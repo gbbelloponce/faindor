@@ -1,0 +1,12 @@
+{
+  "name": "faindor",
+  "packageManager": "bun@1.2.1",
+  "private": true,
+  "scripts": {
+    "dev": "bun --filter '*' dev"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}
