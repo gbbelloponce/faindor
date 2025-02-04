@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "biomejs.biome",
+    "oven.bun-vscode",
+    "bradlc.vscode-tailwindcss",
+    "stivo.tailwind-fold",
+    "pflannery.vscode-versionlens",
+    "usernamehw.errorlens"
+  ]
+}
