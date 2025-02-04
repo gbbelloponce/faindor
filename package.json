@@ -3,10 +3,17 @@
   "packageManager": "bun@1.2.1",
   "private": true,
   "scripts": {
-    "dev": "bun --filter '*' dev"
+    "dev": "bun --filter '*' dev",
+    "lint": "bunx biome check --write ./**/*"
   },
   "workspaces": [
     "apps/*",
     "packages/*"
+  ],
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4"
+  },
+  "trustedDependencies": [
+    "@biomejs/biome"
   ]
 }
