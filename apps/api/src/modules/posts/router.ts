@@ -1,7 +1,7 @@
-import { initTRPC } from "@trpc/server";
 import { z } from "zod";
 
 import { getUserById } from "@modules/users/service";
+import { publicProcedure, router } from "@shared/trpc";
 import { AuthorizationError, NotFoundError } from "@shared/types/errors";
 import { UserRoles } from "@shared/types/roles";
 import { positiveNumberSchema } from "@shared/types/schemas";
@@ -15,15 +15,13 @@ import {
 	updatePost,
 } from "./service";
 
-const t = initTRPC.create();
-
-export const postsRouter = t.router({
-	getPostById: t.procedure
+export const postsRouter = router({
+	getPostById: publicProcedure
 		.input(z.object({ postId: positiveNumberSchema }))
 		.query(async ({ input }) => {
 			return await getPostById(input.postId);
 		}),
-	getAdminFeed: t.procedure
+	getAdminFeed: publicProcedure
 		.input(z.object({ page: positiveNumberSchema }))
 		.query(async ({ input }) => {
 			// TODO: Get role from logged user
@@ -36,7 +34,7 @@ export const postsRouter = t.router({
 
 			return await getLatestsPosts(input.page);
 		}),
-	getFeed: t.procedure
+	getFeed: publicProcedure
 		.input(z.object({ page: positiveNumberSchema }))
 		.query(async ({ input }) => {
 			// TODO: Get domain from logged user
@@ -44,7 +42,7 @@ export const postsRouter = t.router({
 
 			return await getLatestsPostsByDomain(domain ?? "TODO", input.page);
 		}),
-	getLatestsPostsByUserId: t.procedure
+	getLatestsPostsByUserId: publicProcedure
 		.input(
 			z.object({
 				userId: positiveNumberSchema,
@@ -71,7 +69,7 @@ export const postsRouter = t.router({
 
 			return await getLatestsPostsByUserId(input.userId, input.page);
 		}),
-	createPost: t.procedure
+	createPost: publicProcedure
 		.input(z.object({ content: z.string().min(1) }))
 		.mutation(async ({ input }) => {
 			// TODO: Get id from logged user
@@ -81,7 +79,7 @@ export const postsRouter = t.router({
 				userId: -1,
 			});
 		}),
-	updatePost: t.procedure
+	updatePost: publicProcedure
 		.input(
 			z.object({ postId: positiveNumberSchema, content: z.string().min(1) }),
 		)
@@ -93,7 +91,7 @@ export const postsRouter = t.router({
 				content: input.content,
 			});
 		}),
-	softDeletePost: t.procedure
+	softDeletePost: publicProcedure
 		.input(z.object({ postId: positiveNumberSchema }))
 		.mutation(async ({ input }) => {
 			// TODO: Check if logged user is owner or admin

@@ -7,7 +7,7 @@ import { appRouter } from "./router";
 
 const app = new Hono();
 
-app.use(cors());
+app.use(cors({ origin: [process.env.CLIENT_URL] }));
 app.use(prettyJSON());
 
 app.use("/trpc/*", trpcServer({ router: appRouter }));

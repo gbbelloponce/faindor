@@ -2,6 +2,7 @@
 	"compilerOptions": {
 		"strict": true,
 		"baseUrl": "./src",
+		"composite": true,
 		"paths": {
 			"@shared/*": ["shared/*"],
 			"@modules/*": ["modules/*"],
