@@ -17,7 +17,7 @@ import {
 
 const t = initTRPC.create();
 
-export const usersRouter = t.router({
+export const postsRouter = t.router({
 	getPostById: t.procedure
 		.input(z.object({ postId: positiveNumberSchema }))
 		.query(async ({ input }) => {
