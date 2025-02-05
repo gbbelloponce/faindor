@@ -1,5 +1,11 @@
 {
 	"compilerOptions": {
-		"strict": true
+		"strict": true,
+		"baseUrl": "./src",
+		"paths": {
+			"@shared/*": ["shared/*"],
+			"@modules/*": ["modules/*"],
+			"@db/*": ["shared/db/*"]
+		}
 	}
 }
