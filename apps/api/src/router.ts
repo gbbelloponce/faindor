@@ -1,6 +1,6 @@
 import { initTRPC } from "@trpc/server";
-import { usersRouter } from "./modules/users/router";
 import { organizationsRouter } from "./modules/organizations/router";
+import { usersRouter } from "./modules/users/router";
 
 const t = initTRPC.create();
 
