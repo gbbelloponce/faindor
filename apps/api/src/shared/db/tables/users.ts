@@ -1,11 +1,4 @@
-import {
-	uuid,
-	pgTable,
-	serial,
-	text,
-	timestamp,
-	boolean,
-} from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import { UserRoles } from "../../types/roles";
 import { Organizations } from "./organizations";
