@@ -1,10 +1,10 @@
 import {
 	boolean,
+	integer,
 	pgTable,
+	serial,
 	text,
 	timestamp,
-	serial,
-	integer,
 } from "drizzle-orm/pg-core";
 
 import { UserRoles } from "../../types/roles";
