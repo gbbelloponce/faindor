@@ -1,14 +1,21 @@
-import { boolean, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+	boolean,
+	pgTable,
+	text,
+	timestamp,
+	serial,
+	integer,
+} from "drizzle-orm/pg-core";
 
 import { UserRoles } from "../../types/roles";
 import { Organizations } from "./organizations";
 
 export const Users = pgTable("users", {
-	id: uuid("id").primaryKey(),
+	id: serial("id").primaryKey(),
 	name: text("name").notNull(),
 	email: text("email").unique().notNull(),
 	password: text("password").notNull(),
-	organizationId: uuid("organization_id")
+	organizationId: integer("organization_id")
 		.references(() => Organizations.id)
 		.notNull(),
 	role: text("role")

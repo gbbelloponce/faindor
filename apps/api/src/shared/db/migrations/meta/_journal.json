@@ -1,13 +1,13 @@
 {
-	"version": "7",
-	"dialect": "postgresql",
-	"entries": [
-		{
-			"idx": 0,
-			"version": "7",
-			"when": 1738721339041,
-			"tag": "0000_add-users-and-organizations-tables",
-			"breakpoints": true
-		}
-	]
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1738722357570,
+      "tag": "0000_add-initial-tables",
+      "breakpoints": true
+    }
+  ]
 }
