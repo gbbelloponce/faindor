@@ -2,8 +2,8 @@ import { eq } from "drizzle-orm";
 
 import db from "@shared/db";
 import { Organizations } from "@shared/db/tables/organizations";
-import { CouldNotCreateError } from "@shared/types/errors";
 import { parseDBError } from "@shared/utils/errors";
+import { TRPCError } from "@trpc/server";
 import type { CreateOrganizationParams } from "./types/request";
 
 export const getOrganizationByDomain = async (domain: string) => {
@@ -38,9 +38,10 @@ export const createOrganization = async ({
 			.returning({ id: Organizations.id });
 
 		if (!result.length) {
-			throw new CouldNotCreateError(
-				`Failed to create organization with domain: ${domain}`,
-			);
+			throw new TRPCError({
+				message: `Failed to create organization with domain: ${domain}`,
+				code: "INTERNAL_SERVER_ERROR",
+			});
 		}
 
 		return result[0];

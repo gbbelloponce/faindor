@@ -2,9 +2,9 @@ import { z } from "zod";
 
 import { getUserById } from "@modules/users/service";
 import { publicProcedure, router } from "@shared/trpc";
-import { AuthorizationError, NotFoundError } from "@shared/types/errors";
 import { UserRoles } from "@shared/types/roles";
 import { positiveNumberSchema } from "@shared/types/schemas";
+import { TRPCError } from "@trpc/server";
 import {
 	createPost,
 	getLatestsPosts,
@@ -27,9 +27,10 @@ export const postsRouter = router({
 			// TODO: Get role from logged user
 			const role = undefined;
 			if (role !== UserRoles.APP_ADMIN) {
-				throw new AuthorizationError(
-					"You are not allowed to see posts from another organization",
-				);
+				throw new TRPCError({
+					message: "You are not allowed to see posts from another organization",
+					code: "UNAUTHORIZED",
+				});
 			}
 
 			return await getLatestsPosts(input.page);
@@ -52,7 +53,10 @@ export const postsRouter = router({
 		.query(async ({ input }) => {
 			const userParam = await getUserById(input.userId);
 			if (!userParam) {
-				throw new NotFoundError(`User not found with id: ${input.userId}`);
+				throw new TRPCError({
+					message: `User not found with id: ${input.userId}`,
+					code: "NOT_FOUND",
+				});
 			}
 
 			// TODO: Get domain and role from logged user
@@ -62,9 +66,11 @@ export const postsRouter = router({
 				userParam.organization.domain !== domain &&
 				role !== UserRoles.APP_ADMIN
 			) {
-				throw new AuthorizationError(
-					"You are not allowed to see the posts from another organization's user",
-				);
+				throw new TRPCError({
+					message:
+						"You are not allowed to see the posts from another organization's user",
+					code: "UNAUTHORIZED",
+				});
 			}
 
 			return await getLatestsPostsByUserId(input.userId, input.page);

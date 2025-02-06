@@ -4,12 +4,8 @@ import db from "@shared/db";
 import { Organizations } from "@shared/db/tables/organizations";
 import { Posts } from "@shared/db/tables/posts";
 import { Users } from "@shared/db/tables/users";
-import {
-	CouldNotCreateError,
-	CouldNotDeleteError,
-	CouldNotUpdateError,
-} from "@shared/types/errors";
 import { parseDBError } from "@shared/utils/errors";
+import { TRPCError } from "@trpc/server";
 import type { CreatePostParams, UpdatePostParams } from "./types/request";
 
 export const getPostById = async (id: number) => {
@@ -141,9 +137,10 @@ export const createPost = async (post: CreatePostParams) => {
 			.returning();
 
 		if (!result.length) {
-			throw new CouldNotCreateError(
-				`Failed to create post with content: ${post.content} for user: ${post.userId}`,
-			);
+			throw new TRPCError({
+				message: `Failed to create post with content: ${post.content} for user: ${post.userId}`,
+				code: "INTERNAL_SERVER_ERROR",
+			});
 		}
 
 		return result[0];
@@ -164,9 +161,10 @@ export const updatePost = async (post: UpdatePostParams) => {
 			.returning();
 
 		if (!result.length) {
-			throw new CouldNotUpdateError(
-				`Failed to update post with id: ${post.id}`,
-			);
+			throw new TRPCError({
+				message: `Failed to update post with id: ${post.id}`,
+				code: "INTERNAL_SERVER_ERROR",
+			});
 		}
 
 		return result[0];
@@ -186,7 +184,10 @@ export const softDeletePost = async (postId: number) => {
 			.returning();
 
 		if (!result.length) {
-			throw new CouldNotDeleteError(`Failed to delete post with id: ${postId}`);
+			throw new TRPCError({
+				message: `Failed to delete post with id: ${postId}`,
+				code: "INTERNAL_SERVER_ERROR",
+			});
 		}
 
 		return result[0];
