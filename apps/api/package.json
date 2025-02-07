@@ -15,6 +15,7 @@
 		"@trpc/server": "^10.45.2",
 		"drizzle-orm": "^0.39.1",
 		"hono": "^4.6.19",
+		"tldts": "^6.1.76",
 		"zod": "^3.24.1"
 	},
 	"devDependencies": {

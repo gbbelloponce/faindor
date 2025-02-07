@@ -15,6 +15,7 @@ import type {
 	CreateUserParams,
 	GetUserByCredentialsParams,
 } from "../auth/types/request";
+import { getNormalizedDomainFromEmail } from "@shared/utils/mail";
 
 export const getPublicUserInfoById = async (id: number) => {
 	try {
@@ -129,7 +130,7 @@ export const createUser = async (user: CreateUserParams) => {
 		let organizationId = null;
 
 		// Only uses the domain (i.e "example" from "joe@example.com")
-		const organizationDomain = user.email.split("@")[1];
+		const organizationDomain = getNormalizedDomainFromEmail(user.email);
 		const existingOrganization =
 			await getOrganizationByDomain(organizationDomain);
 
