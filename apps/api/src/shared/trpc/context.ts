@@ -13,7 +13,7 @@ export const createContext = async (
 		const authorizationHeader = c.req.header("Authorization");
 		if (!authorizationHeader) {
 			throw new TRPCError({
-				message: "No authorization headerprovided",
+				message: "No authorization header provided",
 				code: "UNAUTHORIZED",
 			});
 		}
