@@ -10,12 +10,12 @@ import { Posts } from "@shared/db/tables/posts";
 import { Users } from "@shared/db/tables/users";
 import { UserRoles } from "@shared/types/roles";
 import { parseDBError } from "@shared/utils/errors";
+import { getNormalizedDomainFromEmail } from "@shared/utils/mail";
 import { TRPCError } from "@trpc/server";
 import type {
 	CreateUserParams,
 	GetUserByCredentialsParams,
 } from "../auth/types/request";
-import { getNormalizedDomainFromEmail } from "@shared/utils/mail";
 
 export const getPublicUserInfoById = async (id: number) => {
 	try {

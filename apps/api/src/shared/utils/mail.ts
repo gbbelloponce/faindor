@@ -1,4 +1,4 @@
-import { getDomainWithoutSuffix, getDomain } from "tldts";
+import { getDomain, getDomainWithoutSuffix } from "tldts";
 
 export const COMMON_EMAIL_PROVIDERS = new Set([
 	"gmail",
