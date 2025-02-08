@@ -12,11 +12,9 @@ export const publicProcedure = t.procedure;
 
 export const authenticatedProcedure = t.procedure.use(
 	t.middleware(({ ctx, next }) => {
-		console.log(ctx.user);
-
 		if (!ctx.user) {
 			throw new TRPCError({
-				message: "Not authenticated",
+				message: "Not authenticated.",
 				code: "UNAUTHORIZED",
 			});
 		}

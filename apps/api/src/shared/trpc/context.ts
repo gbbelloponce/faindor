@@ -13,7 +13,7 @@ export const createContext = async (
 		const authorizationHeader = c.req.header("Authorization");
 		if (!authorizationHeader) {
 			throw new TRPCError({
-				message: "No authorization header provided",
+				message: "No authorization header provided.",
 				code: "UNAUTHORIZED",
 			});
 		}
@@ -22,7 +22,7 @@ export const createContext = async (
 		const [, token] = authorizationHeader.split(" ");
 		if (!token) {
 			throw new TRPCError({
-				message: "No token provided",
+				message: "No token provided.",
 				code: "UNAUTHORIZED",
 			});
 		}
@@ -30,9 +30,9 @@ export const createContext = async (
 		// Verify and validate the token
 		const payload = await verify(token, process.env.JWT_SECRET);
 
-		if (!payload.userId || !payload.userDomain || !payload.userRole) {
+		if (!payload.userId || !payload.organizationId || !payload.userRole) {
 			throw new TRPCError({
-				message: "Invalid token",
+				message: "Invalid token.",
 				code: "UNAUTHORIZED",
 			});
 		}
@@ -42,7 +42,7 @@ export const createContext = async (
 			user: {
 				id: Number(payload.userId),
 				role: payload.userRole,
-				domain: payload.userDomain,
+				organizationId: payload.organizationId,
 			} as LoggedUser,
 		};
 	} catch (error) {
