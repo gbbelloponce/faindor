@@ -9,7 +9,7 @@ import { Organizations } from "@shared/db/tables/organizations";
 import { Posts } from "@shared/db/tables/posts";
 import { Users } from "@shared/db/tables/users";
 import { UserRoles } from "@shared/types/roles";
-import { parseDBError } from "@shared/utils/errors";
+import { checkDBError } from "@shared/utils/errors";
 import { getNormalizedDomainFromEmail } from "@shared/utils/mail";
 import { TRPCError } from "@trpc/server";
 import type {
@@ -39,7 +39,7 @@ export const getPublicUserInfoById = async (id: number) => {
 
 		return result[0];
 	} catch (error) {
-		throw parseDBError(error);
+		throw checkDBError(error);
 	}
 };
 
@@ -60,11 +60,16 @@ export const getUserById = async (id: number) => {
 			.innerJoin(Organizations, eq(Users.organizationId, Organizations.id))
 			.where(eq(Users.id, id));
 
-		if (!result.length) return null;
+		if (!result.length) {
+			throw new TRPCError({
+				message: `There is no user with the id: ${id}`,
+				code: "NOT_FOUND",
+			});
+		}
 
 		return result[0];
 	} catch (error) {
-		throw parseDBError(error);
+		throw checkDBError(error);
 	}
 };
 
@@ -85,11 +90,16 @@ export const getUserByEmail = async (email: string) => {
 			.innerJoin(Organizations, eq(Users.organizationId, Organizations.id))
 			.where(eq(Users.email, email));
 
-		if (!result.length) return null;
+		if (!result.length) {
+			throw new TRPCError({
+				message: `There is no user with the email: ${email}`,
+				code: "NOT_FOUND",
+			});
+		}
 
 		return result[0];
 	} catch (error) {
-		throw parseDBError(error);
+		throw checkDBError(error);
 	}
 };
 
@@ -100,13 +110,6 @@ export const getUserByCredentials = async ({
 	try {
 		const user = await getUserByEmail(email);
 
-		if (!user) {
-			throw new TRPCError({
-				message: `There is no user with the email: ${email}`,
-				code: "NOT_FOUND",
-			});
-		}
-
 		const arePasswordsEqual = await Bun.password.verify(
 			password,
 			user.password,
@@ -114,14 +117,14 @@ export const getUserByCredentials = async ({
 
 		if (!arePasswordsEqual) {
 			throw new TRPCError({
-				message: `Invalid credentials for the email: ${email}`,
+				message: `Invalid credentials for the email: ${email}.`,
 				code: "UNAUTHORIZED",
 			});
 		}
 
 		return user;
 	} catch (error) {
-		throw parseDBError(error);
+		throw checkDBError(error);
 	}
 };
 
@@ -161,13 +164,13 @@ export const createUser = async (user: CreateUserParams) => {
 
 		if (!result.length) {
 			throw new TRPCError({
-				message: `Failed to create user with email: ${user.email} and name: ${user.name}`,
+				message: `Failed to create user with email: ${user.email} and name: ${user.name}.`,
 				code: "INTERNAL_SERVER_ERROR",
 			});
 		}
 
 		return result[0];
 	} catch (error) {
-		throw parseDBError(error);
+		throw checkDBError(error);
 	}
 };
