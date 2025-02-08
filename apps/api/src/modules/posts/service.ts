@@ -4,7 +4,7 @@ import db from "@shared/db";
 import { Organizations } from "@shared/db/tables/organizations";
 import { Posts } from "@shared/db/tables/posts";
 import { Users } from "@shared/db/tables/users";
-import { parseDBError } from "@shared/utils/errors";
+import { checkDBError } from "@shared/utils/errors";
 import { TRPCError } from "@trpc/server";
 import type { CreatePostParams, UpdatePostParams } from "./types/request";
 
@@ -19,11 +19,16 @@ export const getPostById = async (id: number) => {
 			.from(Posts)
 			.where(eq(Posts.id, id));
 
-		if (!result.length) return null;
+		if (!result.length) {
+			throw new TRPCError({
+				message: `There is no post with the id: ${id}`,
+				code: "NOT_FOUND",
+			});
+		}
 
 		return result[0];
 	} catch (error) {
-		throw parseDBError(error);
+		throw checkDBError(error);
 	}
 };
 
@@ -55,7 +60,7 @@ export const getLatestsPosts = async (page = 1) => {
 
 		return result;
 	} catch (error) {
-		throw parseDBError(error);
+		throw checkDBError(error);
 	}
 };
 
@@ -83,11 +88,14 @@ export const getLatestsPostsByUserId = async (userId: number, page = 1) => {
 
 		return result;
 	} catch (error) {
-		throw parseDBError(error);
+		throw checkDBError(error);
 	}
 };
 
-export const getLatestsPostsByDomain = async (domain: string, page = 1) => {
+export const getLatestsPostsByOrganizationId = async (
+	organizationId: number,
+	page = 1,
+) => {
 	try {
 		const result = await db
 			.select({
@@ -105,7 +113,7 @@ export const getLatestsPostsByDomain = async (domain: string, page = 1) => {
 			.from(Posts)
 			.innerJoin(Users, eq(Posts.userId, Users.id))
 			.innerJoin(Organizations, eq(Users.organizationId, Organizations.id))
-			.where(eq(Organizations.domain, domain))
+			.where(eq(Organizations.id, organizationId))
 			.orderBy(desc(Posts.createdAt))
 			.groupBy(
 				Posts.id,
@@ -122,7 +130,7 @@ export const getLatestsPostsByDomain = async (domain: string, page = 1) => {
 
 		return result;
 	} catch (error) {
-		throw parseDBError(error);
+		throw checkDBError(error);
 	}
 };
 
@@ -145,7 +153,7 @@ export const createPost = async (post: CreatePostParams) => {
 
 		return result[0];
 	} catch (error) {
-		throw parseDBError(error);
+		throw checkDBError(error);
 	}
 };
 
@@ -169,7 +177,7 @@ export const updatePost = async (post: UpdatePostParams) => {
 
 		return result[0];
 	} catch (error) {
-		throw parseDBError(error);
+		throw checkDBError(error);
 	}
 };
 
@@ -192,6 +200,6 @@ export const softDeletePost = async (postId: number) => {
 
 		return result[0];
 	} catch (error) {
-		throw parseDBError(error);
+		throw checkDBError(error);
 	}
 };

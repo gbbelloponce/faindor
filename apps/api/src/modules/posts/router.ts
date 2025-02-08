@@ -7,8 +7,7 @@ import { positiveNumberSchema } from "@shared/types/schemas";
 import { TRPCError } from "@trpc/server";
 import {
 	createPost,
-	getLatestsPosts,
-	getLatestsPostsByDomain,
+	getLatestsPostsByOrganizationId,
 	getLatestsPostsByUserId,
 	getPostById,
 	softDeletePost,
@@ -18,30 +17,29 @@ import {
 export const postsRouter = router({
 	getPostById: authenticatedProcedure
 		.input(z.object({ postId: positiveNumberSchema }))
-		.query(async ({ input }) => {
-			return await getPostById(input.postId);
-		}),
-	getAdminFeed: authenticatedProcedure
-		.input(z.object({ page: positiveNumberSchema }))
-		.query(async ({ input }) => {
-			// TODO: Get role from logged user
-			const role = undefined;
-			if (role !== UserRoles.APP_ADMIN) {
+		.query(async ({ input, ctx }) => {
+			const post = await getPostById(input.postId);
+			const postUser = await getUserById(post.userId);
+
+			if (
+				postUser.organization.id !== ctx.user.organizationId &&
+				ctx.user.role !== UserRoles.APP_ADMIN
+			) {
 				throw new TRPCError({
-					message: "You are not allowed to see posts from another organization",
+					message: "You are not allowed to see this post.",
 					code: "UNAUTHORIZED",
 				});
 			}
 
-			return await getLatestsPosts(input.page);
+			return post;
 		}),
 	getFeed: authenticatedProcedure
 		.input(z.object({ page: positiveNumberSchema }))
-		.query(async ({ input }) => {
-			// TODO: Get domain from logged user
-			const domain = undefined;
-
-			return await getLatestsPostsByDomain(domain ?? "TODO", input.page);
+		.query(async ({ input, ctx }) => {
+			return await getLatestsPostsByOrganizationId(
+				ctx.user.organizationId,
+				input.page,
+			);
 		}),
 	getLatestsPostsByUserId: authenticatedProcedure
 		.input(
@@ -50,25 +48,18 @@ export const postsRouter = router({
 				page: positiveNumberSchema,
 			}),
 		)
-		.query(async ({ input }) => {
+		.query(async ({ input, ctx }) => {
 			const userParam = await getUserById(input.userId);
-			if (!userParam) {
-				throw new TRPCError({
-					message: `User not found with id: ${input.userId}`,
-					code: "NOT_FOUND",
-				});
-			}
 
-			// TODO: Get domain and role from logged user
-			const domain = undefined;
-			const role = undefined;
+			const organizationId = ctx.user.organizationId;
+			const role = ctx.user.role;
 			if (
-				userParam.organization.domain !== domain &&
+				userParam.organization.id !== organizationId &&
 				role !== UserRoles.APP_ADMIN
 			) {
 				throw new TRPCError({
 					message:
-						"You are not allowed to see the posts from another organization's user",
+						"You are not allowed to see the posts from another organization's user.",
 					code: "UNAUTHORIZED",
 				});
 			}
@@ -77,20 +68,24 @@ export const postsRouter = router({
 		}),
 	createPost: authenticatedProcedure
 		.input(z.object({ content: z.string().min(1) }))
-		.mutation(async ({ input }) => {
-			// TODO: Get id from logged user
-
+		.mutation(async ({ input, ctx }) => {
 			return await createPost({
 				content: input.content,
-				userId: -1,
+				userId: ctx.user.id,
 			});
 		}),
 	updatePost: authenticatedProcedure
 		.input(
 			z.object({ postId: positiveNumberSchema, content: z.string().min(1) }),
 		)
-		.mutation(async ({ input }) => {
-			// TODO: Check if logged user is owner
+		.mutation(async ({ input, ctx }) => {
+			const existingPost = await getPostById(input.postId);
+			if (existingPost.userId !== ctx.user.id) {
+				throw new TRPCError({
+					message: "You are not allowed to update this post.",
+					code: "UNAUTHORIZED",
+				});
+			}
 
 			return await updatePost({
 				id: input.postId,
@@ -99,8 +94,17 @@ export const postsRouter = router({
 		}),
 	softDeletePost: authenticatedProcedure
 		.input(z.object({ postId: positiveNumberSchema }))
-		.mutation(async ({ input }) => {
-			// TODO: Check if logged user is owner or admin
+		.mutation(async ({ input, ctx }) => {
+			const existingPost = await getPostById(input.postId);
+			if (
+				existingPost.userId !== ctx.user.id &&
+				ctx.user.role !== UserRoles.APP_ADMIN
+			) {
+				throw new TRPCError({
+					message: "You are not allowed to delete this post.",
+					code: "UNAUTHORIZED",
+				});
+			}
 
 			return await softDeletePost(input.postId);
 		}),
