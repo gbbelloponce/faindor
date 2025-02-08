@@ -17,7 +17,7 @@ export const authRouter = router({
 				iat: new Date().getTime() / 1000,
 				userId: user.id,
 				userRole: user.role,
-				userDomain: user.organization.domain,
+				organizationId: user.organization.id,
 			},
 			process.env.JWT_SECRET,
 		);
