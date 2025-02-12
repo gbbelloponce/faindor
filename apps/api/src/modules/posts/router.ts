@@ -10,6 +10,8 @@ import {
 	getLatestsPostsByOrganizationId,
 	getLatestsPostsByUserId,
 	getPostById,
+	getPostLikes,
+	likePost,
 	softDeletePost,
 	updatePost,
 } from "./service";
@@ -19,10 +21,9 @@ export const postsRouter = router({
 		.input(z.object({ postId: positiveNumberSchema }))
 		.query(async ({ input, ctx }) => {
 			const post = await getPostById(input.postId);
-			const postUser = await getUserById(post.userId);
 
 			if (
-				postUser.organization.id !== ctx.user.organizationId &&
+				post.user.organizationId !== ctx.user.organizationId &&
 				ctx.user.role !== UserRoles.APP_ADMIN
 			) {
 				throw new TRPCError({
@@ -80,7 +81,7 @@ export const postsRouter = router({
 		)
 		.mutation(async ({ input, ctx }) => {
 			const existingPost = await getPostById(input.postId);
-			if (existingPost.userId !== ctx.user.id) {
+			if (existingPost.user.id !== ctx.user.id) {
 				throw new TRPCError({
 					message: "You are not allowed to update this post.",
 					code: "UNAUTHORIZED",
@@ -97,7 +98,7 @@ export const postsRouter = router({
 		.mutation(async ({ input, ctx }) => {
 			const existingPost = await getPostById(input.postId);
 			if (
-				existingPost.userId !== ctx.user.id &&
+				existingPost.user.id !== ctx.user.id &&
 				ctx.user.role !== UserRoles.APP_ADMIN
 			) {
 				throw new TRPCError({
@@ -107,5 +108,25 @@ export const postsRouter = router({
 			}
 
 			return await softDeletePost(input.postId);
+		}),
+	likePost: authenticatedProcedure
+		.input(z.object({ postId: positiveNumberSchema }))
+		.mutation(async ({ input, ctx }) => {
+			const existingPost = await getPostById(input.postId);
+			if (existingPost.user.organizationId !== ctx.user.organizationId) {
+				throw new TRPCError({
+					message: "You are not allowed to like this post.",
+					code: "UNAUTHORIZED",
+				});
+			}
+
+			return await likePost(input.postId, ctx.user.id);
+		}),
+	getPostLikes: authenticatedProcedure
+		.input(
+			z.object({ postId: positiveNumberSchema, page: positiveNumberSchema }),
+		)
+		.query(async ({ input }) => {
+			return await getPostLikes(input.postId, input.page);
 		}),
 });
