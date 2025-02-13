@@ -6,9 +6,13 @@ export const checkDBError = (error: unknown) => {
 		console.error("NeonDbError with code: ", error.code);
 	}
 
+	if (error instanceof TRPCError) {
+		return error;
+	}
+
 	console.error(error);
 
-	throw new TRPCError({
+	return new TRPCError({
 		message:
 			"There was an error with the database, check the server logs for more info.",
 		code: "INTERNAL_SERVER_ERROR",

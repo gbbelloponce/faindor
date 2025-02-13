@@ -1,15 +1,17 @@
-import { count, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq } from "drizzle-orm";
 
 import db from "@shared/db";
 import { Likes } from "@shared/db/tables/likes";
-import { Organizations } from "@shared/db/tables/organizations";
 import { Posts } from "@shared/db/tables/posts";
 import { Users } from "@shared/db/tables/users";
 import { checkDBError } from "@shared/utils/errors";
 import { TRPCError } from "@trpc/server";
 import type { CreatePostParams, UpdatePostParams } from "./types/request";
 
-export const getPostById = async (id: number) => {
+export const getPostByIdAndOrganizationId = async (
+	id: number,
+	organizationId: number,
+) => {
 	try {
 		const result = await db
 			.select({
@@ -24,7 +26,7 @@ export const getPostById = async (id: number) => {
 			.from(Posts)
 			.innerJoin(Users, eq(Posts.userId, Users.id))
 			.leftJoin(Likes, eq(Posts.id, Likes.postId))
-			.where(eq(Posts.id, id));
+			.where(and(eq(Posts.id, id), eq(Users.organizationId, organizationId)));
 
 		if (!result.length) {
 			throw new TRPCError({
@@ -39,20 +41,20 @@ export const getPostById = async (id: number) => {
 	}
 };
 
-export const getLatestsPosts = async (page = 1) => {
+export const getLatestsPostsByUserId = async (
+	userId: number,
+	organizationId: number,
+	page = 1,
+) => {
 	try {
 		const result = await db
 			.select({
 				id: Posts.id,
 				content: Posts.content,
+				likesCount: count(Likes.id),
 				user: {
 					id: Users.id,
 					name: Users.name,
-					email: Users.email,
-				},
-				organization: {
-					id: Organizations.id,
-					domain: Organizations.domain,
 				},
 				createdAt: Posts.createdAt,
 				updatedAt: Posts.updatedAt,
@@ -60,35 +62,19 @@ export const getLatestsPosts = async (page = 1) => {
 			})
 			.from(Posts)
 			.innerJoin(Users, eq(Posts.userId, Users.id))
-			.innerJoin(Organizations, eq(Users.organizationId, Organizations.id))
-			.orderBy(desc(Posts.createdAt))
-			.offset((page - 1) * 10) // Get 10 posts per page, skip the other ones
-			.limit(10);
-
-		return result;
-	} catch (error) {
-		throw checkDBError(error);
-	}
-};
-
-export const getLatestsPostsByUserId = async (userId: number, page = 1) => {
-	try {
-		const result = await db
-			.select({
-				id: Posts.id,
-				content: Posts.content,
-				user: {
-					id: Users.id,
-					name: Users.name,
-					email: Users.email,
-				},
-				createdAt: Posts.createdAt,
-				updatedAt: Posts.updatedAt,
-				deletedAt: Posts.deletedAt,
-			})
-			.from(Posts)
-			.innerJoin(Users, eq(Posts.userId, Users.id))
-			.where(eq(Users.id, userId))
+			.leftJoin(Likes, eq(Posts.id, Likes.postId))
+			.where(
+				and(eq(Users.id, userId), eq(Users.organizationId, organizationId)),
+			)
+			.groupBy(
+				Posts.id,
+				Posts.content,
+				Users.id,
+				Users.name,
+				Posts.createdAt,
+				Posts.updatedAt,
+				Posts.deletedAt,
+			)
 			.orderBy(desc(Posts.createdAt))
 			.offset((page - 1) * 10) // Get 10 posts per page, skip the other ones
 			.limit(10);
@@ -108,10 +94,10 @@ export const getLatestsPostsByOrganizationId = async (
 			.select({
 				id: Posts.id,
 				content: Posts.content,
+				likesCount: count(Likes.id),
 				user: {
 					id: Users.id,
 					name: Users.name,
-					email: Users.email,
 				},
 				createdAt: Posts.createdAt,
 				updatedAt: Posts.updatedAt,
@@ -119,15 +105,14 @@ export const getLatestsPostsByOrganizationId = async (
 			})
 			.from(Posts)
 			.innerJoin(Users, eq(Posts.userId, Users.id))
-			.innerJoin(Organizations, eq(Users.organizationId, Organizations.id))
-			.where(eq(Organizations.id, organizationId))
+			.leftJoin(Likes, eq(Posts.id, Likes.postId))
+			.where(eq(Users.organizationId, organizationId))
 			.orderBy(desc(Posts.createdAt))
 			.groupBy(
 				Posts.id,
 				Posts.content,
 				Users.id,
 				Users.name,
-				Users.email,
 				Posts.createdAt,
 				Posts.updatedAt,
 				Posts.deletedAt,
@@ -164,7 +149,7 @@ export const createPost = async (post: CreatePostParams) => {
 	}
 };
 
-export const updatePost = async (post: UpdatePostParams) => {
+export const updatePost = async (post: UpdatePostParams, userId: number) => {
 	try {
 		const result = await db
 			.update(Posts)
@@ -172,7 +157,7 @@ export const updatePost = async (post: UpdatePostParams) => {
 				content: post.content,
 				updatedAt: new Date(),
 			})
-			.where(eq(Posts.id, post.id))
+			.where(and(eq(Posts.id, post.id), eq(Posts.userId, userId)))
 			.returning();
 
 		if (!result.length) {
@@ -188,19 +173,19 @@ export const updatePost = async (post: UpdatePostParams) => {
 	}
 };
 
-export const softDeletePost = async (postId: number) => {
+export const softDeletePost = async (postId: number, userId: number) => {
 	try {
 		const result = await db
 			.update(Posts)
 			.set({
 				deletedAt: new Date(),
 			})
-			.where(eq(Posts.id, postId))
+			.where(and(eq(Posts.id, postId), eq(Posts.userId, userId)))
 			.returning();
 
 		if (!result.length) {
 			throw new TRPCError({
-				message: `Failed to delete post with id: ${postId}`,
+				message: `Failed to soft delete post with id: ${postId}`,
 				code: "INTERNAL_SERVER_ERROR",
 			});
 		}
@@ -211,8 +196,22 @@ export const softDeletePost = async (postId: number) => {
 	}
 };
 
-export const likePost = async (postId: number, userId: number) => {
+export const likePost = async (
+	postId: number,
+	userId: number,
+	organizationId: number,
+) => {
 	try {
+		const post = await getPostByIdAndOrganizationId(postId, userId);
+
+		if (post.user.organizationId !== organizationId) {
+			throw new TRPCError({
+				message:
+					"You are not allowed to like a post from another organization.",
+				code: "UNAUTHORIZED",
+			});
+		}
+
 		const result = await db
 			.insert(Likes)
 			.values({
@@ -234,7 +233,11 @@ export const likePost = async (postId: number, userId: number) => {
 	}
 };
 
-export const getPostLikes = async (postId: number, page = 1) => {
+export const getPostLikes = async (
+	postId: number,
+	organizationId: number,
+	page = 1,
+) => {
 	try {
 		const result = await db
 			.select({
@@ -246,7 +249,9 @@ export const getPostLikes = async (postId: number, page = 1) => {
 			})
 			.from(Likes)
 			.innerJoin(Users, eq(Likes.userId, Users.id))
-			.where(eq(Likes.postId, postId))
+			.where(
+				and(eq(Likes.postId, postId), eq(Users.organizationId, organizationId)),
+			)
 			.offset((page - 1) * 10) // Get 10 likes per page, skip the other ones
 			.limit(10);
 

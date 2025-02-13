@@ -1,4 +1,4 @@
-import { integer, pgTable, serial } from "drizzle-orm/pg-core";
+import { integer, pgTable, serial, timestamp } from "drizzle-orm/pg-core";
 
 import { Posts } from "./posts";
 import { Users } from "./users";
@@ -11,6 +11,7 @@ export const Likes = pgTable("likes", {
 	userId: integer("user_id")
 		.references(() => Users.id)
 		.notNull(),
+	createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export type Like = typeof Likes.$inferSelect;
