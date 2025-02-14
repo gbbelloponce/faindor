@@ -1,6 +1,6 @@
 import { and, desc, eq, isNull } from "drizzle-orm";
 
-import { getPostByIdAndOrganizationId } from "@modules/posts/service";
+import { checkPostUserIsFromOrganizationId } from "@modules/posts/service";
 import db from "@shared/db";
 import { Comments } from "@shared/db/tables/comments";
 import { Users } from "@shared/db/tables/users";
@@ -57,15 +57,7 @@ export const createComment = async (
 	organizationId: number,
 ) => {
 	try {
-		const post = await getPostByIdAndOrganizationId(postId, organizationId);
-
-		if (post.user.organizationId !== organizationId) {
-			throw new TRPCError({
-				message:
-					"You are not allowed to comment on a post from another organization.",
-				code: "UNAUTHORIZED",
-			});
-		}
+		await checkPostUserIsFromOrganizationId(postId, organizationId);
 
 		const result = await db
 			.insert(Comments)

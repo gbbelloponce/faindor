@@ -1,34 +1,13 @@
 {
-	"version": "7",
-	"dialect": "postgresql",
-	"entries": [
-		{
-			"idx": 0,
-			"version": "7",
-			"when": 1738722357570,
-			"tag": "0000_add-initial-tables",
-			"breakpoints": true
-		},
-		{
-			"idx": 1,
-			"version": "7",
-			"when": 1739403183990,
-			"tag": "0001_add-likes",
-			"breakpoints": true
-		},
-		{
-			"idx": 2,
-			"version": "7",
-			"when": 1739406020483,
-			"tag": "0002_add-comments",
-			"breakpoints": true
-		},
-		{
-			"idx": 3,
-			"version": "7",
-			"when": 1739499243641,
-			"tag": "0003_add-replies",
-			"breakpoints": true
-		}
-	]
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1739555705932,
+      "tag": "0000_initial-schemas",
+      "breakpoints": true
+    }
+  ]
 }

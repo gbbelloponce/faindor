@@ -1,2 +1,0 @@
-ALTER TABLE "comments" ADD COLUMN "replies_to" integer;--> statement-breakpoint
-ALTER TABLE "comments" ADD CONSTRAINT "comments_replies_to_comments_id_fk" FOREIGN KEY ("replies_to") REFERENCES "public"."comments"("id") ON DELETE no action ON UPDATE no action;

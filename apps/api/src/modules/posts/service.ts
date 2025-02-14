@@ -1,12 +1,44 @@
+import { TRPCError } from "@trpc/server";
 import { and, count, desc, eq } from "drizzle-orm";
 
 import db from "@shared/db";
 import { Likes } from "@shared/db/tables/likes";
 import { Posts } from "@shared/db/tables/posts";
+import { SavedPosts } from "@shared/db/tables/savedPosts";
 import { Users } from "@shared/db/tables/users";
 import { checkDBError } from "@shared/utils/errors";
-import { TRPCError } from "@trpc/server";
 import type { CreatePostParams, UpdatePostParams } from "./types/request";
+
+/**
+ * Given a postId and an organizationId, this function will throw an error if the post's user is not from the organizationId given.
+ * @param postId
+ * @param organizationId
+ */
+export const checkPostUserIsFromOrganizationId = async (
+	postId: number,
+	organizationId: number,
+) => {
+	try {
+		const result = await db
+			.select({
+				id: Posts.id,
+			})
+			.from(Posts)
+			.innerJoin(Users, eq(Posts.userId, Users.id))
+			.where(
+				and(eq(Posts.id, postId), eq(Users.organizationId, organizationId)),
+			);
+
+		if (!result.length) {
+			throw new TRPCError({
+				message: `You are not allowed to access post with id: ${postId}`,
+				code: "UNAUTHORIZED",
+			});
+		}
+	} catch (error) {
+		throw checkDBError(error);
+	}
+};
 
 export const getPostByIdAndOrganizationId = async (
 	id: number,
@@ -186,6 +218,32 @@ export const softDeletePost = async (postId: number, userId: number) => {
 		if (!result.length) {
 			throw new TRPCError({
 				message: `Failed to soft delete post with id: ${postId}`,
+				code: "INTERNAL_SERVER_ERROR",
+			});
+		}
+
+		return result[0];
+	} catch (error) {
+		throw checkDBError(error);
+	}
+};
+
+export const savePostById = async (
+	postId: number,
+	userId: number,
+	organizationId: number,
+) => {
+	try {
+		await checkPostUserIsFromOrganizationId(postId, organizationId);
+
+		const result = await db
+			.insert(SavedPosts)
+			.values({ postId, userId })
+			.returning();
+
+		if (!result.length) {
+			throw new TRPCError({
+				message: `Failed to save post with id: ${postId}`,
 				code: "INTERNAL_SERVER_ERROR",
 			});
 		}

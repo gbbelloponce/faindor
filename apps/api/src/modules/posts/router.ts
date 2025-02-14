@@ -7,6 +7,7 @@ import {
 	getLatestsPostsByOrganizationId,
 	getLatestsPostsByUserId,
 	getPostByIdAndOrganizationId,
+	savePostById,
 	softDeletePost,
 	updatePost,
 } from "./service";
@@ -69,5 +70,14 @@ export const postsRouter = router({
 		.input(z.object({ postId: positiveNumberSchema }))
 		.mutation(async ({ input, ctx }) => {
 			return await softDeletePost(input.postId, ctx.user.id);
+		}),
+	savePostById: authenticatedProcedure
+		.input(z.object({ postId: positiveNumberSchema }))
+		.mutation(async ({ input, ctx }) => {
+			return await savePostById(
+				input.postId,
+				ctx.user.id,
+				ctx.user.organizationId,
+			);
 		}),
 });

@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 
-import { getPostByIdAndOrganizationId } from "@modules/posts/service";
+import { checkPostUserIsFromOrganizationId } from "@modules/posts/service";
 import db from "@shared/db";
 import { Likes } from "@shared/db/tables/likes";
 import { Users } from "@shared/db/tables/users";
@@ -13,15 +13,7 @@ export const createLike = async (
 	organizationId: number,
 ) => {
 	try {
-		const post = await getPostByIdAndOrganizationId(postId, userId);
-
-		if (post.user.organizationId !== organizationId) {
-			throw new TRPCError({
-				message:
-					"You are not allowed to like a post from another organization.",
-				code: "UNAUTHORIZED",
-			});
-		}
+		await checkPostUserIsFromOrganizationId(postId, organizationId);
 
 		const result = await db
 			.insert(Likes)
