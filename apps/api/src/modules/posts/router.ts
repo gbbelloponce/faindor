@@ -7,8 +7,6 @@ import {
 	getLatestsPostsByOrganizationId,
 	getLatestsPostsByUserId,
 	getPostByIdAndOrganizationId,
-	getPostLikes,
-	likePost,
 	softDeletePost,
 	updatePost,
 } from "./service";
@@ -71,21 +69,5 @@ export const postsRouter = router({
 		.input(z.object({ postId: positiveNumberSchema }))
 		.mutation(async ({ input, ctx }) => {
 			return await softDeletePost(input.postId, ctx.user.id);
-		}),
-	likePost: authenticatedProcedure
-		.input(z.object({ postId: positiveNumberSchema }))
-		.mutation(async ({ input, ctx }) => {
-			return await likePost(input.postId, ctx.user.id, ctx.user.organizationId);
-		}),
-	getPostLikes: authenticatedProcedure
-		.input(
-			z.object({ postId: positiveNumberSchema, page: positiveNumberSchema }),
-		)
-		.query(async ({ input, ctx }) => {
-			return await getPostLikes(
-				input.postId,
-				ctx.user.organizationId,
-				input.page,
-			);
 		}),
 });
