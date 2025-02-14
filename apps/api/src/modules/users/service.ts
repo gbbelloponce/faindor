@@ -1,17 +1,21 @@
+import { TRPCError } from "@trpc/server";
 import { count, eq } from "drizzle-orm";
 
 import {
 	createOrganization,
 	getOrganizationByDomain,
 } from "@modules/organizations/service";
+import { COMMON_PROVIDERS_ORGANIZATION_ID } from "@shared/constants";
 import db from "@shared/db";
 import { Organizations } from "@shared/db/tables/organizations";
 import { Posts } from "@shared/db/tables/posts";
 import { Users } from "@shared/db/tables/users";
 import { UserRoles } from "@shared/types/roles";
 import { checkDBError } from "@shared/utils/errors";
-import { getNormalizedDomainFromEmail } from "@shared/utils/mail";
-import { TRPCError } from "@trpc/server";
+import {
+	COMMON_EMAIL_PROVIDERS,
+	getNormalizedDomainFromEmail,
+} from "@shared/utils/mail";
 import type {
 	CreateUserParams,
 	GetUserByCredentialsParams,
@@ -132,19 +136,25 @@ export const createUser = async (user: CreateUserParams) => {
 	try {
 		let organizationId = null;
 
-		// Only uses the domain (i.e "example" from "joe@example.com")
 		const organizationDomain = getNormalizedDomainFromEmail(user.email);
-		const existingOrganization =
-			await getOrganizationByDomain(organizationDomain);
 
-		// Creates the organization if it doesn't exist
-		if (!existingOrganization) {
-			const createdOrganization = await createOrganization({
-				domain: organizationDomain,
-			});
-			organizationId = createdOrganization.id;
+		// If the domain is from a common provider, group all users inside the same organization
+		if (COMMON_EMAIL_PROVIDERS.has(organizationDomain)) {
+			organizationId = COMMON_PROVIDERS_ORGANIZATION_ID;
 		} else {
-			organizationId = existingOrganization.id;
+			const existingOrganization =
+				await getOrganizationByDomain(organizationDomain);
+
+			// Creates the organization for the given domain if it doesn't exist
+			if (!existingOrganization) {
+				const createdOrganization = await createOrganization({
+					name: organizationDomain,
+					domain: organizationDomain,
+				});
+				organizationId = createdOrganization.id;
+			} else {
+				organizationId = existingOrganization.id;
+			}
 		}
 
 		const result = await db
@@ -160,6 +170,7 @@ export const createUser = async (user: CreateUserParams) => {
 				id: Users.id,
 				name: Users.name,
 				email: Users.email,
+				organizationId: Users.organizationId,
 			});
 
 		if (!result.length) {

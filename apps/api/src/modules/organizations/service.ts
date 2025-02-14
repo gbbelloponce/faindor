@@ -1,9 +1,9 @@
+import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 
 import db from "@shared/db";
 import { Organizations } from "@shared/db/tables/organizations";
 import { checkDBError } from "@shared/utils/errors";
-import { TRPCError } from "@trpc/server";
 import type { CreateOrganizationParams } from "./types/request";
 
 export const getOrganizationById = async (id: number) => {
@@ -52,13 +52,15 @@ export const getOrganizationByDomain = async (domain: string) => {
 };
 
 export const createOrganization = async ({
+	name,
 	domain,
 }: CreateOrganizationParams) => {
 	try {
 		const result = await db
 			.insert(Organizations)
 			.values({
-				domain: domain,
+				name,
+				domain,
 			})
 			.returning({ id: Organizations.id });
 

@@ -1,7 +1,8 @@
 import { z } from "zod";
 
 export const createOrganizationSchema = z.object({
-	domain: z.string().min(1),
+	name: z.string(),
+	domain: z.string(),
 });
 
 export type CreateOrganizationParams = z.infer<typeof createOrganizationSchema>;
