@@ -10,7 +10,8 @@
 		"ignore": [
 			"bun.lock",
 			"node_modules/",
-			"dist/"
+			"dist/",
+			"migrations/"
 		]
 	},
 	"formatter": {
