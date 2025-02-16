@@ -42,7 +42,7 @@ export const createContext = async (
 			user: {
 				id: Number(payload.userId),
 				role: payload.userRole,
-				organizationId: payload.organizationId,
+				organizationId: Number(payload.organizationId),
 			} as LoggedUser,
 		};
 	} catch (error) {
