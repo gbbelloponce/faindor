@@ -1,6 +1,6 @@
 import { and, desc, eq, isNull } from "drizzle-orm";
 
-import { checkPostUserIsFromOrganizationId } from "@modules/posts/service";
+import { validatePostsUserIsFromOrganizationId } from "@modules/posts/service";
 import db from "@shared/db";
 import { Comments } from "@shared/db/tables/comments";
 import { Users } from "@shared/db/tables/users";
@@ -57,7 +57,7 @@ export const createComment = async (
 	organizationId: number,
 ) => {
 	try {
-		await checkPostUserIsFromOrganizationId(postId, organizationId);
+		await validatePostsUserIsFromOrganizationId(postId, organizationId);
 
 		const result = await db
 			.insert(Comments)

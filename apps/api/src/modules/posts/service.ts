@@ -14,7 +14,7 @@ import type { CreatePostParams, UpdatePostParams } from "./types/request";
  * @param postId
  * @param organizationId
  */
-export const checkPostUserIsFromOrganizationId = async (
+export const validatePostsUserIsFromOrganizationId = async (
 	postId: number,
 	organizationId: number,
 ) => {
@@ -40,10 +40,7 @@ export const checkPostUserIsFromOrganizationId = async (
 	}
 };
 
-export const getPostByIdAndOrganizationId = async (
-	id: number,
-	organizationId: number,
-) => {
+export const getPostById = async (id: number, organizationId: number) => {
 	try {
 		const result = await db
 			.select({
@@ -234,7 +231,7 @@ export const savePostById = async (
 	organizationId: number,
 ) => {
 	try {
-		await checkPostUserIsFromOrganizationId(postId, organizationId);
+		await validatePostsUserIsFromOrganizationId(postId, organizationId);
 
 		const result = await db
 			.insert(SavedPosts)

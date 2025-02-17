@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 
-import { checkPostUserIsFromOrganizationId } from "@modules/posts/service";
+import { validatePostsUserIsFromOrganizationId } from "@modules/posts/service";
 import db from "@shared/db";
 import { Likes } from "@shared/db/tables/likes";
 import { Users } from "@shared/db/tables/users";
@@ -13,7 +13,7 @@ export const createLike = async (
 	organizationId: number,
 ) => {
 	try {
-		await checkPostUserIsFromOrganizationId(postId, organizationId);
+		await validatePostsUserIsFromOrganizationId(postId, organizationId);
 
 		const result = await db
 			.insert(Likes)

@@ -6,24 +6,21 @@ import {
 	createPost,
 	getLatestsPostsByOrganizationId,
 	getLatestsPostsByUserId,
-	getPostByIdAndOrganizationId,
+	getPostById,
 	savePostById,
 	softDeletePost,
 	updatePost,
 } from "./service";
 
 export const postsRouter = router({
-	getPostByIdAndOrganizationId: authenticatedProcedure
+	getPostById: authenticatedProcedure
 		.input(z.object({ postId: positiveNumberSchema }))
 		.query(async ({ input, ctx }) => {
-			const post = await getPostByIdAndOrganizationId(
-				input.postId,
-				ctx.user.organizationId,
-			);
+			const post = await getPostById(input.postId, ctx.user.organizationId);
 
 			return post;
 		}),
-	getFeed: authenticatedProcedure
+	getLatestsPostsByOrganizationId: authenticatedProcedure
 		.input(z.object({ page: positiveNumberSchema }))
 		.query(async ({ input, ctx }) => {
 			return await getLatestsPostsByOrganizationId(
