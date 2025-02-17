@@ -8,6 +8,13 @@
       "when": 1739555705932,
       "tag": "0000_initial-schemas",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1739757136106,
+      "tag": "0001_add-communities",
+      "breakpoints": true
     }
   ]
 }
