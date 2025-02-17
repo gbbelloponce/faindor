@@ -10,6 +10,7 @@ export const updatePostSchema = z.object({
 
 export type CreatePostParams = {
 	content: string;
+	communityId?: number;
 	userId: number;
 };
 

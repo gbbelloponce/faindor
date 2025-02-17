@@ -4,6 +4,7 @@ import { authenticatedProcedure, router } from "@shared/trpc";
 import { positiveNumberSchema } from "@shared/types/schemas";
 import {
 	createPost,
+	getLatestsPostsByCommunityId,
 	getLatestsPostsByOrganizationId,
 	getLatestsPostsByUserId,
 	getPostById,
@@ -20,7 +21,7 @@ export const postsRouter = router({
 
 			return post;
 		}),
-	getLatestsPostsByOrganizationId: authenticatedProcedure
+	getLatestsPosts: authenticatedProcedure
 		.input(z.object({ page: positiveNumberSchema }))
 		.query(async ({ input, ctx }) => {
 			return await getLatestsPostsByOrganizationId(
@@ -42,11 +43,31 @@ export const postsRouter = router({
 				input.page,
 			);
 		}),
+	getLatestsPostsByCommunityId: authenticatedProcedure
+		.input(
+			z.object({
+				communityId: positiveNumberSchema,
+				page: positiveNumberSchema,
+			}),
+		)
+		.query(async ({ input, ctx }) => {
+			return await getLatestsPostsByCommunityId(
+				input.communityId,
+				ctx.user.organizationId,
+				input.page,
+			);
+		}),
 	createPost: authenticatedProcedure
-		.input(z.object({ content: z.string().min(1) }))
+		.input(
+			z.object({
+				content: z.string().min(1),
+				communityId: positiveNumberSchema.optional(),
+			}),
+		)
 		.mutation(async ({ input, ctx }) => {
 			return await createPost({
 				content: input.content,
+				communityId: input.communityId,
 				userId: ctx.user.id,
 			});
 		}),

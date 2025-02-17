@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, count, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, isNotNull } from "drizzle-orm";
 
 import db from "@shared/db";
 import { Likes } from "@shared/db/tables/likes";
@@ -70,50 +70,6 @@ export const getPostById = async (id: number, organizationId: number) => {
 	}
 };
 
-export const getLatestsPostsByUserId = async (
-	userId: number,
-	organizationId: number,
-	page = 1,
-) => {
-	try {
-		const result = await db
-			.select({
-				id: Posts.id,
-				content: Posts.content,
-				likesCount: count(Likes.id),
-				user: {
-					id: Users.id,
-					name: Users.name,
-				},
-				createdAt: Posts.createdAt,
-				updatedAt: Posts.updatedAt,
-				deletedAt: Posts.deletedAt,
-			})
-			.from(Posts)
-			.innerJoin(Users, eq(Posts.userId, Users.id))
-			.leftJoin(Likes, eq(Posts.id, Likes.postId))
-			.where(
-				and(eq(Users.id, userId), eq(Users.organizationId, organizationId)),
-			)
-			.groupBy(
-				Posts.id,
-				Posts.content,
-				Users.id,
-				Users.name,
-				Posts.createdAt,
-				Posts.updatedAt,
-				Posts.deletedAt,
-			)
-			.orderBy(desc(Posts.createdAt))
-			.offset((page - 1) * 10) // Get 10 posts per page, skip the other ones
-			.limit(10);
-
-		return result;
-	} catch (error) {
-		throw checkDBError(error);
-	}
-};
-
 export const getLatestsPostsByOrganizationId = async (
 	organizationId: number,
 	page = 1,
@@ -155,12 +111,108 @@ export const getLatestsPostsByOrganizationId = async (
 	}
 };
 
+export const getLatestsPostsByUserId = async (
+	userId: number,
+	organizationId: number,
+	page = 1,
+) => {
+	try {
+		const result = await db
+			.select({
+				id: Posts.id,
+				content: Posts.content,
+				communityId: Posts.communityId,
+				likesCount: count(Likes.id),
+				user: {
+					id: Users.id,
+					name: Users.name,
+				},
+				createdAt: Posts.createdAt,
+				updatedAt: Posts.updatedAt,
+				deletedAt: Posts.deletedAt,
+			})
+			.from(Posts)
+			.innerJoin(Users, eq(Posts.userId, Users.id))
+			.leftJoin(Likes, eq(Posts.id, Likes.postId))
+			.where(
+				and(eq(Users.id, userId), eq(Users.organizationId, organizationId)),
+			)
+			.groupBy(
+				Posts.id,
+				Posts.content,
+				Users.id,
+				Users.name,
+				Posts.createdAt,
+				Posts.updatedAt,
+				Posts.deletedAt,
+			)
+			.orderBy(desc(Posts.createdAt))
+			.offset((page - 1) * 10) // Get 10 posts per page, skip the other ones
+			.limit(10);
+
+		return result;
+	} catch (error) {
+		throw checkDBError(error);
+	}
+};
+
+export const getLatestsPostsByCommunityId = async (
+	communityId: number,
+	organizationId: number,
+	page = 1,
+) => {
+	try {
+		const result = await db
+			.select({
+				id: Posts.id,
+				content: Posts.content,
+				communityId: Posts.communityId,
+				likesCount: count(Likes.id),
+				user: {
+					id: Users.id,
+					name: Users.name,
+				},
+				createdAt: Posts.createdAt,
+				updatedAt: Posts.updatedAt,
+				deletedAt: Posts.deletedAt,
+			})
+			.from(Posts)
+			.innerJoin(Users, eq(Posts.userId, Users.id))
+			.leftJoin(Likes, eq(Posts.id, Likes.postId))
+			.where(
+				and(
+					eq(Users.organizationId, organizationId),
+					eq(Posts.communityId, communityId),
+					isNotNull(Posts.communityId),
+				),
+			)
+			.orderBy(desc(Posts.createdAt))
+			.groupBy(
+				Posts.id,
+				Posts.content,
+				Posts.communityId,
+				Users.id,
+				Users.name,
+				Posts.createdAt,
+				Posts.updatedAt,
+				Posts.deletedAt,
+			)
+			.offset((page - 1) * 10)
+			.limit(10);
+
+		return result;
+	} catch (error) {
+		throw checkDBError(error);
+	}
+};
+
 export const createPost = async (post: CreatePostParams) => {
 	try {
 		const result = await db
 			.insert(Posts)
 			.values({
 				content: post.content,
+				communityId: post.communityId,
 				userId: post.userId,
 			})
 			.returning();
