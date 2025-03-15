@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "bun --filter '*' dev",
-    "lint": "bunx biome check --write ./**/*",
+    "lint": "bunx biome check --write ./apps/",
     "prepare": "husky"
   },
   "workspaces": [
