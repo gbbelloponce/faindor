@@ -11,7 +11,8 @@
 			"bun.lock",
 			"node_modules/",
 			"dist/",
-			"migrations/"
+			"migrations/",
+			"tsconfig.*"
 		]
 	},
 	"formatter": {

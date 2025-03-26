@@ -2,20 +2,22 @@
   "name": "faindor",
   "packageManager": "bun@1.2.1",
   "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
+    "prepare": "husky",
     "dev": "bun --filter '*' dev",
     "lint": "bunx biome check --write ./apps/",
-    "prepare": "husky"
+    "clean": "rm -rf node_modules/ bun.lock"
   },
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "husky": "^9.1.7"
   },
   "trustedDependencies": [
-    "@biomejs/biome"
+    "@biomejs/biome",
+    "esbuild"
   ]
 }
