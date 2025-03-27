@@ -1,5 +1,13 @@
+import { Moon, Sun } from "lucide-react";
 import { useEffect } from "react";
+
 import { Theme, useThemeStore } from "../state/theme";
+import { Button } from "./ui/button";
+
+const ThemeToIcon = {
+	[Theme.light]: <Moon />,
+	[Theme.dark]: <Sun />,
+};
 
 export const ThemeToggler = () => {
 	const { theme, toggleTheme, setThemeFromStorageOrSystem } = useThemeStore();
@@ -17,12 +25,11 @@ export const ThemeToggler = () => {
 	}, [theme]);
 
 	return (
-		<button
-			type="button"
-			className="bg-blue-500 p-2 rounded-md"
-			onClick={() => toggleTheme()}
+		<Button
+			className="bg-background hover:bg-accent text-primary"
+			onClick={toggleTheme}
 		>
-			{theme}
-		</button>
+			{ThemeToIcon[theme]}
+		</Button>
 	);
 };

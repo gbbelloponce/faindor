@@ -21,12 +21,10 @@
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true,
 		"noUncheckedSideEffectImports": true,
+		"baseUrl": ".",
 		"paths": {
-			"@shared/*": [
-				"./src/shared/*"
-			],
-			"@modules/*": [
-				"./src/modules/*"
+			"@/*": [
+				"./src/*"
 			],
 		}
 	},

@@ -1,11 +1,9 @@
-import { ThemeToggler } from "./shared/components/ThemeToggler";
+import { ThemeToggler } from "./shared/components/theme-toggler";
 
 const App = () => {
 	return (
 		<>
-			<div className="bg-white text-black dark:bg-black dark:text-white">
-				Hello!!
-			</div>
+			<div>Hello!!</div>
 			<ThemeToggler />
 		</>
 	);
