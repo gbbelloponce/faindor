@@ -12,7 +12,8 @@
 			"node_modules/",
 			"dist/",
 			"migrations/",
-			"tsconfig.*"
+			"tsconfig.*",
+			".next/"
 		]
 	},
 	"formatter": {
