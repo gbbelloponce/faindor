@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ export default function Register() {
 						"johndoe123**",
 					);
 					if (success) {
+						toast.success("You were registered successfully!");
 						router.push("/home");
 					}
 				}}
