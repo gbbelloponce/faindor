@@ -1,7 +1,7 @@
 "use client";
 
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/lib/store/auth-store";
