@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import { ThemeProvider } from "@/components/theme-provider";
 
-import "../styles/globals.css";
+import "@/styles/globals.css";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 	title: "Faindor",
 	description:
 		"Faindor is a free and open-source social media platform to share anything with people in your organization.",
+	icons: ["faindor-logo-rounded.png"],
 };
 
 export default function RootLayout({
