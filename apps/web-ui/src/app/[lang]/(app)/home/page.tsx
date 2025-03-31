@@ -21,11 +21,11 @@ export default function Home() {
 				className="cursor-pointer"
 				onClick={async () => {
 					logOut();
-					toast.success("You were logged out");
+					toast.success(dictionary.auth.messages.loggedOut);
 					router.push("/login");
 				}}
 			>
-				Log Out
+				{dictionary.auth.logout}
 			</Button>
 			<ThemeToggler />
 			<LocaleSwitcher />

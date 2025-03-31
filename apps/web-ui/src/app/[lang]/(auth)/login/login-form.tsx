@@ -16,6 +16,7 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
+import { useLocale } from "@/hooks/useLocale";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/lib/store/auth-store";
 
@@ -26,6 +27,8 @@ const formSchema = z.object({
 
 export function LoginForm() {
 	const router = useRouter();
+
+	const { dictionary } = useLocale();
 
 	const { logInWithCredentials, isLoading, error } = useAuthStore();
 
@@ -41,11 +44,13 @@ export function LoginForm() {
 		const success = await logInWithCredentials(data.email, data.password);
 
 		if (success) {
-			toast.success("Logged in successfully!");
+			toast.success(dictionary.auth.messages.loggedIn);
 			router.push("/home");
 		} else {
-			toast.error(error?.title ?? "Login failed", {
-				description: error?.description ?? "There was an error logging in",
+			toast.error(error?.title ?? dictionary.auth.messages.error.logIn.title, {
+				description:
+					error?.description ??
+					dictionary.auth.messages.error.logIn.description,
 			});
 		}
 	};
@@ -61,7 +66,7 @@ export function LoginForm() {
 					name="email"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Email</FormLabel>
+							<FormLabel>{dictionary.auth.common.email}</FormLabel>
 							<FormControl>
 								<Input {...field} disabled={isLoading} />
 							</FormControl>
@@ -74,7 +79,7 @@ export function LoginForm() {
 					name="password"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Password</FormLabel>
+							<FormLabel>{dictionary.auth.common.password}</FormLabel>
 							<FormControl>
 								<Input {...field} type="password" disabled={isLoading} />
 							</FormControl>
@@ -83,7 +88,11 @@ export function LoginForm() {
 					)}
 				/>
 				<Button type="submit" disabled={isLoading}>
-					{isLoading ? <Loader2 className="animate-spin" /> : "Log In"}
+					{isLoading ? (
+						<Loader2 className="animate-spin" />
+					) : (
+						dictionary.auth.login.loginButton
+					)}
 				</Button>
 			</form>
 		</Form>

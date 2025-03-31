@@ -16,6 +16,7 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
+import { useLocale } from "@/hooks/useLocale";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/lib/store/auth-store";
 
@@ -34,6 +35,8 @@ const formSchema = z
 
 export function RegisterForm() {
 	const router = useRouter();
+
+	const { dictionary } = useLocale();
 
 	const { register, isLoading, error } = useAuthStore();
 
@@ -57,12 +60,17 @@ export function RegisterForm() {
 		);
 
 		if (success) {
-			toast.success("Registered successfully!");
+			toast.success(dictionary.auth.messages.registered);
 			router.push("/home");
 		} else {
-			toast.error(error?.title ?? "Registration failed", {
-				description: error?.description ?? "There was an error registering",
-			});
+			toast.error(
+				error?.title ?? dictionary.auth.messages.error.register.title,
+				{
+					description:
+						error?.description ??
+						dictionary.auth.messages.error.register.description,
+				},
+			);
 		}
 	};
 
@@ -78,7 +86,7 @@ export function RegisterForm() {
 						name="firstName"
 						render={({ field }) => (
 							<FormItem className="flex-1">
-								<FormLabel>First Name</FormLabel>
+								<FormLabel>{dictionary.auth.common.firstName}</FormLabel>
 								<FormControl>
 									<Input {...field} disabled={isLoading} />
 								</FormControl>
@@ -91,7 +99,7 @@ export function RegisterForm() {
 						name="lastName"
 						render={({ field }) => (
 							<FormItem className="flex-1">
-								<FormLabel>Last Name</FormLabel>
+								<FormLabel>{dictionary.auth.common.lastName}</FormLabel>
 								<FormControl>
 									<Input {...field} disabled={isLoading} />
 								</FormControl>
@@ -105,7 +113,7 @@ export function RegisterForm() {
 					name="email"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Email</FormLabel>
+							<FormLabel>{dictionary.auth.common.email}</FormLabel>
 							<FormControl>
 								<Input {...field} disabled={isLoading} />
 							</FormControl>
@@ -118,7 +126,7 @@ export function RegisterForm() {
 					name="password"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Password</FormLabel>
+							<FormLabel>{dictionary.auth.common.password}</FormLabel>
 							<FormControl>
 								<Input {...field} type="password" disabled={isLoading} />
 							</FormControl>
@@ -131,7 +139,7 @@ export function RegisterForm() {
 					name="confirmPassword"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Confirm Password</FormLabel>
+							<FormLabel>{dictionary.auth.common.confirmPassword}</FormLabel>
 							<FormControl>
 								<Input {...field} type="password" disabled={isLoading} />
 							</FormControl>
@@ -140,7 +148,11 @@ export function RegisterForm() {
 					)}
 				/>
 				<Button type="submit" disabled={isLoading}>
-					{isLoading ? <Loader2 className="animate-spin" /> : "Register"}
+					{isLoading ? (
+						<Loader2 className="animate-spin" />
+					) : (
+						dictionary.auth.register.registerButton
+					)}
 				</Button>
 			</form>
 		</Form>

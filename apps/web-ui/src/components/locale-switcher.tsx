@@ -21,8 +21,8 @@ export function LocaleSwitcher({
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button variant={buttonVariant}>
-					<Globe className="h-[1.2rem] w-[1.2rem]" />
+				<Button variant={buttonVariant} size="icon">
+					<Globe />
 					<span className="sr-only">Change language</span>
 				</Button>
 			</DropdownMenuTrigger>

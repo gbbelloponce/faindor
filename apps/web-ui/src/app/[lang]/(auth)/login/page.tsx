@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { Logo } from "@/components/logo";
-import { ThemeToggler } from "@/components/theme-toggler";
 import { getDictionary } from "@/dictionaries/get-dictionary";
 import type { Locale } from "@/dictionaries/i18n-config";
 import { LoginForm } from "./login-form";
@@ -23,9 +22,9 @@ export default async function Login({ params }: { params: { lang: Locale } }) {
 				</div>
 				<LoginForm />
 				<div className="text-center text-sm">
-					Don't have an account?{" "}
+					{dictionary.auth.login.dontHaveAccount}{" "}
 					<Link href="/register" className="font-medium text-primary underline">
-						Register here
+						{dictionary.auth.login.register}
 					</Link>
 				</div>
 			</div>

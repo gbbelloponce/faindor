@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { Logo } from "@/components/logo";
-import { ThemeToggler } from "@/components/theme-toggler";
 import { getDictionary } from "@/dictionaries/get-dictionary";
 import type { Locale } from "@/dictionaries/i18n-config";
 import { RegisterForm } from "./register-form";
@@ -27,9 +26,9 @@ export default async function Register({
 				</div>
 				<RegisterForm />
 				<div className="text-center text-sm">
-					Already have an account?{" "}
+					{dictionary.auth.register.alreadyHaveAccount}{" "}
 					<Link href="/login" className="font-medium text-primary underline">
-						Log In
+						{dictionary.auth.register.login}
 					</Link>
 				</div>
 			</div>
