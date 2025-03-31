@@ -16,8 +16,8 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
-import { useLocale } from "@/hooks/useLocale";
 import { Input } from "@/components/ui/input";
+import { useLocale } from "@/hooks/useLocale";
 import { useAuthStore } from "@/lib/store/auth-store";
 
 const formSchema = z.object({
