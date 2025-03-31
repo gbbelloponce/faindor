@@ -14,16 +14,16 @@ export const es: Dictionary = {
 	},
 	auth: {
 		login: {
-			title: "Bienvenido de Nuevo",
-			subtitle: "Inicia sesión para conectarte con tu organización",
+			title: "Reconéctate con tu equipo",
+			subtitle: "Mantente al día. Inicia sesión en tu espacio de trabajo.",
 			loginButton: "Iniciar sesión",
 			dontHaveAccount: "¿No tienes una cuenta?",
 			register: "Registrate aquí",
 		},
 		register: {
-			title: "Registrarse",
-			subtitle: "Crea una cuenta para conectarte con tu organización",
-			registerButton: "Registrarse",
+			title: "Únete a la red de tu equipo",
+			subtitle: "Crea una cuenta para conectarte con tus compañeros.",
+			registerButton: "Crear cuenta",
 			alreadyHaveAccount: "¿Ya tienes una cuenta?",
 			login: "Inicia sesión aquí",
 		},

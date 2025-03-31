@@ -14,18 +14,18 @@ export const en: Dictionary = {
 	},
 	auth: {
 		login: {
-			title: "Welcome Back",
-			subtitle: "Log in to connect with your organization",
-			loginButton: "Login",
+			title: "Reconnect with your team",
+			subtitle: "Stay in the loop. Log in to your workspace.",
+			loginButton: "Log In",
 			dontHaveAccount: "Don't have an account?",
 			register: "Register here",
 		},
 		register: {
-			title: "Register",
-			subtitle: "Create an account to connect with your organization",
-			registerButton: "Register",
+			title: "Join Your Team's Network",
+			subtitle: "Create an account to connect with your colleagues.",
+			registerButton: "Create Account",
 			alreadyHaveAccount: "Already have an account?",
-			login: "Login here",
+			login: "Log In here",
 		},
 		common: {
 			firstName: "First Name",
