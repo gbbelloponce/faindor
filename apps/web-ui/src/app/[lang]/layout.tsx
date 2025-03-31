@@ -5,6 +5,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 import "@/styles/globals.css";
+import { getDictionary } from "@/dictionaries/get-dictionary";
+import { type Locale, i18n } from "@/dictionaries/i18n-config";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -16,20 +18,35 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-	title: "Faindor",
-	description:
-		"Faindor is a free and open-source social media platform to share anything with people in your organization.",
-	icons: ["faindor-logo-rounded.png"],
-};
+export async function generateMetadata({
+	params,
+}: { params: { lang: Locale } }): Promise<Metadata> {
+	const { lang } = await params;
 
-export default function RootLayout({
+	const dictionary = getDictionary(lang);
+
+	return {
+		title: dictionary.metadata.title,
+		description: dictionary.metadata.description,
+		icons: ["/faindor-logo-rounded.png"],
+	};
+}
+
+export async function generateStaticParams() {
+	return i18n.locales.map((lang) => ({ lang }));
+}
+
+export default async function RootLayout({
 	children,
+	params,
 }: Readonly<{
 	children: React.ReactNode;
+	params: { lang: Locale };
 }>) {
+	const { lang } = await params;
+
 	return (
-		<html lang="en" suppressHydrationWarning>
+		<html lang={lang} suppressHydrationWarning>
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>

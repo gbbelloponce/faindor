@@ -2,9 +2,15 @@ import Link from "next/link";
 
 import { Logo } from "@/components/logo";
 import { ThemeToggler } from "@/components/theme-toggler";
-import { RegisterForm } from "./register-form";
+import { getDictionary } from "@/dictionaries/get-dictionary";
+import type { Locale } from "@/dictionaries/i18n-config";
+import { LoginForm } from "./login-form";
 
-export default function Register() {
+export default async function Login({ params }: { params: { lang: Locale } }) {
+	const { lang } = await params;
+
+	const dictionary = getDictionary(lang);
+
 	return (
 		<>
 			<header className="absolute top-2 right-2">
@@ -14,16 +20,21 @@ export default function Register() {
 				<div className="w-full max-w-md space-y-8">
 					<div className="flex flex-col items-center space-y-2 text-center">
 						<Logo size="md" withTitle />
-						<h1 className="text-4xl font-bold">Create an account</h1>
+						<h1 className="text-4xl font-bold">
+							{dictionary.auth.login.title}
+						</h1>
 						<p className="text-muted-foreground">
-							Join your organization's network
+							{dictionary.auth.login.subtitle}
 						</p>
 					</div>
-					<RegisterForm />
+					<LoginForm />
 					<div className="text-center text-sm">
-						Already have an account?{" "}
-						<Link href="/login" className="font-medium text-primary underline">
-							Log In
+						Don't have an account?{" "}
+						<Link
+							href="/register"
+							className="font-medium text-primary underline"
+						>
+							Register here
 						</Link>
 					</div>
 				</div>
