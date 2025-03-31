@@ -45,7 +45,7 @@ export function middleware(request: NextRequest) {
 
 	const token = request.cookies.get(USER_TOKEN_COOKIE_KEY)?.value;
 	const userId = request.cookies.get(USER_ID_COOKIE_KEY)?.value;
-	const isAuthenticated = Boolean(token) && Boolean(userId);
+	const isAuthenticated = !!token && !!userId;
 
 	const locale = getLocale(request);
 
