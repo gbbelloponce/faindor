@@ -23,6 +23,10 @@ interface AuthState {
 	user: User | null;
 	isAuthenticated: boolean;
 	isLoading: boolean;
+	error: {
+		title: string;
+		description: string;
+	} | null;
 	logInWithCredentials: (email: string, password: string) => Promise<boolean>;
 	logInWithToken: (token: string) => Promise<boolean>;
 	register: (
@@ -41,6 +45,7 @@ export const useAuthStore = create<AuthState>()(
 			user: null,
 			isAuthenticated: false,
 			isLoading: false,
+			error: null,
 
 			logInWithCredentials: async (email, password): Promise<boolean> => {
 				set({
@@ -70,7 +75,13 @@ export const useAuthStore = create<AuthState>()(
 
 					return true;
 				} catch (error) {
-					set({ isLoading: false });
+					set({
+						isLoading: false,
+						error: {
+							title: "Login failed",
+							description: "There was an error logging in",
+						},
+					});
 					return false;
 				}
 			},
@@ -141,7 +152,13 @@ export const useAuthStore = create<AuthState>()(
 
 					return true;
 				} catch (error) {
-					set({ isLoading: false });
+					set({
+						isLoading: false,
+						error: {
+							title: "Registration failed",
+							description: "There was an error registering",
+						},
+					});
 					return false;
 				}
 			},

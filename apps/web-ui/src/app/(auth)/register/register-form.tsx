@@ -1,10 +1,11 @@
 "use client";
 
-import { z } from "zod";
-
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +33,10 @@ const formSchema = z
 	});
 
 export function RegisterForm() {
+	const router = useRouter();
+
+	const { register, isLoading, error } = useAuthStore();
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -43,8 +48,22 @@ export function RegisterForm() {
 		},
 	});
 
-	const onSubmit = (data: z.infer<typeof formSchema>) => {
-		toast.info(JSON.stringify(data));
+	const onSubmit = async (data: z.infer<typeof formSchema>) => {
+		const success = await register(
+			data.firstName,
+			data.lastName,
+			data.email,
+			data.password,
+		);
+
+		if (success) {
+			toast.success("Registered successfully!");
+			router.push("/home");
+		} else {
+			toast.error(error?.title ?? "Registration failed", {
+				description: error?.description ?? "There was an error registering",
+			});
+		}
 	};
 
 	return (
@@ -53,7 +72,7 @@ export function RegisterForm() {
 				onSubmit={form.handleSubmit(onSubmit)}
 				className="flex flex-col gap-4 min-w-xs"
 			>
-				<div className="flex flex-row gap-2">
+				<div className="flex flex-row items-start gap-2">
 					<FormField
 						control={form.control}
 						name="firstName"
@@ -61,8 +80,9 @@ export function RegisterForm() {
 							<FormItem className="flex-1">
 								<FormLabel>First Name</FormLabel>
 								<FormControl>
-									<Input {...field} />
+									<Input {...field} disabled={isLoading} />
 								</FormControl>
+								<FormMessage />
 							</FormItem>
 						)}
 					/>
@@ -73,8 +93,9 @@ export function RegisterForm() {
 							<FormItem className="flex-1">
 								<FormLabel>Last Name</FormLabel>
 								<FormControl>
-									<Input {...field} />
+									<Input {...field} disabled={isLoading} />
 								</FormControl>
+								<FormMessage />
 							</FormItem>
 						)}
 					/>
@@ -86,7 +107,7 @@ export function RegisterForm() {
 						<FormItem>
 							<FormLabel>Email</FormLabel>
 							<FormControl>
-								<Input {...field} />
+								<Input {...field} disabled={isLoading} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -99,7 +120,7 @@ export function RegisterForm() {
 						<FormItem>
 							<FormLabel>Password</FormLabel>
 							<FormControl>
-								<Input {...field} type="password" />
+								<Input {...field} type="password" disabled={isLoading} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -112,13 +133,15 @@ export function RegisterForm() {
 						<FormItem>
 							<FormLabel>Confirm Password</FormLabel>
 							<FormControl>
-								<Input {...field} type="password" />
+								<Input {...field} type="password" disabled={isLoading} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
-				<Button type="submit">Register</Button>
+				<Button type="submit" disabled={isLoading}>
+					{isLoading ? <Loader2 className="animate-spin" /> : "Register"}
+				</Button>
 			</form>
 		</Form>
 	);

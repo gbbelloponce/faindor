@@ -1,10 +1,11 @@
 "use client";
 
-import { z } from "zod";
-
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +25,10 @@ const formSchema = z.object({
 });
 
 export function LoginForm() {
+	const router = useRouter();
+
+	const { logInWithCredentials, isLoading, error } = useAuthStore();
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -32,8 +37,17 @@ export function LoginForm() {
 		},
 	});
 
-	const onSubmit = (data: z.infer<typeof formSchema>) => {
-		toast.info(JSON.stringify(data));
+	const onSubmit = async (data: z.infer<typeof formSchema>) => {
+		const success = await logInWithCredentials(data.email, data.password);
+
+		if (success) {
+			toast.success("Logged in successfully!");
+			router.push("/home");
+		} else {
+			toast.error(error?.title ?? "Login failed", {
+				description: error?.description ?? "There was an error logging in",
+			});
+		}
 	};
 
 	return (
@@ -49,7 +63,7 @@ export function LoginForm() {
 						<FormItem>
 							<FormLabel>Email</FormLabel>
 							<FormControl>
-								<Input {...field} />
+								<Input {...field} disabled={isLoading} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -62,13 +76,15 @@ export function LoginForm() {
 						<FormItem>
 							<FormLabel>Password</FormLabel>
 							<FormControl>
-								<Input {...field} type="password" />
+								<Input {...field} type="password" disabled={isLoading} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
-				<Button type="submit">Log In</Button>
+				<Button type="submit" disabled={isLoading}>
+					{isLoading ? <Loader2 className="animate-spin" /> : "Log In"}
+				</Button>
 			</form>
 		</Form>
 	);
