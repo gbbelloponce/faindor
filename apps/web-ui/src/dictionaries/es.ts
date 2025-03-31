@@ -6,6 +6,12 @@ export const es: Dictionary = {
 		description:
 			"Faindor es una plataforma social gratuita y de código abierto para compartir cualquier cosa con las personas en tu organización.",
 	},
+	common: {
+		locales: {
+			en: "Inglés",
+			es: "Español",
+		},
+	},
 	home: {
 		title: "Inicio",
 	},

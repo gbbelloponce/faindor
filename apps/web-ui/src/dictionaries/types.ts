@@ -3,6 +3,12 @@ export type Dictionary = {
 		title: string;
 		description: string;
 	};
+	common: {
+		locales: {
+			en: string;
+			es: string;
+		};
+	};
 	home: {
 		title: string;
 	};

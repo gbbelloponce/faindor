@@ -5,6 +5,7 @@ import Negotiator from "negotiator";
 
 import { i18n } from "./dictionaries/i18n-config";
 import {
+	PREFERRED_LOCALE_COOKIE_KEY,
 	USER_ID_COOKIE_KEY,
 	USER_TOKEN_COOKIE_KEY,
 } from "./lib/constants/cookies";
@@ -12,6 +13,17 @@ import {
 const authRoutes = ["/login", "/register"];
 
 function getLocale(request: NextRequest) {
+	const preferredLocale = request.cookies.get(
+		PREFERRED_LOCALE_COOKIE_KEY,
+	)?.value;
+
+	if (
+		preferredLocale &&
+		i18n.locales.some((locale) => locale === preferredLocale)
+	) {
+		return preferredLocale;
+	}
+
 	const negotiatorHeaders: Record<string, string> = {};
 	// biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
 	request.headers.forEach((value, key) => (negotiatorHeaders[key] = value));
