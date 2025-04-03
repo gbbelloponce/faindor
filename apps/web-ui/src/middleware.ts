@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 
-import { i18n } from "./dictionaries/i18n-config";
+import { type Locale, i18n } from "./dictionaries/i18n-config";
 import {
 	PREFERRED_LOCALE_COOKIE_KEY,
 	USER_ID_COOKIE_KEY,
@@ -13,14 +13,10 @@ import {
 const authRoutes = ["/login", "/register"];
 
 function getLocale(request: NextRequest) {
-	const preferredLocale = request.cookies.get(
-		PREFERRED_LOCALE_COOKIE_KEY,
-	)?.value;
+	const preferredLocale = request.cookies.get(PREFERRED_LOCALE_COOKIE_KEY)
+		?.value as Locale | undefined;
 
-	if (
-		preferredLocale &&
-		i18n.locales.some((locale) => locale === preferredLocale)
-	) {
+	if (preferredLocale && i18n.locales.includes(preferredLocale)) {
 		return preferredLocale;
 	}
 
