@@ -11,7 +11,6 @@ export const createTokenFromUser = async ({
 }: { userId: number; userRole: UserRoles; organizationId: number }) => {
 	const token = await sign(
 		{
-			iat: new Date().getTime() / 1000,
 			userId,
 			userRole,
 			organizationId,
