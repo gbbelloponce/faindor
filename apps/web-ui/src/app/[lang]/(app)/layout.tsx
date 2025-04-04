@@ -1,5 +1,5 @@
-import { AuthProvider } from "@/components/auth-provider";
+import { RequireAuthProvider } from "@/auth/require-auth-provider";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-	return <AuthProvider>{children}</AuthProvider>;
+	return <RequireAuthProvider>{children}</RequireAuthProvider>;
 }

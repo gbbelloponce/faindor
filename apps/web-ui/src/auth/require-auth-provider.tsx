@@ -4,12 +4,15 @@ import Cookies from "js-cookie";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { useAuthStore } from "@/auth/auth-store";
-import { USER_TOKEN_COOKIE_KEY } from "@/auth/constants";
+import { USER_TOKEN_COOKIE_KEY } from "./constants";
+import { useAuth } from "./useAuth";
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function RequireAuthProvider({
+	children,
+}: { children: React.ReactNode }) {
+	const { isLoading, checkAuth } = useAuth();
+
 	const [isInitialized, setIsInitialized] = useState(false);
-	const { isLoading, checkAuth } = useAuthStore();
 
 	useEffect(() => {
 		const initAuth = async () => {

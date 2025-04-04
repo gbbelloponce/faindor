@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { useAuthStore } from "@/auth/auth-store";
+import { useAuth } from "@/auth/useAuth";
 import { Button } from "@/components/ui/button";
 import {
 	Form,
@@ -38,7 +38,7 @@ export function RegisterForm() {
 
 	const { dictionary } = useLocale();
 
-	const { register, isLoading, error } = useAuthStore();
+	const { register, isLoading } = useAuth();
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -52,22 +52,22 @@ export function RegisterForm() {
 	});
 
 	const onSubmit = async (data: z.infer<typeof formSchema>) => {
-		const success = await register(
+		const response = await register(
 			data.firstName,
 			data.lastName,
 			data.email,
 			data.password,
 		);
 
-		if (success) {
+		if (response.success) {
 			toast.success(dictionary.auth.messages.registered);
 			router.push("/home");
 		} else {
 			toast.error(
-				error?.title ?? dictionary.auth.messages.error.register.title,
+				response.error?.title ?? dictionary.auth.messages.error.register.title,
 				{
 					description:
-						error?.description ??
+						response.error?.description ??
 						dictionary.auth.messages.error.register.description,
 				},
 			);
