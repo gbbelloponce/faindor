@@ -1,5 +1,5 @@
-import { sign, verify } from "hono/jwt";
 import { TRPCError } from "@trpc/server";
+import { sign, verify } from "hono/jwt";
 
 import type { LoggedUser } from "@shared/types/auth";
 import type { UserRoles } from "@shared/types/roles";

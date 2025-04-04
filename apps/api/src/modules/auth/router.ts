@@ -1,15 +1,15 @@
+import { createUser, getUserByCredentials } from "@modules/users/service";
+import { publicProcedure, router } from "@shared/trpc";
+import { checkDBError } from "@shared/utils/errors";
+import {
+	createTokenFromUser,
+	decodeLoggedUserFromToken,
+} from "@shared/utils/token";
 import {
 	logInWithCredentialsSchema,
 	logInWithTokenSchema,
 	registerSchema,
 } from "./types/request";
-import {
-	createTokenFromUser,
-	decodeLoggedUserFromToken,
-} from "@shared/utils/token";
-import { checkDBError } from "@shared/utils/errors";
-import { publicProcedure, router } from "@shared/trpc";
-import { createUser, getUserByCredentials } from "@modules/users/service";
 
 export const authRouter = router({
 	logInWithCredentials: publicProcedure
