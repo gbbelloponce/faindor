@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 import "@/styles/globals.css";
 import { getDictionary } from "@/dictionaries/get-dictionary";
 import { type Locale, i18n } from "@/dictionaries/i18n-config";
+import { AppTRPCProvider } from "@/trpc/app-trpc-provider";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -56,8 +57,10 @@ export default async function RootLayout({
 					enableSystem
 					disableTransitionOnChange
 				>
-					{children}
-					<Toaster />
+					<AppTRPCProvider>
+						{children}
+						<Toaster />
+					</AppTRPCProvider>
 				</ThemeProvider>
 			</body>
 		</html>
