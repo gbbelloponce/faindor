@@ -1,6 +1,7 @@
 "use client";
 
 import Cookies from "js-cookie";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { useAuthStore } from "@/auth/auth-store";
@@ -25,7 +26,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	}, [checkAuth]);
 
 	if (!isInitialized || isLoading) {
-		return <div>Loading...</div>;
+		return (
+			<div className="flex h-screen w-screen items-center justify-center">
+				<Loader2 className="animate-spin" />
+			</div>
+		);
 	}
 
 	return <>{children}</>;
