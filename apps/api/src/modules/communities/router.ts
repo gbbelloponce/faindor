@@ -1,7 +1,7 @@
-import { authenticatedProcedure, router } from "@shared/trpc";
+import { authenticatedProcedure, router } from "@/shared/trpc";
 import { z } from "zod";
 
-import { positiveNumberSchema } from "@shared/types/schemas";
+import { positiveNumberSchema } from "@/shared/types/schemas";
 import {
 	createCommunity,
 	getCommunityById,

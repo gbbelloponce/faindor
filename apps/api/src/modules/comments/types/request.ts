@@ -1,4 +1,4 @@
-import { positiveNumberSchema } from "@shared/types/schemas";
+import { positiveNumberSchema } from "@/shared/types/schemas";
 import { z } from "zod";
 
 export const createCommentSchema = z.object({

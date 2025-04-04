@@ -3,8 +3,8 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { prettyJSON } from "hono/pretty-json";
 
-import { createContext } from "@/shared/trpc/context";
 import { appRouter } from "@/router";
+import { createContext } from "@/shared/trpc/context";
 
 const app = new Hono();
 

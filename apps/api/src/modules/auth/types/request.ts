@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { UserRoles } from "@shared/types/roles";
+import { UserRoles } from "@/shared/types/roles";
 
 export const logInWithCredentialsSchema = z.object({
 	email: z.string().email().min(1),

@@ -1,10 +1,10 @@
 import { and, desc, eq, isNull } from "drizzle-orm";
 
-import { validatePostsUserIsFromOrganizationId } from "@modules/posts/service";
-import db from "@shared/db";
-import { Comments } from "@shared/db/tables/comments";
-import { Users } from "@shared/db/tables/users";
-import { checkDBError } from "@shared/utils/errors";
+import { validatePostsUserIsFromOrganizationId } from "@/modules/posts/service";
+import db from "@/shared/db";
+import { Comments } from "@/shared/db/tables/comments";
+import { Users } from "@/shared/db/tables/users";
+import { checkDBError } from "@/shared/utils/errors";
 import { TRPCError } from "@trpc/server";
 import type { CreateCommentParams } from "./types/request";
 

@@ -1,9 +1,9 @@
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 
-import db from "@shared/db";
-import { Organizations } from "@shared/db/tables/organizations";
-import { checkDBError } from "@shared/utils/errors";
+import db from "@/shared/db";
+import { Organizations } from "@/shared/db/tables/organizations";
+import { checkDBError } from "@/shared/utils/errors";
 import type { CreateOrganizationParams } from "./types/request";
 
 export const getOrganizationById = async (id: number) => {

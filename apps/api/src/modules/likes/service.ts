@@ -1,11 +1,11 @@
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 
-import { validatePostsUserIsFromOrganizationId } from "@modules/posts/service";
-import db from "@shared/db";
-import { Likes } from "@shared/db/tables/likes";
-import { Users } from "@shared/db/tables/users";
-import { checkDBError } from "@shared/utils/errors";
+import { validatePostsUserIsFromOrganizationId } from "@/modules/posts/service";
+import db from "@/shared/db";
+import { Likes } from "@/shared/db/tables/likes";
+import { Users } from "@/shared/db/tables/users";
+import { checkDBError } from "@/shared/utils/errors";
 
 export const createLike = async (
 	postId: number,

@@ -1,10 +1,10 @@
-import { createUser, getUserByCredentials } from "@modules/users/service";
-import { publicProcedure, router } from "@shared/trpc";
-import { checkDBError } from "@shared/utils/errors";
+import { createUser, getUserByCredentials } from "@/modules/users/service";
+import { publicProcedure, router } from "@/shared/trpc";
+import { checkDBError } from "@/shared/utils/errors";
 import {
 	createTokenFromUser,
 	decodeLoggedUserFromToken,
-} from "@shared/utils/token";
+} from "@/shared/utils/token";
 import {
 	logInWithCredentialsSchema,
 	logInWithTokenSchema,

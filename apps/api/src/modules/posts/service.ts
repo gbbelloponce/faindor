@@ -1,12 +1,12 @@
 import { TRPCError } from "@trpc/server";
 import { and, count, desc, eq, isNotNull } from "drizzle-orm";
 
-import db from "@shared/db";
-import { Likes } from "@shared/db/tables/likes";
-import { Posts } from "@shared/db/tables/posts";
-import { SavedPosts } from "@shared/db/tables/savedPosts";
-import { Users } from "@shared/db/tables/users";
-import { checkDBError } from "@shared/utils/errors";
+import db from "@/shared/db";
+import { Likes } from "@/shared/db/tables/likes";
+import { Posts } from "@/shared/db/tables/posts";
+import { SavedPosts } from "@/shared/db/tables/savedPosts";
+import { Users } from "@/shared/db/tables/users";
+import { checkDBError } from "@/shared/utils/errors";
 import type { CreatePostParams, UpdatePostParams } from "./types/request";
 
 /**

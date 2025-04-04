@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import { authenticatedProcedure, router } from "@shared/trpc";
-import { positiveNumberSchema } from "@shared/types/schemas";
+import { authenticatedProcedure, router } from "@/shared/trpc";
+import { positiveNumberSchema } from "@/shared/types/schemas";
 import { createLike, getLikesByPostId } from "./service";
 
 export const likesRouter = router({

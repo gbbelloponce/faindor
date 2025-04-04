@@ -4,18 +4,18 @@ import { count, eq } from "drizzle-orm";
 import {
 	createOrganization,
 	getOrganizationByDomain,
-} from "@modules/organizations/service";
-import { COMMON_PROVIDERS_ORGANIZATION_ID } from "@shared/constants";
-import db from "@shared/db";
-import { Organizations } from "@shared/db/tables/organizations";
-import { Posts } from "@shared/db/tables/posts";
-import { Users } from "@shared/db/tables/users";
-import { UserRoles } from "@shared/types/roles";
-import { checkDBError } from "@shared/utils/errors";
+} from "@/modules/organizations/service";
+import { COMMON_PROVIDERS_ORGANIZATION_ID } from "@/shared/constants";
+import db from "@/shared/db";
+import { Organizations } from "@/shared/db/tables/organizations";
+import { Posts } from "@/shared/db/tables/posts";
+import { Users } from "@/shared/db/tables/users";
+import { UserRoles } from "@/shared/types/roles";
+import { checkDBError } from "@/shared/utils/errors";
 import {
 	COMMON_EMAIL_PROVIDERS,
 	getNormalizedDomainFromEmail,
-} from "@shared/utils/mail";
+} from "@/shared/utils/mail";
 import type {
 	CreateUserParams,
 	GetUserByCredentialsParams,

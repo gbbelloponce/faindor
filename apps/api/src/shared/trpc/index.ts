@@ -1,9 +1,9 @@
-import { TRPCError, type inferAsyncReturnType, initTRPC } from "@trpc/server";
+import { TRPCError, initTRPC } from "@trpc/server";
 
 import type { createContext } from "./context";
 
 export const t = initTRPC
-	.context<inferAsyncReturnType<typeof createContext>>()
+	.context<Awaited<ReturnType<typeof createContext>>>()
 	.create();
 
 export const router = t.router;

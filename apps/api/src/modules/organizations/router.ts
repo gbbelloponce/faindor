@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { authenticatedProcedure, router } from "@shared/trpc";
+import { authenticatedProcedure, router } from "@/shared/trpc";
 import { getOrganizationByDomain } from "./service";
 
 export const organizationsRouter = router({

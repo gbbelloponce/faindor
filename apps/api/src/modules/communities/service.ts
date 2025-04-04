@@ -1,10 +1,10 @@
 import { TRPCError } from "@trpc/server";
 
-import db from "@shared/db";
-import { Communities } from "@shared/db/tables/communities";
-import { CommunitiesUsers } from "@shared/db/tables/communitiesUsers";
-import { Users } from "@shared/db/tables/users";
-import { checkDBError } from "@shared/utils/errors";
+import db from "@/shared/db";
+import { Communities } from "@/shared/db/tables/communities";
+import { CommunitiesUsers } from "@/shared/db/tables/communitiesUsers";
+import { Users } from "@/shared/db/tables/users";
+import { checkDBError } from "@/shared/utils/errors";
 import { and, count, eq } from "drizzle-orm";
 
 export const getCommunityById = async (
