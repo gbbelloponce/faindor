@@ -3,10 +3,10 @@
 import Cookies from "js-cookie";
 import { usePathname, useRouter } from "next/navigation";
 
+import { PREFERRED_LOCALE_COOKIE_KEY } from "@/dictionaries/constants";
 import { getDictionary } from "@/dictionaries/get-dictionary";
 import { i18n } from "@/dictionaries/i18n-config";
 import type { Locale } from "@/dictionaries/i18n-config";
-import { PREFERRED_LOCALE_COOKIE_KEY } from "@/lib/constants/cookies";
 
 export const useLocale = () => {
 	const pathname = usePathname();

@@ -1,10 +1,8 @@
 import Cookies from "js-cookie";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import {
-	USER_ID_COOKIE_KEY,
-	USER_TOKEN_COOKIE_KEY,
-} from "../constants/cookies";
+
+import { USER_ID_COOKIE_KEY, USER_TOKEN_COOKIE_KEY } from "@/auth/constants";
 
 const AUTH_COOKIE_CONFIG: Cookies.CookieAttributes = {
 	expires: 30,

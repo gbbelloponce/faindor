@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { useAuthStore } from "@/auth/auth-store";
 import { Button } from "@/components/ui/button";
 import {
 	Form,
@@ -17,8 +18,7 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useLocale } from "@/hooks/useLocale";
-import { useAuthStore } from "@/lib/store/auth-store";
+import { useLocale } from "@/dictionaries/useLocale";
 
 const formSchema = z.object({
 	email: z.string().email("Invalid email address"),

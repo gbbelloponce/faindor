@@ -1,14 +1,10 @@
-import { type NextRequest, NextResponse } from "next/server";
-
 import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
+import { type NextRequest, NextResponse } from "next/server";
 
-import { type Locale, i18n } from "./dictionaries/i18n-config";
-import {
-	PREFERRED_LOCALE_COOKIE_KEY,
-	USER_ID_COOKIE_KEY,
-	USER_TOKEN_COOKIE_KEY,
-} from "./lib/constants/cookies";
+import { USER_ID_COOKIE_KEY, USER_TOKEN_COOKIE_KEY } from "@/auth/constants";
+import { PREFERRED_LOCALE_COOKIE_KEY } from "@/dictionaries/constants";
+import { type Locale, i18n } from "@/dictionaries/i18n-config";
 
 const authRoutes = ["/login", "/register"];
 

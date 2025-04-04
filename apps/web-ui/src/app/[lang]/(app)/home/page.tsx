@@ -3,11 +3,11 @@
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
+import { useAuthStore } from "@/auth/auth-store";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ThemeToggler } from "@/components/theme-toggler";
 import { Button } from "@/components/ui/button";
-import { useLocale } from "@/hooks/useLocale";
-import { useAuthStore } from "@/lib/store/auth-store";
+import { useLocale } from "@/dictionaries/useLocale";
 
 export default function Home() {
 	const { logOut } = useAuthStore();

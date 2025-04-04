@@ -11,7 +11,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { i18n } from "@/dictionaries/i18n-config";
-import { useLocale } from "@/hooks/useLocale";
+import { useLocale } from "@/dictionaries/useLocale";
 
 export function LocaleSwitcher({
 	buttonVariant = "outline",

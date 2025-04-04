@@ -3,8 +3,8 @@
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 
-import { USER_TOKEN_COOKIE_KEY } from "@/lib/constants/cookies";
-import { useAuthStore } from "@/lib/store/auth-store";
+import { useAuthStore } from "@/auth/auth-store";
+import { USER_TOKEN_COOKIE_KEY } from "@/auth/constants";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const [isInitialized, setIsInitialized] = useState(false);
