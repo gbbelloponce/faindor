@@ -1,4 +1,8 @@
-import { createUser, getUserByCredentials } from "@/modules/users/service";
+import {
+	createUser,
+	getUserByCredentials,
+	getUserById,
+} from "@/modules/users/service";
 import { publicProcedure, router } from "@/shared/trpc";
 import { checkDBError } from "@/shared/utils/errors";
 import {
@@ -27,7 +31,15 @@ export const authRouter = router({
 					organizationId: user.organization.id,
 				});
 
-				return { token };
+				return {
+					token,
+					user: {
+						id: user.id,
+						name: user.name,
+						role: user.role,
+						email: user.email,
+					},
+				};
 			} catch (error) {
 				throw checkDBError(error);
 			}
@@ -45,7 +57,17 @@ export const authRouter = router({
 					organizationId: user.organizationId,
 				});
 
-				return { token: newToken };
+				const fullUser = await getUserById(user.id);
+
+				return {
+					token: newToken,
+					user: {
+						id: fullUser.id,
+						role: fullUser.role,
+						name: fullUser.name,
+						email: fullUser.email,
+					},
+				};
 			} catch (error) {
 				throw checkDBError(error);
 			}
