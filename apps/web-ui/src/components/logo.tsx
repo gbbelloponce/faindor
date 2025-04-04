@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 export type LogoSize = "xs" | "sm" | "md" | "lg" | "xl";
 
