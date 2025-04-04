@@ -1,32 +1,62 @@
-import { sign } from "hono/jwt";
-
-import { createUser, getUserByCredentials } from "@modules/users/service";
+import {
+	logInWithCredentialsSchema,
+	logInWithTokenSchema,
+	registerSchema,
+} from "./types/request";
+import {
+	createTokenFromUser,
+	decodeLoggedUserFromToken,
+} from "@shared/utils/token";
+import { checkDBError } from "@shared/utils/errors";
 import { publicProcedure, router } from "@shared/trpc";
-import { loginSchema, registerSchema } from "./types/request";
+import { createUser, getUserByCredentials } from "@modules/users/service";
 
 export const authRouter = router({
-	login: publicProcedure.input(loginSchema).query(async ({ input }) => {
-		const user = await getUserByCredentials({
-			email: input.email,
-			password: input.password,
-		});
+	logInWithCredentials: publicProcedure
+		.input(logInWithCredentialsSchema)
+		.query(async ({ input }) => {
+			try {
+				const user = await getUserByCredentials({
+					email: input.email,
+					password: input.password,
+				});
 
-		// Create token with the user's id and organization's domain
-		const token = await sign(
-			{
-				iat: new Date().getTime() / 1000,
-				userId: user.id,
-				userRole: user.role,
-				organizationId: user.organization.id,
-			},
-			process.env.JWT_SECRET,
-		);
+				const token = await createTokenFromUser({
+					userId: user.id,
+					userRole: user.role,
+					organizationId: user.organization.id,
+				});
 
-		return { token };
-	}),
+				return { token };
+			} catch (error) {
+				throw checkDBError(error);
+			}
+		}),
+	logInWithToken: publicProcedure
+		.input(logInWithTokenSchema)
+		.query(async ({ input }) => {
+			try {
+				const user = await decodeLoggedUserFromToken(input.token);
+
+				// TODO: Actually create a new token only if the original one is expired
+				const newToken = await createTokenFromUser({
+					userId: user.id,
+					userRole: user.role,
+					organizationId: user.organizationId,
+				});
+
+				return { token: newToken };
+			} catch (error) {
+				throw checkDBError(error);
+			}
+		}),
 	register: publicProcedure
 		.input(registerSchema)
 		.mutation(async ({ input }) => {
-			return await createUser(input);
+			try {
+				return await createUser(input);
+			} catch (error) {
+				throw checkDBError(error);
+			}
 		}),
 });

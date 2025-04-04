@@ -1,9 +1,8 @@
-import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import type { Context } from "hono";
-import { verify } from "hono/jwt";
-
-import type { LoggedUser } from "@shared/types/auth";
 import { TRPCError } from "@trpc/server";
+import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
+
+import { decodeLoggedUserFromToken } from "@shared/utils/token";
 
 export const createContext = async (
 	_: FetchCreateContextFnOptions,
@@ -27,23 +26,10 @@ export const createContext = async (
 			});
 		}
 
-		// Verify and validate the token
-		const payload = await verify(token, process.env.JWT_SECRET);
+		const user = await decodeLoggedUserFromToken(token);
 
-		if (!payload.userId || !payload.organizationId || !payload.userRole) {
-			throw new TRPCError({
-				message: "Invalid token.",
-				code: "UNAUTHORIZED",
-			});
-		}
-
-		// Set the user's token info in the context
 		return {
-			user: {
-				id: Number(payload.userId),
-				role: payload.userRole,
-				organizationId: Number(payload.organizationId),
-			} as LoggedUser,
+			user,
 		};
 	} catch (error) {
 		return {

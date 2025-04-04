@@ -19,9 +19,7 @@ export const Users = pgTable("users", {
 		.references(() => Organizations.id)
 		.notNull(),
 	role: text("role")
-		.$type<
-			UserRoles.APP_ADMIN | UserRoles.ORGANIZATION_ADMIN | UserRoles.USER
-		>()
+		.$type<UserRoles.APP_ADMIN | UserRoles.USER>()
 		.notNull()
 		.default(UserRoles.USER),
 	active: boolean("active").notNull().default(true),
