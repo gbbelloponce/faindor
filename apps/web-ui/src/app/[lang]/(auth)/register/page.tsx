@@ -1,16 +1,13 @@
+"use client";
+
 import Link from "next/link";
 
 import { Logo } from "@/components/logo";
-import { getDictionary } from "@/dictionaries/get-dictionary";
-import type { Locale } from "@/dictionaries/i18n-config";
 import { RegisterForm } from "./register-form";
+import { useLocale } from "@/dictionaries/useLocale";
 
-export default async function Register({
-	params,
-}: { params: { lang: Locale } }) {
-	const { lang } = await params;
-
-	const dictionary = getDictionary(lang);
+export default function Register() {
+	const { dictionary } = useLocale();
 
 	return (
 		<div className="min-h-screen flex flex-col items-center justify-center">
