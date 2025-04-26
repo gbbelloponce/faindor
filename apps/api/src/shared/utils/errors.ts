@@ -14,7 +14,7 @@ export const checkDBError = (error: unknown) => {
 
 	return new TRPCError({
 		message:
-			"There was an error with the database, check the server logs for more info.",
+			"There was an internal server error, check the server logs for more info.",
 		code: "INTERNAL_SERVER_ERROR",
 	});
 };
