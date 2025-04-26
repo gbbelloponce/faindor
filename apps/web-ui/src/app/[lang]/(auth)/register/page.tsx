@@ -3,8 +3,8 @@
 import Link from "next/link";
 
 import { Logo } from "@/components/logo";
-import { RegisterForm } from "./register-form";
 import { useLocale } from "@/dictionaries/useLocale";
+import { RegisterForm } from "./register-form";
 
 export default function Register() {
 	const { dictionary } = useLocale();
