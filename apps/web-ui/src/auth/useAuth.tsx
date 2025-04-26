@@ -1,5 +1,6 @@
 "use client";
 
+import { TRPCClientError } from "@trpc/client";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 
@@ -10,7 +11,13 @@ import {
 	USER_ID_COOKIE_KEY,
 	USER_TOKEN_COOKIE_KEY,
 } from "./constants";
-import type { AuthStorage, User } from "./types";
+import {
+	type AuthResponse,
+	type AuthStorage,
+	LogInErrorCodeEnum,
+	RegisterErrorCodeEnum,
+	type User,
+} from "./types";
 
 export const useAuth = () => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -32,12 +39,12 @@ export const useAuth = () => {
 		localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ user }));
 	};
 
-	const cleanAuthStateInLocalStorage = () =>
-		localStorage.removeItem(AUTH_STORAGE_KEY);
-
 	const trpc = useTRPCClient();
 
-	const logInWithCredentials = async (email: string, password: string) => {
+	const logInWithCredentials = async (
+		email: string,
+		password: string,
+	): Promise<AuthResponse<LogInErrorCodeEnum>> => {
 		setIsLoading(true);
 
 		try {
@@ -57,12 +64,16 @@ export const useAuth = () => {
 
 			return { success: true, error: null };
 		} catch (error) {
+			let errorCode = LogInErrorCodeEnum.INTERNAL_SERVER_ERROR;
+
+			if (error instanceof TRPCClientError) {
+				errorCode = error.data.code as LogInErrorCodeEnum;
+			}
+
 			return {
 				success: false,
 				error: {
-					title: "Login failed",
-					// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-					description: (error as any).message,
+					code: errorCode,
 				},
 			};
 		} finally {
@@ -70,7 +81,9 @@ export const useAuth = () => {
 		}
 	};
 
-	const logInWithToken = async (token: string) => {
+	const logInWithToken = async (
+		token: string,
+	): Promise<AuthResponse<LogInErrorCodeEnum>> => {
 		setIsLoading(true);
 
 		try {
@@ -92,12 +105,16 @@ export const useAuth = () => {
 				error: null,
 			};
 		} catch (error) {
+			let errorCode = LogInErrorCodeEnum.INTERNAL_SERVER_ERROR;
+
+			if (error instanceof TRPCClientError) {
+				errorCode = error.data.code as LogInErrorCodeEnum;
+			}
+
 			return {
 				success: false,
 				error: {
-					title: "Login failed",
-					// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-					description: (error as any).message,
+					code: errorCode,
 				},
 			};
 		} finally {
@@ -110,7 +127,7 @@ export const useAuth = () => {
 		lastName: string,
 		email: string,
 		password: string,
-	) => {
+	): Promise<AuthResponse<RegisterErrorCodeEnum>> => {
 		setIsLoading(true);
 
 		try {
@@ -126,12 +143,16 @@ export const useAuth = () => {
 				error: null,
 			};
 		} catch (error) {
+			let errorCode = RegisterErrorCodeEnum.INTERNAL_SERVER_ERROR;
+
+			if (error instanceof TRPCClientError) {
+				errorCode = error.data.code as RegisterErrorCodeEnum;
+			}
+
 			return {
 				success: false,
 				error: {
-					title: "Registration failed",
-					// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-					description: (error as any).message,
+					code: errorCode,
 				},
 			};
 		} finally {
@@ -146,7 +167,7 @@ export const useAuth = () => {
 		setUser(null);
 		setIsLoading(false);
 
-		cleanAuthStateInLocalStorage();
+		localStorage.removeItem(AUTH_STORAGE_KEY);
 	};
 
 	const checkAuth = async () => {

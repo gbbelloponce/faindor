@@ -1,3 +1,5 @@
+import { LogInErrorCodeEnum, RegisterErrorCodeEnum } from "@/auth/types";
+
 export type Dictionary = {
 	metadata: {
 		title: string;
@@ -36,14 +38,27 @@ export type Dictionary = {
 			loggedIn: string;
 			registered: string;
 			loggedOut: string;
-			error: {
+
+			errors: {
 				logIn: {
-					title: string;
-					description: string;
+					[LogInErrorCodeEnum.NOT_FOUND]: {
+						title: string;
+						description: string;
+					};
+					[LogInErrorCodeEnum.UNAUTHORIZED]: {
+						title: string;
+						description: string;
+					};
+					[LogInErrorCodeEnum.INTERNAL_SERVER_ERROR]: {
+						title: string;
+						description: string;
+					};
 				};
 				register: {
-					title: string;
-					description: string;
+					[RegisterErrorCodeEnum.INTERNAL_SERVER_ERROR]: {
+						title: string;
+						description: string;
+					};
 				};
 			};
 		};

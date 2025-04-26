@@ -48,11 +48,11 @@ export function LoginForm() {
 			router.push("/home");
 		} else {
 			toast.error(
-				response.error?.title ?? dictionary.auth.messages.error.logIn.title,
+				dictionary.auth.messages.errors.logIn[response.error.code].title,
 				{
 					description:
-						response.error?.description ??
-						dictionary.auth.messages.error.logIn.description,
+						dictionary.auth.messages.errors.logIn[response.error.code]
+							.description,
 				},
 			);
 		}

@@ -64,11 +64,11 @@ export function RegisterForm() {
 			router.push("/home");
 		} else {
 			toast.error(
-				response.error?.title ?? dictionary.auth.messages.error.register.title,
+				dictionary.auth.messages.errors.register[response.error.code].title,
 				{
 					description:
-						response.error?.description ??
-						dictionary.auth.messages.error.register.description,
+						dictionary.auth.messages.errors.register[response.error.code]
+							.description,
 				},
 			);
 		}

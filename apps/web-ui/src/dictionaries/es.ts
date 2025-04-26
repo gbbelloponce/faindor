@@ -1,3 +1,4 @@
+import { LogInErrorCodeEnum, RegisterErrorCodeEnum } from "@/auth/types";
 import type { Dictionary } from "./types";
 
 export const es: Dictionary = {
@@ -39,14 +40,30 @@ export const es: Dictionary = {
 			loggedIn: "Has iniciado sesión exitosamente!",
 			registered: "Has registrado una cuenta exitosamente!",
 			loggedOut: "Has cerrado sesión",
-			error: {
+
+			errors: {
 				logIn: {
-					title: "Error al iniciar sesión",
-					description: "Hubo un error al iniciar sesión",
+					[LogInErrorCodeEnum.NOT_FOUND]: {
+						title: "Usuario no encontrado",
+						description:
+							"No se ha encontrado un usuario con el email proporcionado.",
+					},
+					[LogInErrorCodeEnum.UNAUTHORIZED]: {
+						title: "Credenciales inválidas",
+						description: "Las credenciales proporcionadas no son correctas.",
+					},
+					[LogInErrorCodeEnum.INTERNAL_SERVER_ERROR]: {
+						title: "Error al iniciar sesión",
+						description:
+							"Ha ocurrido un error interno en el servidor al iniciar sesión.",
+					},
 				},
 				register: {
-					title: "Error al registrar una cuenta",
-					description: "Hubo un error al registrar una cuenta",
+					[RegisterErrorCodeEnum.INTERNAL_SERVER_ERROR]: {
+						title: "Error al registrar",
+						description:
+							"Ha ocurrido un error interno en el servidor al registrar.",
+					},
 				},
 			},
 		},
