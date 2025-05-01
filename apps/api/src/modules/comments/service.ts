@@ -3,6 +3,7 @@ import { db } from "@/shared/db";
 import { handleError } from "@/shared/utils/errors";
 import { TRPCError } from "@trpc/server";
 import type { CreateCommentBody } from "./types/request";
+import { PAGE_SIZE } from "@/shared/constants";
 
 export const getCommentsByPostId = async (
 	postId: number,
@@ -23,8 +24,8 @@ export const getCommentsByPostId = async (
 			orderBy: {
 				createdAt: "desc",
 			},
-			take: 10,
-			skip: (page - 1) * 10,
+			take: PAGE_SIZE,
+			skip: (page - 1) * PAGE_SIZE,
 		});
 
 		return comments;

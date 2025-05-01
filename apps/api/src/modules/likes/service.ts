@@ -1,6 +1,7 @@
 import { isPostFromOrganization } from "@/modules/posts/service";
 import { db } from "@/shared/db";
 import { handleError } from "@/shared/utils/errors";
+import { PAGE_SIZE } from "@/shared/constants";
 
 export const createLike = async (
 	postId: number,
@@ -42,8 +43,8 @@ export const getLikesByPostId = async (
 			include: {
 				user: true,
 			},
-			take: 10,
-			skip: (page - 1) * 10,
+			take: PAGE_SIZE,
+			skip: (page - 1) * PAGE_SIZE,
 		});
 
 		return likes;

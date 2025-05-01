@@ -4,6 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { db } from "@/shared/db";
 import { handleError } from "@/shared/utils/errors";
 import type { CreatePostBody, UpdatePostBody } from "./types/request";
+import { PAGE_SIZE } from "@/shared/constants";
 
 /**
  * Given a postId and an organizationId, this function will throw an error if the post is not from the organizationId given.
@@ -84,8 +85,8 @@ export const getLatestsPostsByOrganizationId = async (
 			orderBy: {
 				createdAt: "desc",
 			},
-			take: 10,
-			skip: (page - 1) * 10,
+			take: PAGE_SIZE,
+			skip: (page - 1) * PAGE_SIZE,
 		});
 
 		return posts;
@@ -116,8 +117,8 @@ export const getLatestsPostsByUserId = async (
 			orderBy: {
 				createdAt: "desc",
 			},
-			take: 10,
-			skip: (page - 1) * 10,
+			take: PAGE_SIZE,
+			skip: (page - 1) * PAGE_SIZE,
 		});
 
 		return posts;
@@ -148,8 +149,8 @@ export const getLatestsPostsByGroupId = async (
 			orderBy: {
 				createdAt: "desc",
 			},
-			take: 10,
-			skip: (page - 1) * 10,
+			take: PAGE_SIZE,
+			skip: (page - 1) * PAGE_SIZE,
 		});
 
 		return posts;
