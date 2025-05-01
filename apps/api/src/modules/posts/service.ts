@@ -1,5 +1,5 @@
-import { TRPCError } from "@trpc/server";
 import type { Post, SavedPost } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 
 import { db } from "@/shared/db";
 import { handleError } from "@/shared/utils/errors";

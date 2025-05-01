@@ -1,5 +1,5 @@
-import { TRPCError } from "@trpc/server";
 import { type User, UserRole } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 
 import {
 	createOrganization,

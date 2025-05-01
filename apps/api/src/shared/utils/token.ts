@@ -1,6 +1,6 @@
+import type { UserRole } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { sign, verify } from "hono/jwt";
-import type { UserRole } from "@prisma/client";
 
 import type { LoggedUser } from "@/shared/types/auth";
 

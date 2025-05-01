@@ -1,6 +1,6 @@
+import { isPostFromOrganization } from "@/modules/posts/service";
 import { db } from "@/shared/db";
 import { handleError } from "@/shared/utils/errors";
-import { isPostFromOrganization } from "@/modules/posts/service";
 
 export const createLike = async (
 	postId: number,
