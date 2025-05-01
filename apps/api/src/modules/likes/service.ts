@@ -1,11 +1,6 @@
-import { TRPCError } from "@trpc/server";
-import { and, eq } from "drizzle-orm";
-
-import { validatePostsUserIsFromOrganizationId } from "@/modules/posts/service";
-import db from "@/shared/db";
-import { Likes } from "@/shared/db/tables/likes";
-import { Users } from "@/shared/db/tables/users";
-import { checkDBError } from "@/shared/utils/errors";
+import { db } from "@/shared/db";
+import { handleError } from "@/shared/utils/errors";
+import { isPostFromOrganization } from "@/modules/posts/service";
 
 export const createLike = async (
 	postId: number,
@@ -13,26 +8,21 @@ export const createLike = async (
 	organizationId: number,
 ) => {
 	try {
-		await validatePostsUserIsFromOrganizationId(postId, organizationId);
+		await isPostFromOrganization(postId, organizationId);
 
-		const result = await db
-			.insert(Likes)
-			.values({
+		const like = await db.like.create({
+			data: {
 				postId,
 				userId,
-			})
-			.returning();
+			},
+		});
 
-		if (!result.length) {
-			throw new TRPCError({
-				message: `Failed to like post with id: ${postId}`,
-				code: "INTERNAL_SERVER_ERROR",
-			});
-		}
-
-		return result[0];
+		return like;
 	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error, {
+			message: `Failed to like post with id: ${postId}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
 	}
 };
 
@@ -42,24 +32,25 @@ export const getLikesByPostId = async (
 	page = 1,
 ) => {
 	try {
-		const result = await db
-			.select({
-				id: Likes.id,
-				user: {
-					id: Users.id,
-					name: Users.name,
+		const likes = await db.like.findMany({
+			where: {
+				postId,
+				post: {
+					organizationId,
 				},
-			})
-			.from(Likes)
-			.innerJoin(Users, eq(Likes.userId, Users.id))
-			.where(
-				and(eq(Likes.postId, postId), eq(Users.organizationId, organizationId)),
-			)
-			.offset((page - 1) * 10) // Get 10 likes per page, skip the other ones
-			.limit(10);
+			},
+			include: {
+				user: true,
+			},
+			take: 10,
+			skip: (page - 1) * 10,
+		});
 
-		return result;
+		return likes;
 	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error, {
+			message: `Failed to get likes by post id: ${postId}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
 	}
 };

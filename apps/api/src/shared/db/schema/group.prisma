@@ -1,0 +1,30 @@
+model Group {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+
+  organizationId Int?
+
+  organization Organization? @relation(fields: [organizationId], references: [id])
+
+  members GroupMember[]
+  posts   Post[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model GroupMember {
+  id Int @id @default(autoincrement())
+
+  groupId  Int
+  memberId Int
+
+  group  Group @relation(fields: [groupId], references: [id])
+  member User  @relation(fields: [memberId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([groupId, memberId])
+}

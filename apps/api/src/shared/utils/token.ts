@@ -1,14 +1,14 @@
 import { TRPCError } from "@trpc/server";
 import { sign, verify } from "hono/jwt";
+import type { UserRole } from "@prisma/client";
 
 import type { LoggedUser } from "@/shared/types/auth";
-import type { UserRoles } from "@/shared/types/roles";
 
 export const createTokenFromUser = async ({
 	userId,
 	userRole,
 	organizationId,
-}: { userId: number; userRole: UserRoles; organizationId: number }) => {
+}: { userId: number; userRole: UserRole; organizationId: number }) => {
 	const token = await sign(
 		{
 			userId,

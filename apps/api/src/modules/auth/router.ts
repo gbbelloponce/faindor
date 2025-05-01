@@ -4,7 +4,7 @@ import {
 	getUserById,
 } from "@/modules/users/service";
 import { publicProcedure, router } from "@/shared/trpc";
-import { checkDBError } from "@/shared/utils/errors";
+import { handleError } from "@/shared/utils/errors";
 import {
 	createTokenFromUser,
 	decodeLoggedUserFromToken,
@@ -28,7 +28,7 @@ export const authRouter = router({
 				const token = await createTokenFromUser({
 					userId: user.id,
 					userRole: user.role,
-					organizationId: user.organization.id,
+					organizationId: user.organizationId,
 				});
 
 				return {
@@ -41,7 +41,7 @@ export const authRouter = router({
 					},
 				};
 			} catch (error) {
-				throw checkDBError(error);
+				throw handleError(error);
 			}
 		}),
 	logInWithToken: publicProcedure
@@ -66,10 +66,11 @@ export const authRouter = router({
 						role: fullUser.role,
 						name: fullUser.name,
 						email: fullUser.email,
+						organizationId: fullUser.organizationId,
 					},
 				};
 			} catch (error) {
-				throw checkDBError(error);
+				throw handleError(error);
 			}
 		}),
 	register: publicProcedure
@@ -78,7 +79,7 @@ export const authRouter = router({
 			try {
 				return await createUser(input);
 			} catch (error) {
-				throw checkDBError(error);
+				throw handleError(error);
 			}
 		}),
 });

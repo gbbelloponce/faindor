@@ -1,17 +1,13 @@
 import { TRPCError } from "@trpc/server";
-import { count, eq } from "drizzle-orm";
+import { type User, UserRole } from "@prisma/client";
 
 import {
 	createOrganization,
 	getOrganizationByDomain,
 } from "@/modules/organizations/service";
 import { COMMON_PROVIDERS_ORGANIZATION_ID } from "@/shared/constants";
-import db from "@/shared/db";
-import { Organizations } from "@/shared/db/tables/organizations";
-import { Posts } from "@/shared/db/tables/posts";
-import { Users } from "@/shared/db/tables/users";
-import { UserRoles } from "@/shared/types/roles";
-import { checkDBError } from "@/shared/utils/errors";
+import { db } from "@/shared/db";
+import { handleError } from "@/shared/utils/errors";
 import {
 	COMMON_EMAIL_PROVIDERS,
 	getNormalizedDomainFromEmail,
@@ -23,94 +19,85 @@ import type {
 
 export const getPublicUserInfoById = async (id: number) => {
 	try {
-		const result = await db
-			.select({
-				id: Users.id,
-				name: Users.name,
-				email: Users.email,
-				organization: {
-					id: Organizations.id,
-					domain: Organizations.domain,
-				},
-				publishedPosts: count(Posts.id),
-			})
-			.from(Users)
-			.innerJoin(Organizations, eq(Users.organizationId, Organizations.id))
-			.leftJoin(Posts, eq(Users.id, Posts.userId))
-			.where(eq(Users.id, id));
+		const user = await db.user.findFirst({
+			where: {
+				id,
+			},
+			include: {
+				organization: true,
+			},
+			omit: {
+				active: true,
+				password: true,
+				role: true,
+			},
+		});
 
-		if (!result.length) return null;
-
-		return result[0];
-	} catch (error) {
-		throw checkDBError(error);
-	}
-};
-
-export const getUserById = async (id: number) => {
-	try {
-		const result = await db
-			.select({
-				id: Users.id,
-				name: Users.name,
-				email: Users.email,
-				password: Users.password,
-				role: Users.role,
-				createdAt: Users.createdAt,
-				deletedAt: Users.deletedAt,
-				organization: Organizations,
-			})
-			.from(Users)
-			.innerJoin(Organizations, eq(Users.organizationId, Organizations.id))
-			.where(eq(Users.id, id));
-
-		if (!result.length) {
+		if (!user) {
 			throw new TRPCError({
 				message: `There is no user with the id: ${id}`,
 				code: "NOT_FOUND",
 			});
 		}
 
-		return result[0];
+		return user;
 	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error);
 	}
 };
 
-export const getUserByEmail = async (email: string) => {
+export const getUserById = async (id: number): Promise<User> => {
 	try {
-		const result = await db
-			.select({
-				id: Users.id,
-				name: Users.name,
-				email: Users.email,
-				password: Users.password,
-				role: Users.role,
-				createdAt: Users.createdAt,
-				deletedAt: Users.deletedAt,
-				organization: Organizations,
-			})
-			.from(Users)
-			.innerJoin(Organizations, eq(Users.organizationId, Organizations.id))
-			.where(eq(Users.email, email));
+		const user = await db.user.findFirst({
+			where: {
+				id,
+			},
+			include: {
+				organization: true,
+			},
+		});
 
-		if (!result.length) {
+		if (!user) {
+			throw new TRPCError({
+				message: `There is no user with the id: ${id}`,
+				code: "NOT_FOUND",
+			});
+		}
+
+		return user;
+	} catch (error) {
+		throw handleError(error);
+	}
+};
+
+export const getUserByEmail = async (email: string): Promise<User> => {
+	try {
+		const user = await db.user.findFirst({
+			where: {
+				email,
+			},
+			include: {
+				organization: true,
+			},
+		});
+
+		if (!user) {
 			throw new TRPCError({
 				message: `There is no user with the email: ${email}`,
 				code: "NOT_FOUND",
 			});
 		}
 
-		return result[0];
+		return user;
 	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error);
 	}
 };
 
 export const getUserByCredentials = async ({
 	email,
 	password,
-}: GetUserByCredentialsParams) => {
+}: GetUserByCredentialsParams): Promise<User> => {
 	try {
 		const user = await getUserByEmail(email);
 
@@ -128,15 +115,18 @@ export const getUserByCredentials = async ({
 
 		return user;
 	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error, {
+			message: `Failed to get user by credentials with email: ${email}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
 	}
 };
 
-export const createUser = async (user: CreateUserParams) => {
+export const createUser = async (body: CreateUserParams): Promise<User> => {
 	try {
 		let organizationId = null;
 
-		const organizationDomain = getNormalizedDomainFromEmail(user.email);
+		const organizationDomain = getNormalizedDomainFromEmail(body.email);
 
 		// If the domain is from a common provider, group all users inside the same organization
 		if (COMMON_EMAIL_PROVIDERS.has(organizationDomain)) {
@@ -157,31 +147,22 @@ export const createUser = async (user: CreateUserParams) => {
 			}
 		}
 
-		const result = await db
-			.insert(Users)
-			.values({
-				name: user.name,
-				email: user.email,
-				password: await Bun.password.hash(user.password),
-				role: UserRoles.USER,
-				organizationId: organizationId,
-			})
-			.returning({
-				id: Users.id,
-				name: Users.name,
-				email: Users.email,
-				organizationId: Users.organizationId,
-			});
+		const user = await db.user.create({
+			data: {
+				name: body.name,
+				email: body.email,
+				password: await Bun.password.hash(body.password),
+				role: UserRole.USER,
+				organizationId,
+				active: true,
+			},
+		});
 
-		if (!result.length) {
-			throw new TRPCError({
-				message: `Failed to create user with email: ${user.email} and name: ${user.name}.`,
-				code: "INTERNAL_SERVER_ERROR",
-			});
-		}
-
-		return result[0];
+		return user;
 	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error, {
+			message: `Failed to create user with email: ${body.email} and name: ${body.name}.`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
 	}
 };

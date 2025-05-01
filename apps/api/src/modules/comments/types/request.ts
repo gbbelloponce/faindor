@@ -8,4 +8,4 @@ export const createCommentSchema = z.object({
 	userId: positiveNumberSchema,
 });
 
-export type CreateCommentParams = z.infer<typeof createCommentSchema>;
+export type CreateCommentBody = z.infer<typeof createCommentSchema>;

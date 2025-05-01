@@ -1,6 +1,6 @@
 import { authRouter } from "@/modules/auth/router";
 import { commentsRouter } from "@/modules/comments/router";
-import { communitiesRouter } from "@/modules/communities/router";
+import { groupsRouter } from "@/modules/groups/router";
 import { likesRouter } from "@/modules/likes/router";
 import { organizationsRouter } from "@/modules/organizations/router";
 import { postsRouter } from "@/modules/posts/router";
@@ -17,7 +17,7 @@ export const appRouter = router({
 	auth: authRouter,
 	likes: likesRouter,
 	comments: commentsRouter,
-	communities: communitiesRouter,
+	groups: groupsRouter,
 });
 
 export type AppRouter = typeof appRouter;

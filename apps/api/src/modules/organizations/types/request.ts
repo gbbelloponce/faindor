@@ -5,4 +5,4 @@ export const createOrganizationSchema = z.object({
 	domain: z.string(),
 });
 
-export type CreateOrganizationParams = z.infer<typeof createOrganizationSchema>;
+export type CreateOrganizationBody = z.infer<typeof createOrganizationSchema>;

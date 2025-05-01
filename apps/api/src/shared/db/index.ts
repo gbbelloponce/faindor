@@ -1,7 +1,4 @@
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
+import { PrismaClient } from "@prisma/client";
+import { withAccelerate } from "@prisma/extension-accelerate";
 
-const sql = neon(process.env.DATABASE_URL);
-const db = drizzle(sql);
-
-export default db;
+export const db = new PrismaClient().$extends(withAccelerate());

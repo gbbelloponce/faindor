@@ -1,12 +1,8 @@
-import { and, desc, eq, isNull } from "drizzle-orm";
-
-import { validatePostsUserIsFromOrganizationId } from "@/modules/posts/service";
-import db from "@/shared/db";
-import { Comments } from "@/shared/db/tables/comments";
-import { Users } from "@/shared/db/tables/users";
-import { checkDBError } from "@/shared/utils/errors";
+import { isPostFromOrganization } from "@/modules/posts/service";
+import { db } from "@/shared/db";
+import { handleError } from "@/shared/utils/errors";
 import { TRPCError } from "@trpc/server";
-import type { CreateCommentParams } from "./types/request";
+import type { CreateCommentBody } from "./types/request";
 
 export const getCommentsByPostId = async (
 	postId: number,
@@ -14,113 +10,60 @@ export const getCommentsByPostId = async (
 	page = 1,
 ) => {
 	try {
-		const result = db
-			.select({
-				id: Comments.id,
-				content: Comments.content,
-				user: {
-					id: Users.id,
-					name: Users.name,
+		const comments = await db.comment.findMany({
+			include: {
+				replies: true,
+			},
+			where: {
+				postId,
+				post: {
+					organizationId,
 				},
-				createdAt: Comments.createdAt,
-				updatedAt: Comments.updatedAt,
-			})
-			.from(Comments)
-			.innerJoin(Users, eq(Comments.userId, Users.id))
-			.where(
-				and(
-					eq(Comments.postId, postId),
-					eq(Users.organizationId, organizationId),
-					isNull(Comments.repliesTo), // Only get comments and not replies
-				),
-			)
-			.orderBy(desc(Comments.createdAt))
-			.groupBy(
-				Comments.id,
-				Comments.content,
-				Users.id,
-				Users.name,
-				Comments.createdAt,
-				Comments.updatedAt,
-			)
-			.offset((page - 1) * 10)
-			.limit(10);
+			},
+			orderBy: {
+				createdAt: "desc",
+			},
+			take: 10,
+			skip: (page - 1) * 10,
+		});
 
-		return result;
+		return comments;
 	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error, {
+			message: `Failed to get comments by post id: ${postId}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
 	}
 };
 
 export const createComment = async (
-	{ content, commentId, postId, userId }: CreateCommentParams,
+	body: CreateCommentBody,
 	organizationId: number,
 ) => {
 	try {
-		await validatePostsUserIsFromOrganizationId(postId, organizationId);
+		await isPostFromOrganization(body.postId, organizationId);
 
-		const result = await db
-			.insert(Comments)
-			.values({
-				content: content,
-				postId: postId,
-				userId: userId,
-				repliesTo: commentId,
-			})
-			.returning();
+		const comment = await db.comment.create({
+			data: {
+				content: body.content,
+				postId: body.postId,
+				authorId: body.userId,
+				...(body.commentId && { repliesToId: body.commentId }),
+			},
+		});
 
-		if (!result.length) {
+		if (!comment) {
 			throw new TRPCError({
-				message: `Failed to create comment with content: ${content}.`,
+				message: `Failed to create comment with content: ${body.content}.`,
 				code: "INTERNAL_SERVER_ERROR",
 			});
 		}
 
-		return result[0];
+		return comment;
 	} catch (error) {
-		throw checkDBError(error);
-	}
-};
-
-export const getRepliesFromComment = async (
-	commentId: number,
-	organizationId: number,
-	page = 1,
-) => {
-	try {
-		const result = db
-			.select({
-				id: Comments.id,
-				content: Comments.content,
-				user: {
-					id: Users.id,
-					name: Users.name,
-				},
-				createdAt: Comments.createdAt,
-				updatedAt: Comments.updatedAt,
-			})
-			.from(Comments)
-			.innerJoin(Users, eq(Comments.userId, Users.id))
-			.where(
-				and(
-					eq(Users.organizationId, organizationId),
-					eq(Comments.repliesTo, commentId),
-				),
-			)
-			.orderBy(desc(Comments.createdAt))
-			.groupBy(
-				Comments.id,
-				Comments.content,
-				Users.id,
-				Users.name,
-				Comments.createdAt,
-				Comments.updatedAt,
-			)
-			.offset((page - 1) * 10)
-			.limit(10);
-
-		return result;
-	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error, {
+			message: `Failed to create comment with content: ${body.content} for post id: ${body.postId}.`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
 	}
 };

@@ -1,78 +1,71 @@
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import type { Organization } from "@prisma/client";
 
-import db from "@/shared/db";
-import { Organizations } from "@/shared/db/tables/organizations";
-import { checkDBError } from "@/shared/utils/errors";
-import type { CreateOrganizationParams } from "./types/request";
+import { db } from "@/shared/db";
+import { handleError } from "@/shared/utils/errors";
+import type { CreateOrganizationBody } from "./types/request";
 
-export const getOrganizationById = async (id: number) => {
+export const getOrganizationById = async (
+	id: number,
+): Promise<Organization> => {
 	try {
-		const result = await db
-			.select({
-				id: Organizations.id,
-				domain: Organizations.domain,
-				createdAt: Organizations.createdAt,
-				deletedAt: Organizations.deletedAt,
-			})
-			.from(Organizations)
-			.where(eq(Organizations.id, id));
+		const organization = await db.organization.findFirst({
+			where: {
+				id,
+			},
+		});
 
-		if (!result.length) {
+		if (!organization) {
 			throw new TRPCError({
 				message: `There is no organization with the id: ${id}.`,
 				code: "NOT_FOUND",
 			});
 		}
 
-		return result[0];
+		return organization;
 	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error, {
+			message: `Failed to get organization by id: ${id}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
 	}
 };
 
-export const getOrganizationByDomain = async (domain: string) => {
+export const getOrganizationByDomain = async (
+	domain: string,
+): Promise<Organization | null> => {
 	try {
-		const result = await db
-			.select({
-				id: Organizations.id,
-				domain: Organizations.domain,
-				createdAt: Organizations.createdAt,
-				deletedAt: Organizations.deletedAt,
-			})
-			.from(Organizations)
-			.where(eq(Organizations.domain, domain));
-
-		if (!result.length) return null;
-
-		return result[0];
-	} catch (error) {
-		throw checkDBError(error);
-	}
-};
-
-export const createOrganization = async ({
-	name,
-	domain,
-}: CreateOrganizationParams) => {
-	try {
-		const result = await db
-			.insert(Organizations)
-			.values({
-				name,
+		const organization = await db.organization.findFirst({
+			where: {
 				domain,
-			})
-			.returning({ id: Organizations.id });
+			},
+		});
 
-		if (!result.length) {
-			throw new TRPCError({
-				message: `Failed to create organization with domain: ${domain}.`,
-				code: "INTERNAL_SERVER_ERROR",
-			});
-		}
-
-		return result[0];
+		return organization;
 	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error, {
+			message: `Failed to get organization by domain: ${domain}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
+	}
+};
+
+export const createOrganization = async (
+	body: CreateOrganizationBody,
+): Promise<Organization> => {
+	try {
+		const organization = await db.organization.create({
+			data: {
+				name: body.name,
+				domain: body.domain,
+			},
+		});
+
+		return organization;
+	} catch (error) {
+		throw handleError(error, {
+			message: `Failed to create organization with domain: ${body.domain}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
 	}
 };

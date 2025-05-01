@@ -1,113 +1,99 @@
 import { TRPCError } from "@trpc/server";
-import { and, count, desc, eq, isNotNull } from "drizzle-orm";
+import type { Post, SavedPost } from "@prisma/client";
 
-import db from "@/shared/db";
-import { Likes } from "@/shared/db/tables/likes";
-import { Posts } from "@/shared/db/tables/posts";
-import { SavedPosts } from "@/shared/db/tables/savedPosts";
-import { Users } from "@/shared/db/tables/users";
-import { checkDBError } from "@/shared/utils/errors";
-import type { CreatePostParams, UpdatePostParams } from "./types/request";
+import { db } from "@/shared/db";
+import { handleError } from "@/shared/utils/errors";
+import type { CreatePostBody, UpdatePostBody } from "./types/request";
 
 /**
- * Given a postId and an organizationId, this function will throw an error if the post's user is not from the organizationId given.
+ * Given a postId and an organizationId, this function will throw an error if the post is not from the organizationId given.
+ * This is mainly used to check if the user is allowed to perform certain actions on the post.
  * @param postId
  * @param organizationId
  */
-export const validatePostsUserIsFromOrganizationId = async (
+export const isPostFromOrganization = async (
 	postId: number,
 	organizationId: number,
-) => {
+): Promise<Post> => {
 	try {
-		const result = await db
-			.select({
-				id: Posts.id,
-			})
-			.from(Posts)
-			.innerJoin(Users, eq(Posts.userId, Users.id))
-			.where(
-				and(eq(Posts.id, postId), eq(Users.organizationId, organizationId)),
-			);
+		const post = await db.post.findFirst({
+			where: {
+				id: postId,
+				organizationId,
+			},
+		});
 
-		if (!result.length) {
+		if (!post) {
 			throw new TRPCError({
 				message: `You are not allowed to access post with id: ${postId}`,
 				code: "UNAUTHORIZED",
 			});
 		}
+
+		return post;
 	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error, {
+			message: `Failed to check if post with id: ${postId} is from organization with id: ${organizationId}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
 	}
 };
 
-export const getPostById = async (id: number, organizationId: number) => {
+export const getPostById = async (
+	id: number,
+	organizationId: number,
+): Promise<Post> => {
 	try {
-		const result = await db
-			.select({
-				id: Posts.id,
-				content: Posts.content,
-				likesCount: count(Likes.id),
-				user: {
-					id: Users.id,
-					organizationId: Users.organizationId,
-				},
-			})
-			.from(Posts)
-			.innerJoin(Users, eq(Posts.userId, Users.id))
-			.leftJoin(Likes, eq(Posts.id, Likes.postId))
-			.where(and(eq(Posts.id, id), eq(Users.organizationId, organizationId)));
+		const result = await db.post.findFirst({
+			where: {
+				id,
+				organizationId,
+			},
+		});
 
-		if (!result.length) {
+		if (!result) {
 			throw new TRPCError({
 				message: `There is no post with the id: ${id}`,
 				code: "NOT_FOUND",
 			});
 		}
 
-		return result[0];
+		return result;
 	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error, {
+			message: `Failed to get post by id: ${id}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
 	}
 };
 
 export const getLatestsPostsByOrganizationId = async (
 	organizationId: number,
 	page = 1,
-) => {
+): Promise<Post[]> => {
 	try {
-		const result = await db
-			.select({
-				id: Posts.id,
-				content: Posts.content,
-				likesCount: count(Likes.id),
-				user: {
-					id: Users.id,
-					name: Users.name,
-				},
-				createdAt: Posts.createdAt,
-				updatedAt: Posts.updatedAt,
-				deletedAt: Posts.deletedAt,
-			})
-			.from(Posts)
-			.innerJoin(Users, eq(Posts.userId, Users.id))
-			.leftJoin(Likes, eq(Posts.id, Likes.postId))
-			.where(eq(Users.organizationId, organizationId))
-			.orderBy(desc(Posts.createdAt))
-			.groupBy(
-				Posts.id,
-				Posts.content,
-				Users.id,
-				Users.name,
-				Posts.createdAt,
-				Posts.updatedAt,
-				Posts.deletedAt,
-			)
-			.offset((page - 1) * 10) // Get 10 posts per page, skip the other ones
-			.limit(10);
+		const posts = await db.post.findMany({
+			where: {
+				organizationId,
+			},
+			include: {
+				author: true,
+				likes: true,
+				comments: true,
+			},
+			orderBy: {
+				createdAt: "desc",
+			},
+			take: 10,
+			skip: (page - 1) * 10,
+		});
 
-		return result;
+		return posts;
 	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error, {
+			message: `Failed to get latests posts by organization id: ${organizationId}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
 	}
 };
 
@@ -115,165 +101,131 @@ export const getLatestsPostsByUserId = async (
 	userId: number,
 	organizationId: number,
 	page = 1,
-) => {
+): Promise<Post[]> => {
 	try {
-		const result = await db
-			.select({
-				id: Posts.id,
-				content: Posts.content,
-				communityId: Posts.communityId,
-				likesCount: count(Likes.id),
-				user: {
-					id: Users.id,
-					name: Users.name,
-				},
-				createdAt: Posts.createdAt,
-				updatedAt: Posts.updatedAt,
-				deletedAt: Posts.deletedAt,
-			})
-			.from(Posts)
-			.innerJoin(Users, eq(Posts.userId, Users.id))
-			.leftJoin(Likes, eq(Posts.id, Likes.postId))
-			.where(
-				and(eq(Users.id, userId), eq(Users.organizationId, organizationId)),
-			)
-			.groupBy(
-				Posts.id,
-				Posts.content,
-				Users.id,
-				Users.name,
-				Posts.createdAt,
-				Posts.updatedAt,
-				Posts.deletedAt,
-			)
-			.orderBy(desc(Posts.createdAt))
-			.offset((page - 1) * 10) // Get 10 posts per page, skip the other ones
-			.limit(10);
+		const posts = await db.post.findMany({
+			where: {
+				authorId: userId,
+				organizationId,
+			},
+			include: {
+				author: true,
+				likes: true,
+				comments: true,
+			},
+			orderBy: {
+				createdAt: "desc",
+			},
+			take: 10,
+			skip: (page - 1) * 10,
+		});
 
-		return result;
+		return posts;
 	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error, {
+			message: `Failed to get latests posts by user id: ${userId}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
 	}
 };
 
-export const getLatestsPostsByCommunityId = async (
-	communityId: number,
+export const getLatestsPostsByGroupId = async (
+	groupId: number,
 	organizationId: number,
 	page = 1,
-) => {
+): Promise<Post[]> => {
 	try {
-		const result = await db
-			.select({
-				id: Posts.id,
-				content: Posts.content,
-				communityId: Posts.communityId,
-				likesCount: count(Likes.id),
-				user: {
-					id: Users.id,
-					name: Users.name,
-				},
-				createdAt: Posts.createdAt,
-				updatedAt: Posts.updatedAt,
-				deletedAt: Posts.deletedAt,
-			})
-			.from(Posts)
-			.innerJoin(Users, eq(Posts.userId, Users.id))
-			.leftJoin(Likes, eq(Posts.id, Likes.postId))
-			.where(
-				and(
-					eq(Users.organizationId, organizationId),
-					eq(Posts.communityId, communityId),
-					isNotNull(Posts.communityId),
-				),
-			)
-			.orderBy(desc(Posts.createdAt))
-			.groupBy(
-				Posts.id,
-				Posts.content,
-				Posts.communityId,
-				Users.id,
-				Users.name,
-				Posts.createdAt,
-				Posts.updatedAt,
-				Posts.deletedAt,
-			)
-			.offset((page - 1) * 10)
-			.limit(10);
+		const posts = await db.post.findMany({
+			where: {
+				groupId,
+				organizationId,
+			},
+			include: {
+				author: true,
+				likes: true,
+				comments: true,
+			},
+			orderBy: {
+				createdAt: "desc",
+			},
+			take: 10,
+			skip: (page - 1) * 10,
+		});
 
-		return result;
+		return posts;
 	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error, {
+			message: `Failed to get latests posts by group id: ${groupId}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
 	}
 };
 
-export const createPost = async (post: CreatePostParams) => {
+export const createPost = async (body: CreatePostBody): Promise<Post> => {
 	try {
-		const result = await db
-			.insert(Posts)
-			.values({
-				content: post.content,
-				communityId: post.communityId,
-				userId: post.userId,
-			})
-			.returning();
+		const post = await db.post.create({
+			data: {
+				content: body.content,
+				groupId: body.groupId,
+				organizationId: body.organizationId,
+				authorId: body.userId,
+			},
+		});
 
-		if (!result.length) {
-			throw new TRPCError({
-				message: `Failed to create post with content: ${post.content} for user: ${post.userId}`,
-				code: "INTERNAL_SERVER_ERROR",
-			});
-		}
-
-		return result[0];
+		return post;
 	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error, {
+			message: `Failed to create post with content: ${body.content} for user: ${body.userId}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
 	}
 };
 
-export const updatePost = async (post: UpdatePostParams, userId: number) => {
+export const updatePost = async (
+	body: UpdatePostBody,
+	userId: number,
+): Promise<Post> => {
 	try {
-		const result = await db
-			.update(Posts)
-			.set({
-				content: post.content,
-				updatedAt: new Date(),
-			})
-			.where(and(eq(Posts.id, post.id), eq(Posts.userId, userId)))
-			.returning();
+		const post = await db.post.update({
+			where: {
+				id: body.id,
+				authorId: userId,
+			},
+			data: {
+				content: body.content,
+			},
+		});
 
-		if (!result.length) {
-			throw new TRPCError({
-				message: `Failed to update post with id: ${post.id}`,
-				code: "INTERNAL_SERVER_ERROR",
-			});
-		}
-
-		return result[0];
+		return post;
 	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error, {
+			message: `Failed to update post with id: ${body.id}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
 	}
 };
 
-export const softDeletePost = async (postId: number, userId: number) => {
+export const softDeletePost = async (
+	postId: number,
+	userId: number,
+): Promise<Post> => {
 	try {
-		const result = await db
-			.update(Posts)
-			.set({
+		const post = await db.post.update({
+			where: {
+				id: postId,
+				authorId: userId,
+			},
+			data: {
 				deletedAt: new Date(),
-			})
-			.where(and(eq(Posts.id, postId), eq(Posts.userId, userId)))
-			.returning();
+			},
+		});
 
-		if (!result.length) {
-			throw new TRPCError({
-				message: `Failed to soft delete post with id: ${postId}`,
-				code: "INTERNAL_SERVER_ERROR",
-			});
-		}
-
-		return result[0];
+		return post;
 	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error, {
+			message: `Failed to soft delete post with id: ${postId}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
 	}
 };
 
@@ -281,24 +233,45 @@ export const savePostById = async (
 	postId: number,
 	userId: number,
 	organizationId: number,
-) => {
+): Promise<SavedPost> => {
 	try {
-		await validatePostsUserIsFromOrganizationId(postId, organizationId);
+		await isPostFromOrganization(postId, organizationId);
 
-		const result = await db
-			.insert(SavedPosts)
-			.values({ postId, userId })
-			.returning();
+		const savedPost = await db.savedPost.create({
+			data: {
+				postId,
+				userId,
+			},
+		});
 
-		if (!result.length) {
-			throw new TRPCError({
-				message: `Failed to save post with id: ${postId}`,
-				code: "INTERNAL_SERVER_ERROR",
-			});
-		}
-
-		return result[0];
+		return savedPost;
 	} catch (error) {
-		throw checkDBError(error);
+		throw handleError(error, {
+			message: `Failed to save post with id: ${postId} for user with id: ${userId}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
+	}
+};
+
+export const unsavePostByPostAndUserId = async (
+	postId: number,
+	userId: number,
+): Promise<SavedPost> => {
+	try {
+		const savedPost = await db.savedPost.delete({
+			where: {
+				postId_userId: {
+					postId,
+					userId,
+				},
+			},
+		});
+
+		return savedPost;
+	} catch (error) {
+		throw handleError(error, {
+			message: `Failed to unsave post with id: ${postId} for user with id: ${userId}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
 	}
 };

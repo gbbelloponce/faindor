@@ -4,7 +4,7 @@ import { authenticatedProcedure, router } from "@/shared/trpc";
 import { positiveNumberSchema } from "@/shared/types/schemas";
 import {
 	createPost,
-	getLatestsPostsByCommunityId,
+	getLatestsPostsByGroupId,
 	getLatestsPostsByOrganizationId,
 	getLatestsPostsByUserId,
 	getPostById,
@@ -12,6 +12,7 @@ import {
 	softDeletePost,
 	updatePost,
 } from "./service";
+import { createPostSchema, updatePostSchema } from "./types/request";
 
 export const postsRouter = router({
 	getPostById: authenticatedProcedure
@@ -43,45 +44,39 @@ export const postsRouter = router({
 				input.page,
 			);
 		}),
-	getLatestsPostsByCommunityId: authenticatedProcedure
+	getLatestsPostsByGroupId: authenticatedProcedure
 		.input(
 			z.object({
-				communityId: positiveNumberSchema,
+				groupId: positiveNumberSchema,
 				page: positiveNumberSchema,
 			}),
 		)
 		.query(async ({ input, ctx }) => {
-			return await getLatestsPostsByCommunityId(
-				input.communityId,
+			return await getLatestsPostsByGroupId(
+				input.groupId,
 				ctx.user.organizationId,
 				input.page,
 			);
 		}),
 	createPost: authenticatedProcedure
-		.input(
-			z.object({
-				content: z.string().min(1),
-				communityId: positiveNumberSchema.optional(),
-			}),
-		)
+		.input(createPostSchema)
 		.mutation(async ({ input, ctx }) => {
 			return await createPost({
 				content: input.content,
-				communityId: input.communityId,
+				groupId: input.groupId,
+				organizationId: ctx.user.organizationId,
 				userId: ctx.user.id,
 			});
 		}),
 	updatePost: authenticatedProcedure
-		.input(
-			z.object({ postId: positiveNumberSchema, content: z.string().min(1) }),
-		)
+		.input(updatePostSchema)
 		.mutation(async ({ input, ctx }) => {
 			return await updatePost(
 				{
-					id: input.postId,
+					id: input.id,
 					content: input.content,
 				},
-				ctx.user.organizationId,
+				ctx.user.id,
 			);
 		}),
 	softDeletePost: authenticatedProcedure

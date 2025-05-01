@@ -1,0 +1,26 @@
+model User {
+  id       Int      @id @default(autoincrement())
+  name     String
+  email    String   @unique
+  password String
+  role     UserRole @default(USER)
+  active   Boolean  @default(true)
+
+  organizationId Int
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  posts      Post[]
+  groups     GroupMember[]
+  likes      Like[]
+  comments   Comment[]
+  savedPosts SavedPost[]
+
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+}
+
+enum UserRole {
+  USER
+  APP_ADMIN
+}

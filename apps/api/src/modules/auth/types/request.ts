@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { UserRoles } from "@/shared/types/roles";
+import { UserRole } from "@prisma/client";
 
 export const logInWithCredentialsSchema = z.object({
 	email: z.string().email().min(1),
@@ -14,7 +14,7 @@ export const logInWithTokenSchema = z.object({
 export const getUserByDecodedTokenSchema = z.object({
 	email: z.string().email().min(1),
 	organizationId: z.number().min(1),
-	userRole: z.nativeEnum(UserRoles),
+	userRole: z.nativeEnum(UserRole),
 });
 
 export const registerSchema = z.object({

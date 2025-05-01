@@ -1,0 +1,67 @@
+model Post {
+  id      Int    @id @default(autoincrement())
+  content String
+
+  organizationId Int
+  authorId       Int?
+  groupId        Int?
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  author       User?        @relation(fields: [authorId], references: [id])
+  group        Group?       @relation(fields: [groupId], references: [id])
+
+  likes        Like[]
+  comments     Comment[]
+  savedByUsers SavedPost[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Like {
+  id Int @id @default(autoincrement())
+
+  postId Int
+  userId Int
+
+  post Post @relation(fields: [postId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
+}
+
+model Comment {
+  id      Int    @id @default(autoincrement())
+  content String
+
+  postId   Int
+  authorId Int
+
+  post   Post @relation(fields: [postId], references: [id])
+  author User @relation(fields: [authorId], references: [id])
+
+  repliesToId Int?
+  repliesTo   Comment?  @relation("CommentToReplies", fields: [repliesToId], references: [id])
+  replies     Comment[] @relation("CommentToReplies")
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model SavedPost {
+  id Int @id @default(autoincrement())
+
+  postId Int
+  userId Int
+
+  post Post @relation(fields: [postId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
+}

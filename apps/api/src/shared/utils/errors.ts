@@ -1,20 +1,19 @@
-import { NeonDbError } from "@neondatabase/serverless";
 import { TRPCError } from "@trpc/server";
 
-export const checkDBError = (error: unknown) => {
-	if (error instanceof NeonDbError) {
-		console.error("NeonDbError with code: ", error.code);
-	}
+export const handleError = (
+	originalError: unknown,
+	defaultError: Pick<TRPCError, "message" | "code"> & Partial<TRPCError> = {
+		message: "There was internal error in the server.",
+		code: "INTERNAL_SERVER_ERROR",
+	},
+): TRPCError => {
+	console.error(originalError);
 
-	if (error instanceof TRPCError) {
-		return error;
+	if (originalError instanceof TRPCError) {
+		return originalError;
 	}
-
-	console.error(error);
 
 	return new TRPCError({
-		message:
-			"There was an internal server error, check the server logs for more info.",
-		code: "INTERNAL_SERVER_ERROR",
+		...defaultError,
 	});
 };

@@ -1,0 +1,14 @@
+model Organization {
+  id          Int     @id @default(autoincrement())
+  name        String
+  domain      String  @unique
+  description String?
+
+  users  User[]
+  posts  Post[]
+  groups Group[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
