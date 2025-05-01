@@ -1,10 +1,10 @@
 import type { Post, SavedPost } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
+import { PAGE_SIZE } from "@/shared/constants";
 import { db } from "@/shared/db";
 import { handleError } from "@/shared/utils/errors";
 import type { CreatePostBody, UpdatePostBody } from "./types/request";
-import { PAGE_SIZE } from "@/shared/constants";
 
 /**
  * Given a postId and an organizationId, this function will throw an error if the post is not from the organizationId given.

@@ -1,9 +1,9 @@
 import { isPostFromOrganization } from "@/modules/posts/service";
+import { PAGE_SIZE } from "@/shared/constants";
 import { db } from "@/shared/db";
 import { handleError } from "@/shared/utils/errors";
 import { TRPCError } from "@trpc/server";
 import type { CreateCommentBody } from "./types/request";
-import { PAGE_SIZE } from "@/shared/constants";
 
 export const getCommentsByPostId = async (
 	postId: number,
