@@ -3,11 +3,11 @@ model Post {
   content String
 
   organizationId Int
-  authorId       Int?
+  authorId       Int
   groupId        Int?
 
   organization Organization @relation(fields: [organizationId], references: [id])
-  author       User?        @relation(fields: [authorId], references: [id])
+  author       User         @relation(fields: [authorId], references: [id])
   group        Group?       @relation(fields: [groupId], references: [id])
 
   likes        Like[]
