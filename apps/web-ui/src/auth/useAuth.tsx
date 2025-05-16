@@ -2,43 +2,28 @@
 
 import { TRPCClientError } from "@trpc/client";
 import Cookies from "js-cookie";
-import { useEffect, useState } from "react";
+import { create } from "zustand";
 
 import { useTRPCClient } from "@/trpc/trpc";
-import {
-	AUTH_COOKIE_CONFIG,
-	AUTH_STORAGE_KEY,
-	USER_ID_COOKIE_KEY,
-	USER_TOKEN_COOKIE_KEY,
-} from "./constants";
+import { ACCESS_TOKEN_COOKIE_KEY, AUTH_COOKIE_CONFIG } from "./constants";
 import {
 	type AuthResponse,
-	type AuthStorage,
+	type AuthState,
 	LogInErrorCodeEnum,
 	RegisterErrorCodeEnum,
-	type User,
 } from "./types";
 
+// Create base store without API methods
+export const useAuthStore = create<AuthState>((set) => ({
+	isLoading: false,
+	currentUser: null,
+	setIsLoading: (isLoading) => set({ isLoading }),
+	setCurrentUser: (user) => set({ currentUser: user }),
+}));
+
 export const useAuth = () => {
-	const [isLoading, setIsLoading] = useState(false);
-	const [user, setUser] = useState<User | null>(null);
-
-	// On mount, load possible authenticated user from local storage
-	useEffect(() => {
-		const storageString = localStorage.getItem("faindor-auth-store");
-		if (!storageString) return;
-
-		const parsedStorage = JSON.parse(storageString) as AuthStorage;
-
-		if (parsedStorage.user?.id) {
-			setUser(parsedStorage.user);
-		}
-	}, []);
-
-	const saveAuthStateInLocalStorage = ({ user }: AuthStorage) => {
-		localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ user }));
-	};
-
+	const { isLoading, currentUser, setIsLoading, setCurrentUser } =
+		useAuthStore();
 	const trpc = useTRPCClient();
 
 	const logInWithCredentials = async (
@@ -53,14 +38,8 @@ export const useAuth = () => {
 				password,
 			});
 
-			Cookies.set(USER_TOKEN_COOKIE_KEY, token, AUTH_COOKIE_CONFIG);
-			Cookies.set(USER_ID_COOKIE_KEY, user.id.toString(), AUTH_COOKIE_CONFIG);
-
-			setUser(user);
-
-			saveAuthStateInLocalStorage({
-				user,
-			});
+			Cookies.set(ACCESS_TOKEN_COOKIE_KEY, token, AUTH_COOKIE_CONFIG);
+			setCurrentUser(user);
 
 			return { success: true, error: null };
 		} catch (error) {
@@ -81,24 +60,17 @@ export const useAuth = () => {
 		}
 	};
 
-	const logInWithToken = async (
-		token: string,
+	const logInWithAccessToken = async (
+		accessToken: string,
 	): Promise<AuthResponse<LogInErrorCodeEnum>> => {
 		setIsLoading(true);
 
 		try {
-			const { token: newToken, user } = await trpc.auth.logInWithToken.query({
-				token,
+			const { user } = await trpc.auth.logInWithAccessToken.query({
+				accessToken,
 			});
 
-			Cookies.set(USER_TOKEN_COOKIE_KEY, newToken, AUTH_COOKIE_CONFIG);
-			Cookies.set(USER_ID_COOKIE_KEY, user.id.toString(), AUTH_COOKIE_CONFIG);
-
-			setUser(user);
-
-			saveAuthStateInLocalStorage({
-				user,
-			});
+			setCurrentUser(user);
 
 			return {
 				success: true,
@@ -132,7 +104,6 @@ export const useAuth = () => {
 
 		try {
 			await trpc.auth.register.mutate({
-				// TODO: Separate firstName and lastName in API and DB
 				name: `${firstName} ${lastName}`,
 				email,
 				password,
@@ -161,61 +132,17 @@ export const useAuth = () => {
 	};
 
 	const logOut = () => {
-		Cookies.remove(USER_TOKEN_COOKIE_KEY);
-		Cookies.remove(USER_ID_COOKIE_KEY);
-
-		setUser(null);
+		Cookies.remove(ACCESS_TOKEN_COOKIE_KEY);
+		setCurrentUser(null);
 		setIsLoading(false);
-
-		localStorage.removeItem(AUTH_STORAGE_KEY);
-	};
-
-	const checkAuth = async () => {
-		if (isLoading) {
-			return false;
-		}
-
-		const userIdFromCookies = Number(Cookies.get(USER_ID_COOKIE_KEY));
-		const tokenFromCookies = Cookies.get(USER_TOKEN_COOKIE_KEY);
-
-		// If we don't have either a user in the state nor no user in state and no cookies, we're not authenticated
-		if (!user?.id && !userIdFromCookies && !tokenFromCookies) {
-			return false;
-		}
-
-		// If we have a user in state, verify it matches with the cookie
-		if (user) {
-			if (user.id !== userIdFromCookies) {
-				// User mismatch, so try to re-authenticate with token
-				if (tokenFromCookies) {
-					return await logInWithToken(tokenFromCookies);
-				}
-
-				// No token, so log out
-				logOut();
-				return false;
-			}
-
-			return true;
-		}
-
-		// No user in state but we have a token, so try to authenticate
-		if (tokenFromCookies) {
-			return await logInWithToken(tokenFromCookies);
-		}
-
-		// Somehow there is no user and no token, so log out
-		logOut();
-		return false;
 	};
 
 	return {
 		isLoading,
-		user,
+		currentUser,
 		logInWithCredentials,
-		logInWithToken,
+		logInWithAccessToken,
 		register,
 		logOut,
-		checkAuth,
 	};
 };

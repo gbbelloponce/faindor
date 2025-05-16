@@ -7,8 +7,8 @@ export const logInWithCredentialsSchema = z.object({
 	password: z.string().min(1),
 });
 
-export const logInWithTokenSchema = z.object({
-	token: z.string().min(1),
+export const logInWithAccessTokenSchema = z.object({
+	accessToken: z.string().min(1),
 });
 
 export const getUserByDecodedTokenSchema = z.object({

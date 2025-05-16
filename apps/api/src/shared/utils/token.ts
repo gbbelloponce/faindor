@@ -4,7 +4,7 @@ import { sign, verify } from "hono/jwt";
 
 import type { LoggedUser } from "@/shared/types/auth";
 
-export const createTokenFromUser = async ({
+export const createAccessToken = async ({
 	userId,
 	userRole,
 	organizationId,
@@ -15,13 +15,13 @@ export const createTokenFromUser = async ({
 			userRole,
 			organizationId,
 		},
-		process.env.JWT_SECRET,
+		process.env.ACCESS_TOKEN_SECRET,
 	);
 
 	return token;
 };
 
-export const decodeLoggedUserFromToken = async (token: string) => {
+export const decodeAccessToken = async (token: string) => {
 	if (!token) {
 		throw new TRPCError({
 			message: "No token provided.",
@@ -29,7 +29,7 @@ export const decodeLoggedUserFromToken = async (token: string) => {
 		});
 	}
 
-	const payload = await verify(token, process.env.JWT_SECRET);
+	const payload = await verify(token, process.env.ACCESS_TOKEN_SECRET);
 
 	if (!payload.userId || !payload.organizationId || !payload.userRole) {
 		throw new TRPCError({

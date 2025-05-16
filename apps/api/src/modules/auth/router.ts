@@ -5,13 +5,10 @@ import {
 } from "@/modules/users/service";
 import { publicProcedure, router } from "@/shared/trpc";
 import { handleError } from "@/shared/utils/errors";
+import { createAccessToken, decodeAccessToken } from "@/shared/utils/token";
 import {
-	createTokenFromUser,
-	decodeLoggedUserFromToken,
-} from "@/shared/utils/token";
-import {
+	logInWithAccessTokenSchema,
 	logInWithCredentialsSchema,
-	logInWithTokenSchema,
 	registerSchema,
 } from "./types/request";
 
@@ -25,7 +22,7 @@ export const authRouter = router({
 					password: input.password,
 				});
 
-				const token = await createTokenFromUser({
+				const token = await createAccessToken({
 					userId: user.id,
 					userRole: user.role,
 					organizationId: user.organizationId,
@@ -44,23 +41,23 @@ export const authRouter = router({
 				throw handleError(error);
 			}
 		}),
-	logInWithToken: publicProcedure
-		.input(logInWithTokenSchema)
+	logInWithAccessToken: publicProcedure
+		.input(logInWithAccessTokenSchema)
 		.query(async ({ input }) => {
 			try {
-				const user = await decodeLoggedUserFromToken(input.token);
+				const user = await decodeAccessToken(input.accessToken);
 
 				// TODO: Actually create a new token only if the original one is expired
-				const newToken = await createTokenFromUser({
+				/* const newToken = await createAccessToken({
 					userId: user.id,
 					userRole: user.role,
 					organizationId: user.organizationId,
-				});
+				}); */
 
 				const fullUser = await getUserById(user.id);
 
 				return {
-					token: newToken,
+					// token: newToken,
 					user: {
 						id: fullUser.id,
 						role: fullUser.role,

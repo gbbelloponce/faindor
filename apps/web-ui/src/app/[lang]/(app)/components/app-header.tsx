@@ -10,6 +10,7 @@ import {
 	User,
 } from "lucide-react";
 
+import { useAuth } from "@/auth/useAuth";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ThemeToggler } from "@/components/theme-toggler";
 import { Button } from "@/components/ui/button";
@@ -27,10 +28,19 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarInput, useSidebar } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/utils";
+import { useRouter } from "next/navigation";
 
 export function AppHeader() {
+	const router = useRouter();
+
 	const isMobile = useIsMobile();
 	const { toggleSidebar } = useSidebar();
+	const { currentUser, logOut } = useAuth();
+
+	const handleLogOut = () => {
+		logOut();
+		router.push("/login");
+	};
 
 	return (
 		<header className="h-16 flex sticky top-0 z-[var(--header-z-index)] justify-between gap-6 px-4 bg-sidebar border-b">
@@ -112,10 +122,10 @@ export function AppHeader() {
 						<DropdownMenuLabel className="font-normal">
 							<div className="flex flex-col space-y-1">
 								<p className="text-sm font-medium leading-none">
-									Galo Benjamín Bello Ponce
+									{currentUser?.name}
 								</p>
 								<span className="text-xs leading-none text-muted-foreground">
-									galo@spot.com
+									{currentUser?.email}
 								</span>
 							</div>
 						</DropdownMenuLabel>
@@ -136,7 +146,7 @@ export function AppHeader() {
 						<DropdownMenuSeparator />
 
 						<DropdownMenuGroup>
-							<DropdownMenuItem>
+							<DropdownMenuItem onClick={handleLogOut}>
 								<LogOut className="text-destructive" />
 								<span className="text-destructive">Log out</span>
 							</DropdownMenuItem>

@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import type { Context } from "hono";
 
-import { decodeLoggedUserFromToken } from "@/shared/utils/token";
+import { decodeAccessToken } from "@/shared/utils/token";
 
 export const createContext = async (
 	_: FetchCreateContextFnOptions,
@@ -26,7 +26,7 @@ export const createContext = async (
 			});
 		}
 
-		const user = await decodeLoggedUserFromToken(token);
+		const user = await decodeAccessToken(token);
 
 		return {
 			user,

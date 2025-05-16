@@ -5,8 +5,11 @@ export interface User {
 	email: string;
 }
 
-export interface AuthStorage {
-	user: User | null;
+export interface AuthState {
+	isLoading: boolean;
+	currentUser: User | null;
+	setIsLoading: (isLoading: boolean) => void;
+	setCurrentUser: (user: User | null) => void;
 }
 
 export type AuthResponse<ErrorCodeType> =
