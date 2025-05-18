@@ -16,17 +16,21 @@ export function RequireAuthProvider({
 	// biome-ignore lint/correctness/useExhaustiveDependencies: This should only run once on mount
 	useEffect(() => {
 		const initAuth = async () => {
-			const accessTokenFromCookies = Cookies.get(ACCESS_TOKEN_COOKIE_KEY);
+			const accessToken = Cookies.get(ACCESS_TOKEN_COOKIE_KEY);
 
-			if (!accessTokenFromCookies) {
+			// Somehow there is no access token (this shouldn't happen since the middleware checks for it and redirects if it's not present)
+			// so log out just in case
+			if (!accessToken) {
+				logOut();
 				setIsInitialized(true);
 				return;
 			}
 
-			const loggedIn = await logInWithAccessToken(accessTokenFromCookies);
+			const loggedIn = await logInWithAccessToken(accessToken);
 
 			if (!loggedIn.success) {
 				logOut();
+				return;
 			}
 
 			setIsInitialized(true);

@@ -8,8 +8,10 @@ export interface User {
 export interface AuthState {
 	isLoading: boolean;
 	currentUser: User | null;
+	isRefreshing: boolean;
 	setIsLoading: (isLoading: boolean) => void;
 	setCurrentUser: (user: User | null) => void;
+	setIsRefreshing: (isRefreshing: boolean) => void;
 }
 
 export type AuthResponse<ErrorCodeType> =
@@ -18,6 +20,11 @@ export type AuthResponse<ErrorCodeType> =
 
 export enum LogInErrorCodeEnum {
 	NOT_FOUND = "NOT_FOUND",
+	UNAUTHORIZED = "UNAUTHORIZED",
+	INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR",
+}
+
+export enum RefreshTokenErrorCodeEnum {
 	UNAUTHORIZED = "UNAUTHORIZED",
 	INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR",
 }

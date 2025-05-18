@@ -5,7 +5,13 @@ import {
 } from "@/modules/users/service";
 import { publicProcedure, router } from "@/shared/trpc";
 import { handleError } from "@/shared/utils/errors";
-import { createAccessToken, decodeAccessToken } from "@/shared/utils/token";
+import {
+	createAccessToken,
+	createRefreshToken,
+	decodeAccessToken,
+	decodeRefreshToken,
+} from "@/shared/utils/token";
+import { z } from "zod";
 import {
 	logInWithAccessTokenSchema,
 	logInWithCredentialsSchema,
@@ -22,14 +28,19 @@ export const authRouter = router({
 					password: input.password,
 				});
 
-				const token = await createAccessToken({
+				const accessToken = await createAccessToken({
 					userId: user.id,
 					userRole: user.role,
 					organizationId: user.organizationId,
 				});
 
+				const refreshToken = await createRefreshToken({
+					userId: user.id,
+				});
+
 				return {
-					token,
+					accessToken,
+					refreshToken,
 					user: {
 						id: user.id,
 						name: user.name,
@@ -46,24 +57,47 @@ export const authRouter = router({
 		.query(async ({ input }) => {
 			try {
 				const user = await decodeAccessToken(input.accessToken);
-
-				// TODO: Actually create a new token only if the original one is expired
-				/* const newToken = await createAccessToken({
-					userId: user.id,
-					userRole: user.role,
-					organizationId: user.organizationId,
-				}); */
-
 				const fullUser = await getUserById(user.id);
 
 				return {
-					// token: newToken,
 					user: {
 						id: fullUser.id,
 						role: fullUser.role,
 						name: fullUser.name,
 						email: fullUser.email,
 						organizationId: fullUser.organizationId,
+					},
+				};
+			} catch (error) {
+				throw handleError(error);
+			}
+		}),
+	refreshToken: publicProcedure
+		.input(z.object({ refreshToken: z.string() }))
+		.mutation(async ({ input }) => {
+			try {
+				const { userId } = await decodeRefreshToken(input.refreshToken);
+				const user = await getUserById(userId);
+
+				const accessToken = await createAccessToken({
+					userId: user.id,
+					userRole: user.role,
+					organizationId: user.organizationId,
+				});
+
+				const refreshToken = await createRefreshToken({
+					userId: user.id,
+				});
+
+				return {
+					accessToken,
+					refreshToken,
+					user: {
+						id: user.id,
+						name: user.name,
+						role: user.role,
+						email: user.email,
+						organizationId: user.organizationId,
 					},
 				};
 			} catch (error) {

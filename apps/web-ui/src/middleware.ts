@@ -2,7 +2,10 @@ import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 import { type NextRequest, NextResponse } from "next/server";
 
-import { ACCESS_TOKEN_COOKIE_KEY } from "@/auth/constants";
+import {
+	ACCESS_TOKEN_COOKIE_KEY,
+	REFRESH_TOKEN_COOKIE_KEY,
+} from "@/auth/constants";
 import { PREFERRED_LOCALE_COOKIE_KEY } from "@/dictionaries/constants";
 import { type Locale, i18n } from "@/dictionaries/i18n-config";
 
@@ -36,7 +39,8 @@ export function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 
 	const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE_KEY)?.value;
-	const isAuthenticated = !!accessToken;
+	const refreshToken = request.cookies.get(REFRESH_TOKEN_COOKIE_KEY)?.value;
+	const isAuthenticated = !!accessToken && !!refreshToken;
 
 	const locale = getLocale(request);
 
