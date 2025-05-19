@@ -6,7 +6,7 @@ import { TRPCClientError } from "@trpc/client";
 import Cookies from "js-cookie";
 import { useState } from "react";
 
-import type { AppRouter } from "../../../api/src/router";
+import type { AppRouter } from "api";
 import {
 	ACCESS_TOKEN_COOKIE_CONFIG,
 	ACCESS_TOKEN_COOKIE_KEY,
@@ -65,7 +65,7 @@ export function AppTRPCProvider({ children }: { children: React.ReactNode }) {
 							Authorization: token ? `Bearer ${token}` : "",
 						};
 					},
-					fetch: async (url, options) => {
+					fetch: async (url: URL | RequestInfo, options?: RequestInit) => {
 						const response = await fetch(url, options);
 
 						// For 401s, it retries them with a refreshed token

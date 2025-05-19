@@ -3,7 +3,11 @@
 	"scripts": {
 		"dev": "bun run --hot src/index.ts",
 		"db:migrate": "bunx prisma migrate dev --schema src/shared/db/schema",
-		"db:generate": "bunx prisma generate --no-engine --schema src/shared/db/schema"
+		"db:generate": "bunx prisma generate --no-engine --schema src/shared/db/schema",
+		"build:app": "bun build --target node --outdir dist src/index.ts",
+		"build:types": "tsc --emitDeclarationOnly",
+		"build": "bun run build:app && bun run build:types",
+		"start": "bun run dist/index.js"
 	},
 	"dependencies": {
 		"@hono/trpc-server": "^0.3.4",
@@ -17,5 +21,11 @@
 	"devDependencies": {
 		"@types/bun": "latest",
 		"prisma": "^6.7.0"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/types/src/router.d.ts",
+			"import": "./dist/index.js"
+		}
 	}
 }
