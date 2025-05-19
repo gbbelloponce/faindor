@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { ACCESS_TOKEN_COOKIE_KEY } from "./constants";
+import { ACCESS_TOKEN_COOKIE_KEY, FROM_LOGIN_COOKIE_KEY } from "./constants";
 import { useAuth } from "./useAuth";
 
 export function RequireAuthProvider({
@@ -22,6 +22,16 @@ export function RequireAuthProvider({
 			// so log out just in case
 			if (!accessToken) {
 				logOut();
+				setIsInitialized(true);
+				return;
+			}
+
+			// If the user is coming from the login page, we don't need to log in again with access token.
+			// It's possible that you still see a call to logInWithAccessToken in development
+			// due to react strict mode
+			const fromLogin = Cookies.get(FROM_LOGIN_COOKIE_KEY);
+			if (fromLogin) {
+				Cookies.remove(FROM_LOGIN_COOKIE_KEY);
 				setIsInitialized(true);
 				return;
 			}
