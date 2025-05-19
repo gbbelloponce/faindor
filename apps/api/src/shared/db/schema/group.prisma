@@ -13,6 +13,8 @@ model Group {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+
+  @@map("groups")
 }
 
 model GroupMember {
@@ -27,4 +29,5 @@ model GroupMember {
   createdAt DateTime @default(now())
 
   @@unique([groupId, memberId])
+  @@map("group_members")
 }

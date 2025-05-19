@@ -18,6 +18,8 @@ model User {
 
   createdAt DateTime  @default(now())
   deletedAt DateTime?
+
+  @@map("users")
 }
 
 enum UserRole {

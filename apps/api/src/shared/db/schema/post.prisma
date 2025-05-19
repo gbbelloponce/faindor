@@ -17,6 +17,8 @@ model Post {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+
+  @@map("posts")
 }
 
 model Like {
@@ -31,6 +33,7 @@ model Like {
   createdAt DateTime @default(now())
 
   @@unique([postId, userId])
+  @@map("likes")
 }
 
 model Comment {
@@ -50,6 +53,8 @@ model Comment {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+
+  @@map("comments")
 }
 
 model SavedPost {
@@ -64,4 +69,5 @@ model SavedPost {
   createdAt DateTime @default(now())
 
   @@unique([postId, userId])
+  @@map("saved_posts")
 }
