@@ -7,6 +7,7 @@ import {
 } from "@/modules/organizations/service";
 import { COMMON_PROVIDERS_ORGANIZATION_ID } from "@/shared/constants";
 import { db } from "@/shared/db";
+import type { UserWithOrganization } from "@/shared/types/auth";
 import { handleError } from "@/shared/utils/errors";
 import {
 	COMMON_EMAIL_PROVIDERS,
@@ -46,7 +47,9 @@ export const getPublicUserInfoById = async (id: number) => {
 	}
 };
 
-export const getUserById = async (id: number): Promise<User> => {
+export const getUserById = async (
+	id: number,
+): Promise<UserWithOrganization> => {
 	try {
 		const user = await db.user.findFirst({
 			where: {
@@ -70,7 +73,9 @@ export const getUserById = async (id: number): Promise<User> => {
 	}
 };
 
-export const getUserByEmail = async (email: string): Promise<User> => {
+export const getUserByEmail = async (
+	email: string,
+): Promise<UserWithOrganization> => {
 	try {
 		const user = await db.user.findFirst({
 			where: {
@@ -97,7 +102,7 @@ export const getUserByEmail = async (email: string): Promise<User> => {
 export const getUserByCredentials = async ({
 	email,
 	password,
-}: GetUserByCredentialsParams): Promise<User> => {
+}: GetUserByCredentialsParams): Promise<UserWithOrganization> => {
 	try {
 		const user = await getUserByEmail(email);
 

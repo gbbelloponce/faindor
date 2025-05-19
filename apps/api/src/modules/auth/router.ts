@@ -41,12 +41,7 @@ export const authRouter = router({
 				return {
 					accessToken,
 					refreshToken,
-					user: {
-						id: user.id,
-						name: user.name,
-						role: user.role,
-						email: user.email,
-					},
+					user,
 				};
 			} catch (error) {
 				throw handleError(error);
@@ -60,13 +55,7 @@ export const authRouter = router({
 				const fullUser = await getUserById(user.id);
 
 				return {
-					user: {
-						id: fullUser.id,
-						role: fullUser.role,
-						name: fullUser.name,
-						email: fullUser.email,
-						organizationId: fullUser.organizationId,
-					},
+					user: fullUser,
 				};
 			} catch (error) {
 				throw handleError(error);
@@ -92,13 +81,7 @@ export const authRouter = router({
 				return {
 					accessToken,
 					refreshToken,
-					user: {
-						id: user.id,
-						name: user.name,
-						role: user.role,
-						email: user.email,
-						organizationId: user.organizationId,
-					},
+					user,
 				};
 			} catch (error) {
 				throw handleError(error);

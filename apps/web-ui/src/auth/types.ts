@@ -4,13 +4,21 @@ export interface User {
 	role: string;
 	email: string;
 }
+export interface Organization {
+	id: number;
+	name: string;
+}
+
+export interface UserWithOrganization extends User {
+	organization: Organization;
+}
 
 export interface AuthState {
 	isLoading: boolean;
-	currentUser: User | null;
+	currentUser: UserWithOrganization | null;
 	isRefreshing: boolean;
 	setIsLoading: (isLoading: boolean) => void;
-	setCurrentUser: (user: User | null) => void;
+	setCurrentUser: (user: UserWithOrganization | null) => void;
 	setIsRefreshing: (isRefreshing: boolean) => void;
 }
 

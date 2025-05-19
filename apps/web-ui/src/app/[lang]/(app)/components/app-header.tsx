@@ -2,13 +2,13 @@
 
 import {
 	Bell,
-	Building2,
 	LogOut,
 	Search,
 	Settings,
 	SidebarIcon,
 	User,
 } from "lucide-react";
+import Image from "next/image";
 
 import { useAuth } from "@/auth/useAuth";
 import { LocaleSwitcher } from "@/components/locale-switcher";
@@ -52,13 +52,18 @@ export function AppHeader() {
 				<Separator orientation="vertical" className="mr-2 max-h-4" />
 
 				<div className="flex items-center">
-					<Building2 className="size-6" />
+					<Image
+						src="/faindor-logo-rounded.png"
+						alt="Faindor Logo"
+						width={24}
+						height={24}
+					/>
 					<span
 						className={cn("ml-2 text-lg font-bold select-none", {
 							hidden: isMobile,
 						})}
 					>
-						Company Inc.
+						{currentUser?.organization.name}
 					</span>
 				</div>
 			</div>
