@@ -151,9 +151,15 @@ export function AppHeader() {
 						<DropdownMenuSeparator />
 
 						<DropdownMenuGroup>
-							<DropdownMenuItem onClick={handleLogOut}>
-								<LogOut className="text-destructive" />
-								<span className="text-destructive">Log out</span>
+							<DropdownMenuItem asChild>
+								<Button
+									variant="ghost"
+									className="w-full justify-start cursor-pointer hover:border-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+									onClick={handleLogOut}
+								>
+									<LogOut className="h-4 w-4 text-destructive" />
+									<span className="text-destructive">Log out</span>
+								</Button>
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 					</DropdownMenuContent>
