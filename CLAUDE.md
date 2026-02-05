@@ -108,3 +108,28 @@ Faindor is a workplace social media platform where users log in with work emails
 - **Installing packages**: 
   - ⚠️ DO NOT use `bun run --filter` for package installation (adds to root package.json)
   - Instead: `cd apps/<app>` then `bun add <package>`
+
+## Commit Convention
+This project uses [Conventional Commits](https://www.conventionalcommits.org/).
+
+Format: `<type>(<scope>): <description>`
+
+**Types:** `feat`, `fix`, `chore`, `refactor`, `docs`, `style`, `test`, `perf`, `ci`, `build`
+
+**Scopes:**
+- `api` — backend changes
+- `web-ui` — frontend changes
+- `api|web-ui` — changes spanning both apps
+- Omit scope for global/root changes (e.g. `docs: ...`)
+
+**Examples:**
+- `feat(web-ui): add event creation page`
+- `fix(api): prevent duplicate likes on same post`
+- `chore(api|web-ui): update build configuration`
+- `refactor(api): extract pagination helper`
+- `docs: add claude context and code review files`
+
+**Rules:**
+- Use lowercase for description
+- No period at the end
+- Use imperative mood ("add", not "added" or "adds")
