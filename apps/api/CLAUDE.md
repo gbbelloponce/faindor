@@ -9,7 +9,7 @@ Each feature lives in `src/modules/<feature>/` with:
 Shared code lives in `src/shared/`:
 - `trpc/` — tRPC setup, context creation, procedure definitions
 - `db/` — Prisma client and schema files
-- `utils/` — error handling, JWT tokens, email/domain utilities, pagination
+- `utils/` — error handling, JWT tokens, email/domain utilities, pagination, env validation
 - `constants/` — shared constants (e.g. PAGE_SIZE)
 - `types/` — shared Zod schemas (e.g. positiveNumberSchema)
 
@@ -39,7 +39,10 @@ Shared code lives in `src/shared/`:
 ### Validation
 - All inputs validated with Zod schemas in `types/request.ts`.
 - Use `positiveNumberSchema` from `src/shared/types/schemas.ts` for ID fields.
-- Apply `.trim()` to string inputs to avoid whitespace issues.
+- Apply `.trim()` and `.max()` to string inputs to avoid whitespace issues and limit input size.
+
+### Startup
+- Required env vars are validated at startup via `validateEnv()` in `src/shared/utils/env.ts`.
 
 ## Commands
 - **Dev server:** `bun run dev` (runs with `--hot`)
@@ -48,8 +51,8 @@ Shared code lives in `src/shared/`:
 - **Install packages:** `cd apps/api && bun add <package>` (not `--filter`)
 
 ## Known Issues
-See `CODE_REVIEW.md` for a full list. Key ones:
-- Comment creation accepts userId from client (should use ctx.user.id)
-- Soft delete filters (`deletedAt: null`) are missing from all queries
-- Password validation is too weak (min 1 char)
-- Post list queries load full likes/comments instead of counts (FIXED: now uses _count)
+See `CODE_REVIEW.md` for a full list. Remaining open issues:
+- No rate limiting on auth and content creation endpoints (#7)
+- No admin-only route enforcement (#9)
+- Offset-based pagination could be cursor-based for better performance at scale (#15)
+- Domain field has no format validation (#16)

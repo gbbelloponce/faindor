@@ -28,102 +28,61 @@
 
 ---
 
-## Critical Issues
+## Resolved Issues
 
-### 1. User ID Injection in Comments
-**Files:** `src/modules/comments/types/request.ts`, `src/modules/comments/service.ts`
+### 1. ~~User ID Injection in Comments~~ (FIXED)
+Removed `userId` from `createCommentSchema`; comments now use `ctx.user.id`.
 
-The `createCommentSchema` accepts `userId` from the client and uses it directly as `authorId`. A malicious client can post comments as any user. Posts and likes correctly use `ctx.user.id` from JWT context, but comments don't.
+### 2. ~~Soft Delete Queries Are Broken~~ (FIXED)
+Added `deletedAt: null` filters to all queries.
 
-**Fix:** Remove `userId` from the schema and use `ctx.user.id` like the posts module does.
+### 3. ~~Weak Password Validation~~ (FIXED)
+Password now requires minimum 8 characters.
 
-### 2. Soft Delete Queries Are Broken
-**Files:** All service files with queries
+### 4. ~~N+1 Query Problem~~ (FIXED)
+Post list queries now use `_count` instead of full includes.
 
-`deletedAt` exists in the schema but **no queries filter by `deletedAt: null`**. Deleted posts, comments, and users are still returned. This defeats the purpose of soft deletes.
+### 5. ~~`findFirst()` Where `findUnique()` Should Be Used~~ (FIXED)
+Switched to `findUnique()` for email and domain lookups.
 
-**Fix:** Either add `deletedAt: null` to all `where` clauses, or set up Prisma middleware to apply it globally.
+### 6. ~~Duplicated Pagination Logic~~ (FIXED)
+Extracted `getPaginationArgs()` helper in `src/shared/utils/pagination.ts`.
 
-### 3. Weak Password Validation
-**File:** `src/modules/auth/types/request.ts`
+### 8. ~~Context Errors Silently Swallowed~~ (FIXED)
+Context now distinguishes expected vs unexpected errors.
 
-`password: z.string().min(1)` allows single-character passwords.
+### 10. ~~No `.trim()` on Zod String Schemas~~ (FIXED)
+Added `.trim()` to all user-facing string inputs.
 
-**Fix:** Enforce at least 8 characters: `z.string().min(8)`.
+### 11. ~~No Input Sanitization~~ (FIXED)
+Added `.max()` length constraints to all string inputs (names: 100, domains: 255, posts: 5000, comments: 2000).
+
+### 12. ~~No Cascading Deletes~~ (FIXED)
+Added `onDelete: Cascade` to all parent-child relations. Comment replies use `onDelete: SetNull` to preserve threads.
+
+### 13. ~~Optional `Group.organizationId`~~ (FIXED)
+Made `organizationId` required on `Group`. Fixed `createGroup` service to pass `organizationId`.
+
+### 14. ~~No Env Var Validation on Startup~~ (FIXED)
+Added `validateEnv()` in `src/shared/utils/env.ts`, called at startup.
+
+### 17. ~~Redundant Authorization Check in Groups~~ (FIXED)
+Removed redundant `organizationId` check in `joinGroup()` — the query already filters by it.
 
 ---
 
-## Medium Issues
-
-### 4. N+1 Query Problem
-**File:** `src/modules/posts/service.ts`
-
-Post queries use `include: { author: true, likes: true, comments: true }` which loads **all** likes and comments for every post. For list views, use `_count` instead. The comment `replies: true` include could even recurse without depth limits.
-
-### 5. `findFirst()` Where `findUnique()` Should Be Used
-**Files:** `src/modules/organizations/service.ts`, `src/modules/users/service.ts`
-
-Email and domain lookups use `findFirst()` even though those fields have unique constraints. `findUnique()` is more efficient and semantically correct.
-
-### 6. Duplicated Pagination Logic
-**File:** `src/modules/posts/service.ts`
-
-`getLatestsPostsByOrganizationId`, `getLatestsPostsByUserId`, and `getLatestsPostsByGroupId` share nearly identical code (include, orderBy, take, skip). Same pattern across comments and likes. Could extract a shared pagination helper.
+## Open Issues
 
 ### 7. No Rate Limiting
 Login, registration, token refresh, and content creation are all unprotected against brute force or spam.
 
-### 8. Context Errors Silently Swallowed
-**File:** `src/shared/trpc/context.ts`
-
-All errors in context creation return `{ user: null }`. Malformed tokens look identical to unauthenticated requests, making debugging harder and hiding potentially malicious requests.
-
 ### 9. Missing Admin Enforcement
 `UserRole.APP_ADMIN` exists in the schema but is never checked anywhere. No admin-only routes exist.
 
----
-
-## Minor Issues
-
-### 10. No `.trim()` on Zod String Schemas
-`"  admin  "` and `"admin"` could create separate records.
-
-### 11. No Input Sanitization
-Post/comment content has no sanitization. Potential XSS if frontend doesn't escape properly.
-
-### 12. No Cascading Deletes
-Deleting a user orphans their posts, comments, likes, and group memberships. Consider `onDelete: Cascade` in the schema.
-
-### 13. Optional `Group.organizationId`
-**File:** `src/shared/db/schema/group.prisma`
-
-Allows groups without organizations, which seems unintentional. Should probably be required.
-
-### 14. No Env Var Validation on Startup
-If `ACCESS_TOKEN_SECRET` is missing, it only fails when someone tries to log in. Validate required env vars at startup.
-
 ### 15. Offset-Based Pagination
-Works fine now but cursor-based would be more reliable and performant as data grows.
+Works fine now but cursor-based would be more reliable and performant as data grows. Deferred — offset-based pagination helper was just extracted.
 
 ### 16. Weak Domain Validation
 **File:** `src/modules/organizations/types/request.ts`
 
 `domain: z.string()` has no format constraints. Could accept any arbitrary string.
-
-### 17. Redundant Authorization Check in Groups
-**File:** `src/modules/groups/service.ts`
-
-The organization check on the fetched group is redundant because the query already filters by `organizationId`.
-
----
-
-## Suggested Priority
-
-1. Fix comment userId injection (security)
-2. Add `deletedAt: null` filters globally (correctness)
-3. Strengthen password validation (security)
-4. Replace `include` with `_count` for list queries (performance)
-5. Switch `findFirst()` to `findUnique()` (correctness)
-6. Extract pagination helper (maintainability)
-7. Add rate limiting (security)
-8. Validate env vars on startup (reliability)
