@@ -1,7 +1,7 @@
 import { isPostFromOrganization } from "@/modules/posts/service";
-import { PAGE_SIZE } from "@/shared/constants";
 import { db } from "@/shared/db";
 import { handleError } from "@/shared/utils/errors";
+import { getPaginationArgs } from "@/shared/utils/pagination";
 import { TRPCError } from "@trpc/server";
 import type { CreateCommentBody } from "./types/request";
 
@@ -26,8 +26,7 @@ export const getCommentsByPostId = async (
 			orderBy: {
 				createdAt: "desc",
 			},
-			take: PAGE_SIZE,
-			skip: (page - 1) * PAGE_SIZE,
+			...getPaginationArgs(page),
 		});
 
 		return comments;

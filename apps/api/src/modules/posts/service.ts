@@ -1,9 +1,9 @@
 import { TRPCError } from "@trpc/server";
 import type { Post, SavedPost } from "../../generated/prisma/client";
 
-import { PAGE_SIZE } from "@/shared/constants";
 import { db } from "@/shared/db";
 import { handleError } from "@/shared/utils/errors";
+import { getPaginationArgs } from "@/shared/utils/pagination";
 import type { CreatePostBody, UpdatePostBody } from "./types/request";
 
 /**
@@ -87,8 +87,7 @@ export const getLatestsPostsByOrganizationId = async (
 			orderBy: {
 				createdAt: "desc",
 			},
-			take: PAGE_SIZE,
-			skip: (page - 1) * PAGE_SIZE,
+			...getPaginationArgs(page),
 		});
 
 		return posts;
@@ -119,8 +118,7 @@ export const getLatestsPostsByUserId = async (
 			orderBy: {
 				createdAt: "desc",
 			},
-			take: PAGE_SIZE,
-			skip: (page - 1) * PAGE_SIZE,
+			...getPaginationArgs(page),
 		});
 
 		return posts;
@@ -151,8 +149,7 @@ export const getLatestsPostsByGroupId = async (
 			orderBy: {
 				createdAt: "desc",
 			},
-			take: PAGE_SIZE,
-			skip: (page - 1) * PAGE_SIZE,
+			...getPaginationArgs(page),
 		});
 
 		return posts;
