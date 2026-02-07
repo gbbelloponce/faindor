@@ -5,6 +5,9 @@ import { prettyJSON } from "hono/pretty-json";
 
 import { appRouter } from "@/router";
 import { createContext } from "@/shared/trpc/context";
+import { validateEnv } from "@/shared/utils/env";
+
+validateEnv();
 
 const app = new Hono();
 
