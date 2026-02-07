@@ -21,10 +21,10 @@ const geistMono = Geist_Mono({
 
 export async function generateMetadata({
 	params,
-}: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
+}: { params: Promise<{ lang: string }> }): Promise<Metadata> {
 	const { lang } = await params;
 
-	const dictionary = getDictionary(lang);
+	const dictionary = getDictionary(lang as Locale);
 
 	return {
 		title: dictionary.metadata.title,
@@ -42,7 +42,7 @@ export default async function RootLayout({
 	params,
 }: Readonly<{
 	children: React.ReactNode;
-	params: Promise<{ lang: Locale }>;
+	params: Promise<{ lang: string }>;
 }>) {
 	const { lang } = await params;
 

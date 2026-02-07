@@ -22,14 +22,16 @@ import { useLocale } from "@/dictionaries/useLocale";
 
 const formSchema = z
 	.object({
-		firstName: z.string().min(1, "First name is required"),
-		lastName: z.string().min(1, "Last name is required"),
-		email: z.string().email("Invalid email address"),
-		password: z.string().min(8, "Password must be at least 8 characters long"),
+		firstName: z.string().min(1, { error: "First name is required" }),
+		lastName: z.string().min(1, { error: "Last name is required" }),
+		email: z.string().email({ error: "Invalid email address" }),
+		password: z
+			.string()
+			.min(8, { error: "Password must be at least 8 characters long" }),
 		confirmPassword: z.string(),
 	})
 	.refine((data) => data.password === data.confirmPassword, {
-		message: "Passwords do not match",
+		error: "Passwords do not match",
 		path: ["confirmPassword"],
 	});
 

@@ -14,7 +14,7 @@ export const logInWithAccessTokenSchema = z.object({
 export const getUserByDecodedTokenSchema = z.object({
 	email: z.string().email().min(1),
 	organizationId: z.number().min(1),
-	userRole: z.nativeEnum(UserRole),
+	userRole: z.enum(UserRole),
 });
 
 export const registerSchema = z.object({

@@ -50,8 +50,8 @@ Faindor is a workplace social media platform where users log in with work emails
   - Type exports for frontend consumption via `AppRouter`
 
 ### Web UI (apps/web-ui)
-- **Framework**: Next.js 15 with App Router
-- **Styling**: 
+- **Framework**: Next.js 16 with App Router (Turbopack is now the default bundler)
+- **Styling**:
   - Tailwind CSS v4
   - shadcn/ui components (New York style)
   - CSS variables for theming
@@ -60,15 +60,15 @@ Faindor is a workplace social media platform where users log in with work emails
   - TanStack Query (via tRPC) for server state
 - **Internationalization**:
   - Multi-language support (en, es)
-  - Server-side locale detection via middleware
+  - Server-side locale detection via proxy (`src/proxy.ts`)
   - Dictionary-based translations
 - **Authentication Flow**:
-  - Middleware-based route protection
+  - Proxy-based route protection (`src/proxy.ts`)
   - Cookie-based token storage (js-cookie)
   - Auto-refresh mechanism for access tokens
 - **Key Features**:
   - Dark mode support (next-themes)
-  - Form handling with react-hook-form + zod
+  - Form handling with react-hook-form + zod (Zod v4)
   - Toast notifications (sonner)
 
 ## Database Schema
@@ -80,7 +80,7 @@ Faindor is a workplace social media platform where users log in with work emails
 
 ## Development Patterns
 - **Type Safety**: End-to-end type safety via tRPC
-- **Validation**: Zod schemas for request/response validation
+- **Validation**: Zod v4 schemas for request/response validation (use `{ error: "msg" }` instead of string shorthand for error messages; use `z.enum()` instead of `z.nativeEnum()` for native enums)
 - **Error Handling**: Standardized error responses with specific error codes
 - **Code Style**: 
   - Tab indentation (enforced by Biome)
@@ -99,7 +99,7 @@ Faindor is a workplace social media platform where users log in with work emails
 
 ## Development Notes
 - API runs with hot reload: `bun run --hot`
-- Frontend uses Next.js Turbopack
+- Frontend uses Next.js Turbopack (default in Next.js 16, no `--turbopack` flag needed)
 - Database migrations: `bun run --filter api db:migrate`
 - Type generation: `bun run --filter api db:generate`
 
