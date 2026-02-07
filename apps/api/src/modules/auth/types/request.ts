@@ -4,7 +4,9 @@ import { UserRole } from "../../../generated/prisma/client";
 
 export const logInWithCredentialsSchema = z.object({
 	email: z.string().email().min(1),
-	password: z.string().min(1),
+	password: z
+		.string()
+		.min(8, { error: "Password must be at least 8 characters" }),
 });
 
 export const logInWithAccessTokenSchema = z.object({
@@ -20,7 +22,9 @@ export const getUserByDecodedTokenSchema = z.object({
 export const registerSchema = z.object({
 	name: z.string().min(1),
 	email: z.string().email().min(1),
-	password: z.string().min(1),
+	password: z
+		.string()
+		.min(8, { error: "Password must be at least 8 characters" }),
 });
 
 export type GetUserByCredentialsParams = z.infer<
