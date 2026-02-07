@@ -1,7 +1,7 @@
 "use client";
 
 import Cookies from "js-cookie";
-import { usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 
 import { PREFERRED_LOCALE_COOKIE_KEY } from "@/dictionaries/constants";
 import { getDictionary } from "@/dictionaries/get-dictionary";
@@ -9,8 +9,9 @@ import { i18n } from "@/dictionaries/i18n-config";
 import type { Locale } from "@/dictionaries/i18n-config";
 
 export const useLocale = () => {
+	const { lang } = useParams<{ lang: string }>();
+	const locale = lang as Locale;
 	const pathname = usePathname();
-	const locale = pathname.split("/")[1] as Locale;
 	const dictionary = getDictionary(locale);
 	const router = useRouter();
 
