@@ -4,7 +4,7 @@
     "oven.bun-vscode",
     "bradlc.vscode-tailwindcss",
     "stivo.tailwind-fold",
-    "pflannery.vscode-versionlens",
+    "legalfina.npm-version-lens",
     "usernamehw.errorlens"
   ]
 }
