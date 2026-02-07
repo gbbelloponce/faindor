@@ -17,8 +17,10 @@ export const getCommentsByPostId = async (
 			},
 			where: {
 				postId,
+				deletedAt: null,
 				post: {
 					organizationId,
+					deletedAt: null,
 				},
 			},
 			orderBy: {
@@ -39,6 +41,7 @@ export const getCommentsByPostId = async (
 
 export const createComment = async (
 	body: CreateCommentBody,
+	userId: number,
 	organizationId: number,
 ) => {
 	try {
@@ -48,7 +51,7 @@ export const createComment = async (
 			data: {
 				content: body.content,
 				postId: body.postId,
-				authorId: body.userId,
+				authorId: userId,
 				...(body.commentId && { repliesToId: body.commentId }),
 			},
 		});

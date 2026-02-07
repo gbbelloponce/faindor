@@ -20,6 +20,6 @@ export const commentsRouter = router({
 	createComment: authenticatedProcedure
 		.input(createCommentSchema)
 		.mutation(async ({ input, ctx }) => {
-			return await createComment(input, ctx.user.organizationId);
+			return await createComment(input, ctx.user.id, ctx.user.organizationId);
 		}),
 });
