@@ -20,11 +20,8 @@ import type {
 
 export const getPublicUserInfoById = async (id: number) => {
 	try {
-		const user = await db.user.findFirst({
-			where: {
-				id,
-				deletedAt: null,
-			},
+		const user = await db.user.findUnique({
+			where: { id },
 			include: {
 				organization: true,
 			},
@@ -35,7 +32,7 @@ export const getPublicUserInfoById = async (id: number) => {
 			},
 		});
 
-		if (!user) {
+		if (!user || user.deletedAt) {
 			throw new TRPCError({
 				message: `There is no user with the id: ${id}`,
 				code: "NOT_FOUND",
@@ -52,17 +49,14 @@ export const getUserById = async (
 	id: number,
 ): Promise<UserWithOrganization> => {
 	try {
-		const user = await db.user.findFirst({
-			where: {
-				id,
-				deletedAt: null,
-			},
+		const user = await db.user.findUnique({
+			where: { id },
 			include: {
 				organization: true,
 			},
 		});
 
-		if (!user) {
+		if (!user || user.deletedAt) {
 			throw new TRPCError({
 				message: `There is no user with the id: ${id}`,
 				code: "NOT_FOUND",
@@ -79,17 +73,14 @@ export const getUserByEmail = async (
 	email: string,
 ): Promise<UserWithOrganization> => {
 	try {
-		const user = await db.user.findFirst({
-			where: {
-				email,
-				deletedAt: null,
-			},
+		const user = await db.user.findUnique({
+			where: { email },
 			include: {
 				organization: true,
 			},
 		});
 
-		if (!user) {
+		if (!user || user.deletedAt) {
 			throw new TRPCError({
 				message: `There is no user with the email: ${email}`,
 				code: "NOT_FOUND",

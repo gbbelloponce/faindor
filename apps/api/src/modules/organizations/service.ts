@@ -9,14 +9,11 @@ export const getOrganizationById = async (
 	id: number,
 ): Promise<Organization> => {
 	try {
-		const organization = await db.organization.findFirst({
-			where: {
-				id,
-				deletedAt: null,
-			},
+		const organization = await db.organization.findUnique({
+			where: { id },
 		});
 
-		if (!organization) {
+		if (!organization || organization.deletedAt) {
 			throw new TRPCError({
 				message: `There is no organization with the id: ${id}.`,
 				code: "NOT_FOUND",
@@ -36,12 +33,11 @@ export const getOrganizationByDomain = async (
 	domain: string,
 ): Promise<Organization | null> => {
 	try {
-		const organization = await db.organization.findFirst({
-			where: {
-				domain,
-				deletedAt: null,
-			},
+		const organization = await db.organization.findUnique({
+			where: { domain },
 		});
+
+		if (!organization || organization.deletedAt) return null;
 
 		return organization;
 	} catch (error) {
