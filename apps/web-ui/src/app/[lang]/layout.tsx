@@ -29,7 +29,6 @@ export async function generateMetadata({
 	return {
 		title: dictionary.metadata.title,
 		description: dictionary.metadata.description,
-		icons: ["/faindor-logo-rounded.png"],
 	};
 }
 
