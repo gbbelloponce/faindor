@@ -8,32 +8,23 @@ export const createContext = async (
 	_: FetchCreateContextFnOptions,
 	c: Context,
 ) => {
+	const authorizationHeader = c.req.header("Authorization");
+	if (!authorizationHeader) {
+		return { user: null };
+	}
+
+	const [, token] = authorizationHeader.split(" ");
+	if (!token) {
+		return { user: null };
+	}
+
 	try {
-		const authorizationHeader = c.req.header("Authorization");
-		if (!authorizationHeader) {
-			throw new TRPCError({
-				message: "No authorization header provided.",
-				code: "UNAUTHORIZED",
-			});
-		}
-
-		// Get the token
-		const [, token] = authorizationHeader.split(" ");
-		if (!token) {
-			throw new TRPCError({
-				message: "No token provided.",
-				code: "UNAUTHORIZED",
-			});
-		}
-
 		const user = await decodeAccessToken(token);
-
-		return {
-			user,
-		};
+		return { user };
 	} catch (error) {
-		return {
-			user: null,
-		};
+		if (!(error instanceof TRPCError)) {
+			console.error("Unexpected error decoding access token:", error);
+		}
+		return { user: null };
 	}
 };
