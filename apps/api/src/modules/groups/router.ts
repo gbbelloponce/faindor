@@ -11,7 +11,7 @@ export const groupsRouter = router({
 			return await getGroupById(input.groupId, ctx.user.organizationId);
 		}),
 	createGroup: authenticatedProcedure
-		.input(z.object({ name: z.string().min(1) }))
+		.input(z.object({ name: z.string().min(1).max(100).trim() }))
 		.mutation(async ({ input, ctx }) => {
 			return await createGroup(
 				input.name,
