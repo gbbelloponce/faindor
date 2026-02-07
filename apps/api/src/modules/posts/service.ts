@@ -1,5 +1,5 @@
-import type { Post, SavedPost } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import type { Post, SavedPost } from "../../generated/prisma/client";
 
 import { PAGE_SIZE } from "@/shared/constants";
 import { db } from "@/shared/db";

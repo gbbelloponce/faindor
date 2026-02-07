@@ -6,7 +6,7 @@ Faindor is a workplace social media platform where users log in with work emails
 ## Tech Stack
 - **Frontend**: Next.js, TypeScript, TailwindCSS, shadcn/ui (monorepo)
 - **Backend**: Hono with TypeScript (monorepo)
-- **Database**: Prisma ORM with Prisma Postgres (serverless)
+- **Database**: Prisma 7 ORM with Prisma Postgres (serverless)
 - **Authentication**: Custom JWT (access + refresh tokens)
 - **Package Manager**: Bun
 - **Linter/Formatter**: Biome
@@ -34,10 +34,12 @@ Faindor is a workplace social media platform where users log in with work emails
 
 ### API (apps/api)
 - **Framework**: Hono with tRPC integration (@hono/trpc-server)
-- **Database**: 
-  - Prisma ORM with PostgreSQL
+- **Database**:
+  - Prisma 7 ORM with PostgreSQL
   - Prisma Accelerate for edge performance
   - Schema split across multiple files (user.prisma, organization.prisma, post.prisma, group.prisma)
+  - Config in `prisma.config.ts` (schema path, migrations path, datasource URL)
+  - Generated client output: `src/generated/prisma/` (use relative imports to `generated/prisma/client`, not `@/` alias, to keep API type declarations resolvable by the web-ui)
 - **Authentication**: 
   - Custom JWT implementation (access + refresh tokens)
   - Token utilities in `src/shared/utils/token.ts`
@@ -100,8 +102,9 @@ Faindor is a workplace social media platform where users log in with work emails
 ## Development Notes
 - API runs with hot reload: `bun run --hot`
 - Frontend uses Next.js Turbopack (default in Next.js 16, no `--turbopack` flag needed)
-- Database migrations: `bun run --filter api db:migrate`
-- Type generation: `bun run --filter api db:generate`
+- Database migrations: `bun run --filter api db:migrate` (uses `prisma.config.ts` for schema path)
+- Type generation: `bun run --filter api db:generate` (generates to `src/generated/prisma/`)
+- Prisma 7: no `--schema` or `--no-engine` flags needed; config lives in `prisma.config.ts`
 
 ## Monorepo Commands
 - **Running commands in specific apps**: `bun run --filter '<app>' run <command>`

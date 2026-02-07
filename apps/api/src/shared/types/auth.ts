@@ -1,4 +1,8 @@
-import type { Organization, User, UserRole } from "@prisma/client";
+import type {
+	Organization,
+	User,
+	UserRole,
+} from "../../generated/prisma/client";
 
 export interface LoggedUser {
 	id: number;

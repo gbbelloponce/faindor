@@ -11,5 +11,8 @@ node_modules
 # Build Outputs
 dist
 
+# Generated (Prisma)
+**/src/generated
+
 # Misc
 .DS_Store

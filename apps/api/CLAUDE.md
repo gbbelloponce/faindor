@@ -29,7 +29,9 @@ Shared code lives in `src/shared/`:
 - Use specific `TRPCError` codes: `NOT_FOUND`, `UNAUTHORIZED`, `BAD_REQUEST`, `INTERNAL_SERVER_ERROR`.
 
 ### Database
-- Prisma schema is split across `src/shared/db/schema/`: `schema.prisma` (config), `user.prisma`, `organization.prisma`, `post.prisma`, `group.prisma`.
+- Prisma 7 with config in `prisma.config.ts` (schema path, migrations, datasource URL).
+- Prisma schema is split across `src/shared/db/schema/`: `schema.prisma` (generator + datasource), `user.prisma`, `organization.prisma`, `post.prisma`, `group.prisma`.
+- Generated client lives at `src/generated/prisma/` — use relative imports to `generated/prisma/client` (not `@/` alias or `@prisma/client`), so API type declarations are resolvable by the web-ui.
 - Use `findUnique()` for fields with unique constraints (email, domain), not `findFirst()`.
 - Soft deletes use `deletedAt` — always filter with `deletedAt: null` in queries.
 - Pagination uses offset-based: `take: PAGE_SIZE, skip: (page - 1) * PAGE_SIZE`.
@@ -41,8 +43,8 @@ Shared code lives in `src/shared/`:
 
 ## Commands
 - **Dev server:** `bun run dev` (runs with `--hot`)
-- **Prisma generate:** `bun run db:generate`
-- **Prisma migrate:** `bun run db:migrate`
+- **Prisma generate:** `bun run db:generate` (outputs to `src/generated/prisma/`)
+- **Prisma migrate:** `bun run db:migrate` (reads config from `prisma.config.ts`)
 - **Install packages:** `cd apps/api && bun add <package>` (not `--filter`)
 
 ## Known Issues

@@ -1,5 +1,5 @@
-import type { Organization } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import type { Organization } from "../../generated/prisma/client";
 
 import { db } from "@/shared/db";
 import { handleError } from "@/shared/utils/errors";

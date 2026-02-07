@@ -1,7 +1,7 @@
-import type { UserRole } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { sign, verify } from "hono/jwt";
 import { type JWTPayload, JwtTokenExpired } from "hono/utils/jwt/types";
+import type { UserRole } from "../../generated/prisma/client";
 
 import type { LoggedUser } from "@/shared/types/auth";
 
@@ -50,7 +50,11 @@ export const decodeAccessToken = async (accessToken: string) => {
 
 	let payload: JWTPayload;
 	try {
-		payload = await verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+		payload = await verify(
+			accessToken,
+			process.env.ACCESS_TOKEN_SECRET,
+			"HS256",
+		);
 	} catch (error) {
 		if (error instanceof JwtTokenExpired) {
 			throw new TRPCError({
@@ -90,7 +94,11 @@ export const decodeRefreshToken = async (refreshToken: string) => {
 
 	let payload: JWTPayload;
 	try {
-		payload = await verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+		payload = await verify(
+			refreshToken,
+			process.env.REFRESH_TOKEN_SECRET,
+			"HS256",
+		);
 	} catch (error) {
 		if (error instanceof JwtTokenExpired) {
 			throw new TRPCError({
