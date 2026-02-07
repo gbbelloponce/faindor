@@ -9,7 +9,7 @@ Each feature lives in `src/modules/<feature>/` with:
 Shared code lives in `src/shared/`:
 - `trpc/` — tRPC setup, context creation, procedure definitions
 - `db/` — Prisma client and schema files
-- `utils/` — error handling, JWT tokens, email/domain utilities
+- `utils/` — error handling, JWT tokens, email/domain utilities, pagination
 - `constants/` — shared constants (e.g. PAGE_SIZE)
 - `types/` — shared Zod schemas (e.g. positiveNumberSchema)
 
@@ -34,7 +34,7 @@ Shared code lives in `src/shared/`:
 - Generated client lives at `src/generated/prisma/` — use relative imports to `generated/prisma/client` (not `@/` alias or `@prisma/client`), so API type declarations are resolvable by the web-ui.
 - Use `findUnique()` for fields with unique constraints (email, domain), not `findFirst()`.
 - Soft deletes use `deletedAt` — always filter with `deletedAt: null` in queries.
-- Pagination uses offset-based: `take: PAGE_SIZE, skip: (page - 1) * PAGE_SIZE`.
+- Pagination uses offset-based via `getPaginationArgs(page)` from `src/shared/utils/pagination.ts`.
 
 ### Validation
 - All inputs validated with Zod schemas in `types/request.ts`.
@@ -52,4 +52,4 @@ See `CODE_REVIEW.md` for a full list. Key ones:
 - Comment creation accepts userId from client (should use ctx.user.id)
 - Soft delete filters (`deletedAt: null`) are missing from all queries
 - Password validation is too weak (min 1 char)
-- Post list queries load full likes/comments instead of counts
+- Post list queries load full likes/comments instead of counts (FIXED: now uses _count)
