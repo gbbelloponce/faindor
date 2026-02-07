@@ -6,9 +6,9 @@ model Post {
   authorId       Int
   groupId        Int?
 
-  organization Organization @relation(fields: [organizationId], references: [id])
-  author       User         @relation(fields: [authorId], references: [id])
-  group        Group?       @relation(fields: [groupId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  author       User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  group        Group?       @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   likes        Like[]
   comments     Comment[]
@@ -27,8 +27,8 @@ model Like {
   postId Int
   userId Int
 
-  post Post @relation(fields: [postId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
@@ -43,11 +43,11 @@ model Comment {
   postId   Int
   authorId Int
 
-  post   Post @relation(fields: [postId], references: [id])
-  author User @relation(fields: [authorId], references: [id])
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   repliesToId Int?
-  repliesTo   Comment?  @relation("CommentToReplies", fields: [repliesToId], references: [id])
+  repliesTo   Comment?  @relation("CommentToReplies", fields: [repliesToId], references: [id], onDelete: SetNull)
   replies     Comment[] @relation("CommentToReplies")
 
   createdAt DateTime  @default(now())
@@ -63,8 +63,8 @@ model SavedPost {
   postId Int
   userId Int
 
-  post Post @relation(fields: [postId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 

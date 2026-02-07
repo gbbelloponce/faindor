@@ -56,9 +56,10 @@ export const createGroup = async (
 		const group = await db.group.create({
 			data: {
 				name,
+				organizationId,
 				members: {
-					connect: {
-						id: userId,
+					create: {
+						memberId: userId,
 					},
 				},
 			},

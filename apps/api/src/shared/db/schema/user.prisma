@@ -8,7 +8,7 @@ model User {
 
   organizationId Int
 
-  organization Organization @relation(fields: [organizationId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   posts      Post[]
   groups     GroupMember[]

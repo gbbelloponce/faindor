@@ -3,9 +3,9 @@ model Group {
   name        String
   description String?
 
-  organizationId Int?
+  organizationId Int
 
-  organization Organization? @relation(fields: [organizationId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   members GroupMember[]
   posts   Post[]
@@ -23,8 +23,8 @@ model GroupMember {
   groupId  Int
   memberId Int
 
-  group  Group @relation(fields: [groupId], references: [id])
-  member User  @relation(fields: [memberId], references: [id])
+  group  Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  member User  @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
