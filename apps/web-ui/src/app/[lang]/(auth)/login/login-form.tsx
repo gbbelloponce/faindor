@@ -1,17 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import Cookies from "js-cookie";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import {
-	FROM_LOGIN_COOKIE_CONFIG,
-	FROM_LOGIN_COOKIE_KEY,
-} from "@/auth/constants";
 import { useAuth } from "@/auth/useAuth";
 import { Button } from "@/components/ui/button";
 import {
@@ -52,7 +47,6 @@ export function LoginForm() {
 
 		if (response.success) {
 			toast.success(dictionary.auth.messages.loggedIn);
-			Cookies.set(FROM_LOGIN_COOKIE_KEY, "1", FROM_LOGIN_COOKIE_CONFIG);
 			router.push("/home");
 		} else {
 			toast.error(
