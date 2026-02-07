@@ -9,6 +9,7 @@ export const getGroupById = async (groupId: number, organizationId: number) => {
 			where: {
 				id: groupId,
 				organizationId,
+				deletedAt: null,
 			},
 			include: {
 				members: true,
@@ -41,6 +42,7 @@ export const createGroup = async (
 			where: {
 				name,
 				organizationId,
+				deletedAt: null,
 			},
 		});
 
@@ -88,6 +90,7 @@ export const joinGroup = async (
 			where: {
 				id: groupId,
 				organizationId,
+				deletedAt: null,
 			},
 		});
 

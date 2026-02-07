@@ -21,6 +21,7 @@ export const isPostFromOrganization = async (
 			where: {
 				id: postId,
 				organizationId,
+				deletedAt: null,
 			},
 		});
 
@@ -49,6 +50,7 @@ export const getPostById = async (
 			where: {
 				id,
 				organizationId,
+				deletedAt: null,
 			},
 		});
 
@@ -76,6 +78,7 @@ export const getLatestsPostsByOrganizationId = async (
 		const posts = await db.post.findMany({
 			where: {
 				organizationId,
+				deletedAt: null,
 			},
 			include: {
 				author: true,
@@ -108,6 +111,7 @@ export const getLatestsPostsByUserId = async (
 			where: {
 				authorId: userId,
 				organizationId,
+				deletedAt: null,
 			},
 			include: {
 				author: true,
@@ -140,6 +144,7 @@ export const getLatestsPostsByGroupId = async (
 			where: {
 				groupId,
 				organizationId,
+				deletedAt: null,
 			},
 			include: {
 				author: true,
@@ -215,6 +220,7 @@ export const softDeletePost = async (
 			where: {
 				id: postId,
 				authorId: userId,
+				deletedAt: null,
 			},
 			data: {
 				deletedAt: new Date(),

@@ -12,6 +12,7 @@ export const getOrganizationById = async (
 		const organization = await db.organization.findFirst({
 			where: {
 				id,
+				deletedAt: null,
 			},
 		});
 
@@ -38,6 +39,7 @@ export const getOrganizationByDomain = async (
 		const organization = await db.organization.findFirst({
 			where: {
 				domain,
+				deletedAt: null,
 			},
 		});
 

@@ -23,6 +23,7 @@ export const getPublicUserInfoById = async (id: number) => {
 		const user = await db.user.findFirst({
 			where: {
 				id,
+				deletedAt: null,
 			},
 			include: {
 				organization: true,
@@ -54,6 +55,7 @@ export const getUserById = async (
 		const user = await db.user.findFirst({
 			where: {
 				id,
+				deletedAt: null,
 			},
 			include: {
 				organization: true,
@@ -80,6 +82,7 @@ export const getUserByEmail = async (
 		const user = await db.user.findFirst({
 			where: {
 				email,
+				deletedAt: null,
 			},
 			include: {
 				organization: true,

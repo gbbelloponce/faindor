@@ -38,6 +38,7 @@ export const getLikesByPostId = async (
 				postId,
 				post: {
 					organizationId,
+					deletedAt: null,
 				},
 			},
 			include: {
