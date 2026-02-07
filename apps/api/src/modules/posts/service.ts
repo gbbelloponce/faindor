@@ -73,7 +73,7 @@ export const getPostById = async (
 export const getLatestsPostsByOrganizationId = async (
 	organizationId: number,
 	page = 1,
-): Promise<Post[]> => {
+) => {
 	try {
 		const posts = await db.post.findMany({
 			where: {
@@ -82,8 +82,7 @@ export const getLatestsPostsByOrganizationId = async (
 			},
 			include: {
 				author: true,
-				likes: true,
-				comments: true,
+				_count: { select: { likes: true, comments: true } },
 			},
 			orderBy: {
 				createdAt: "desc",
@@ -105,7 +104,7 @@ export const getLatestsPostsByUserId = async (
 	userId: number,
 	organizationId: number,
 	page = 1,
-): Promise<Post[]> => {
+) => {
 	try {
 		const posts = await db.post.findMany({
 			where: {
@@ -115,8 +114,7 @@ export const getLatestsPostsByUserId = async (
 			},
 			include: {
 				author: true,
-				likes: true,
-				comments: true,
+				_count: { select: { likes: true, comments: true } },
 			},
 			orderBy: {
 				createdAt: "desc",
@@ -138,7 +136,7 @@ export const getLatestsPostsByGroupId = async (
 	groupId: number,
 	organizationId: number,
 	page = 1,
-): Promise<Post[]> => {
+) => {
 	try {
 		const posts = await db.post.findMany({
 			where: {
@@ -148,8 +146,7 @@ export const getLatestsPostsByGroupId = async (
 			},
 			include: {
 				author: true,
-				likes: true,
-				comments: true,
+				_count: { select: { likes: true, comments: true } },
 			},
 			orderBy: {
 				createdAt: "desc",
