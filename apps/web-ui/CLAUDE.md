@@ -4,14 +4,14 @@
 Next.js App Router with dynamic `[lang]` locale prefix:
 - `src/app/[lang]/` — root layout (fonts, ThemeProvider, AppTRPCProvider, Toaster)
 - `src/app/[lang]/(auth)/` — public auth pages (login, register). Layout has locale switcher + theme toggler.
-- `src/app/[lang]/(app)/` — protected app pages. Layout wraps with `RequireAuthProvider`, `SidebarProvider`, `AppHeader`, `AppSidebar`.
+- `src/app/[lang]/(app)/` — protected app pages. Layout wraps with `RequireAuthProvider`, `SidebarProvider`, `AppHeader`, `AppSidebar`. Has an `error.tsx` error boundary.
 
 ## Key Patterns
 
 ### Authentication
 - Tokens stored in cookies via `js-cookie`. Config in `src/auth/constants.ts`.
 - `useAuth()` hook (Zustand store) in `src/auth/useAuth.tsx` provides: `logInWithCredentials`, `logInWithAccessToken`, `refreshAccessToken`, `register`, `logOut`, `currentUser`.
-- `RequireAuthProvider` (`src/auth/require-auth-provider.tsx`) validates auth on page load for protected routes.
+- `RequireAuthProvider` (`src/auth/require-auth-provider.tsx`) validates auth on page load for protected routes. Tries access token first, falls back to refresh token, then logs out.
 - tRPC provider intercepts 401 responses and auto-refreshes tokens (`src/trpc/app-trpc-provider.tsx`).
 - Proxy (`src/proxy.ts`) handles route protection and locale detection server-side (migrated from `middleware.ts` for Next.js 16).
 
@@ -25,7 +25,7 @@ Next.js App Router with dynamic `[lang]` locale prefix:
 - Supported locales: `en`, `es` (configured in `src/dictionaries/i18n-config.ts`).
 - Dictionaries in `src/dictionaries/en.ts` and `src/dictionaries/es.ts`.
 - Type-safe dictionary structure defined in `src/dictionaries/types.ts`.
-- `useLocale()` hook in `src/dictionaries/useLocale.ts` — returns dictionary, locale, and `changeLocale()`.
+- `useLocale()` hook in `src/dictionaries/useLocale.ts` — uses `useParams()` to get `[lang]` param. Returns dictionary, locale, and `changeLocale()`.
 - Locale detected in proxy via Accept-Language header, persisted in cookie.
 
 ### Forms
@@ -55,7 +55,7 @@ Next.js App Router with dynamic `[lang]` locale prefix:
 - `NODE_ENV` — used for cookie security flags (secure: true in production).
 
 ## Known Issues
-See `CODE_REVIEW.md` for the full list. Key ones:
-- `RequireAuthProvider` doesn't attempt token refresh before logging out
-- Password validation is min(8) on frontend but min(1) on API — should be aligned
-- `useLocale()` parses pathname directly instead of using `useParams()`
+See `CODE_REVIEW.md` for the full list. Remaining:
+- No loading/error state patterns for tRPC queries (ongoing — will be addressed as pages are built)
+- Hardcoded dummy notifications in app header (placeholder)
+- Sidebar nav items are placeholders (ongoing)
