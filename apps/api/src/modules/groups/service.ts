@@ -102,13 +102,6 @@ export const joinGroup = async (
 			});
 		}
 
-		if (existingGroup?.organizationId !== organizationId) {
-			throw new TRPCError({
-				message: `You are not allowed to join the group with id: ${groupId}`,
-				code: "UNAUTHORIZED",
-			});
-		}
-
 		const groupMember = await db.groupMember.create({
 			data: {
 				groupId,
