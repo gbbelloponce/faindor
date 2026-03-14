@@ -70,5 +70,14 @@ export const es: Dictionary = {
 	},
 	home: {
 		title: "Inicio",
+		createPost: {
+			placeholder: "¿Qué tienes en mente?",
+			button: "Publicar",
+		},
+		post: {
+			likes: "me gusta",
+			comments: "comentarios",
+		},
+		emptyFeed: "No hay publicaciones aún. ¡Sé el primero en compartir algo!",
 	},
 };

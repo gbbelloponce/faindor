@@ -68,5 +68,14 @@ export const en: Dictionary = {
 	},
 	home: {
 		title: "Home",
+		createPost: {
+			placeholder: "What's on your mind?",
+			button: "Post",
+		},
+		post: {
+			likes: "likes",
+			comments: "comments",
+		},
+		emptyFeed: "No posts yet. Be the first to share something!",
 	},
 };

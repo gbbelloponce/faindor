@@ -4,7 +4,11 @@ import type { Post, SavedPost } from "../../generated/prisma/client";
 import { db } from "@/shared/db";
 import { handleError } from "@/shared/utils/errors";
 import { getPaginationArgs } from "@/shared/utils/pagination";
-import type { CreatePostBody, UpdatePostBody } from "./types/request";
+import type {
+	CreatePostBody,
+	PostWithAuthorAndCounts,
+	UpdatePostBody,
+} from "./types/request";
 
 /**
  * Given a postId and an organizationId, this function will throw an error if the post is not from the organizationId given.
@@ -73,7 +77,7 @@ export const getPostById = async (
 export const getLatestsPostsByOrganizationId = async (
 	organizationId: number,
 	page = 1,
-) => {
+): Promise<PostWithAuthorAndCounts[]> => {
 	try {
 		const posts = await db.post.findMany({
 			where: {
@@ -90,7 +94,7 @@ export const getLatestsPostsByOrganizationId = async (
 			...getPaginationArgs(page),
 		});
 
-		return posts;
+		return posts as PostWithAuthorAndCounts[];
 	} catch (error) {
 		throw handleError(error, {
 			message: `Failed to get latests posts by organization id: ${organizationId}`,
@@ -103,7 +107,7 @@ export const getLatestsPostsByUserId = async (
 	userId: number,
 	organizationId: number,
 	page = 1,
-) => {
+): Promise<PostWithAuthorAndCounts[]> => {
 	try {
 		const posts = await db.post.findMany({
 			where: {
@@ -121,7 +125,7 @@ export const getLatestsPostsByUserId = async (
 			...getPaginationArgs(page),
 		});
 
-		return posts;
+		return posts as PostWithAuthorAndCounts[];
 	} catch (error) {
 		throw handleError(error, {
 			message: `Failed to get latests posts by user id: ${userId}`,
@@ -134,7 +138,7 @@ export const getLatestsPostsByGroupId = async (
 	groupId: number,
 	organizationId: number,
 	page = 1,
-) => {
+): Promise<PostWithAuthorAndCounts[]> => {
 	try {
 		const posts = await db.post.findMany({
 			where: {
@@ -152,7 +156,7 @@ export const getLatestsPostsByGroupId = async (
 			...getPaginationArgs(page),
 		});
 
-		return posts;
+		return posts as PostWithAuthorAndCounts[];
 	} catch (error) {
 		throw handleError(error, {
 			message: `Failed to get latests posts by group id: ${groupId}`,

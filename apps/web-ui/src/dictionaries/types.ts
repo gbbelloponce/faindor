@@ -65,5 +65,14 @@ export type Dictionary = {
 	};
 	home: {
 		title: string;
+		createPost: {
+			placeholder: string;
+			button: string;
+		};
+		post: {
+			likes: string;
+			comments: string;
+		};
+		emptyFeed: string;
 	};
 };
