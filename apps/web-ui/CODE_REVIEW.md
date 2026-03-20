@@ -57,10 +57,8 @@ The home page is a placeholder, but as pages are built out there should be a con
 
 ## Minor Issues
 
-### 7. Hardcoded Dummy Notifications
-**File:** `src/app/[lang]/(app)/components/app-header.tsx`
-
-30 dummy notification items in the dropdown. Should be cleaned up or gated before going live.
+### ~~7. Hardcoded Dummy Notifications~~ ✅ Resolved
+Replaced with real notifications from the API + Supabase Realtime badge updates.
 
 ### 8. Sidebar Nav Items Are Placeholders
 Only Home actually links somewhere. Calendar, Users, Photos, Marketplace are non-functional.

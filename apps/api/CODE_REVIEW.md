@@ -84,3 +84,6 @@ Works fine now but cursor-based would be more reliable and performant as data gr
 
 ### 16. ~~Weak Domain Validation~~ (FIXED)
 Added `.regex()` to `createOrganizationSchema.domain` enforcing valid domain format (e.g. `company.com`).
+
+### 18. ~~Notifications Module Missing~~ (ADDED)
+Full `notifications` module added with `Notification` model, `NotificationType` enum (LIKE, COMMENT, REPLY), and procedures for listing, counting unread, and marking all as read. Likes and comments fire notifications asynchronously (fire-and-forget with `void`). Self-notifications are skipped.

@@ -6,14 +6,14 @@ Faindor is a workplace social media platform where users log in with work emails
 ## Tech Stack
 - **Frontend**: Next.js, TypeScript, TailwindCSS, shadcn/ui (monorepo)
 - **Backend**: Hono with TypeScript (monorepo)
-- **Database**: Prisma 7 ORM with Prisma Postgres (serverless)
+- **Database**: Prisma 7 ORM with Supabase PostgreSQL
 - **Authentication**: Custom JWT (access + refresh tokens)
 - **Package Manager**: Bun
 - **Linter/Formatter**: Biome
 
 ## Core Features
 - **Email-based Organizations**: Users assigned to orgs based on email domain
-- **Social Features**: Posts, likes, comments, communities, events
+- **Social Features**: Posts, likes, comments, groups, notifications (real-time)
 - **Kudos System**: Peer recognition with AI-generated images and NFTs (planned)
 - **Admin System**: First user becomes admin, can manage organization
 
@@ -46,7 +46,7 @@ Faindor is a workplace social media platform where users log in with work emails
   - Custom JWT implementation (access + refresh tokens)
   - Token utilities in `src/shared/utils/token.ts`
 - **Module Structure**:
-  - Each feature has its own module: auth, users, organizations, posts, comments, likes, groups
+  - Each feature has its own module: auth, users, organizations, posts, comments, likes, groups, notifications
   - Modules contain: router.ts, service.ts (optional), types/request.ts
 - **Key Patterns**:
   - tRPC procedures: `publicProcedure` and `authenticatedProcedure`
@@ -80,6 +80,7 @@ Faindor is a workplace social media platform where users log in with work emails
 - **Organizations**: Domain-based grouping (e.g., @company.com)
 - **Posts, Comments, Likes**: Social features
 - **Groups**: Organization-specific groups with membership
+- **Notifications**: `Notification` model with `NotificationType` enum (LIKE, COMMENT, REPLY); linked to recipient, actor, post, and optional comment
 - **Soft deletes**: Using `deletedAt` timestamps
 
 ## Development Patterns
@@ -112,8 +113,8 @@ Faindor is a workplace social media platform where users log in with work emails
 ## Development Notes
 - API runs with hot reload: `bun run --hot`
 - Frontend uses Next.js Turbopack (default in Next.js 16, no `--turbopack` flag needed)
-- Database migrations: `bun run --filter api db:migrate` (uses `prisma.config.ts` for schema path)
-- Type generation: `bun run --filter api db:generate` (generates to `src/generated/prisma/`)
+- Database migrations: `cd apps/api && bun run db:migrate:dev` or `bunx prisma migrate dev --name <name>` (uses `prisma.config.ts` for schema path)
+- Type generation: `cd apps/api && bun run db:generate` (generates to `src/shared/db/generated/prisma/`)
 - Prisma 7: no `--schema` or `--no-engine` flags needed; config lives in `prisma.config.ts`
 
 ## Monorepo Commands
