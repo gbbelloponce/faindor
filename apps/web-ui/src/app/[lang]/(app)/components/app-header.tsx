@@ -26,8 +26,10 @@ import {
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInput, useSidebar } from "@/components/ui/sidebar";
+import { useLocale } from "@/dictionaries/useLocale";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/utils";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export function AppHeader() {
@@ -36,6 +38,7 @@ export function AppHeader() {
 	const isMobile = useIsMobile();
 	const { toggleSidebar } = useSidebar();
 	const { currentUser, logOut } = useAuth();
+	const { locale } = useLocale();
 
 	const handleLogOut = () => {
 		logOut();
@@ -138,9 +141,11 @@ export function AppHeader() {
 						<DropdownMenuSeparator />
 
 						<DropdownMenuGroup>
-							<DropdownMenuItem>
-								<User />
-								<span>My Profile</span>
+							<DropdownMenuItem asChild>
+								<Link href={`/${locale}/profile/${currentUser?.id}`}>
+									<User />
+									<span>My Profile</span>
+								</Link>
 							</DropdownMenuItem>
 							<DropdownMenuItem>
 								<Settings />

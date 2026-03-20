@@ -37,7 +37,11 @@ function getInitials(name: string): string {
 		.slice(0, 2);
 }
 
-export function CreatePostForm() {
+type CreatePostFormProps = {
+	groupId?: number;
+};
+
+export function CreatePostForm({ groupId }: CreatePostFormProps = {}) {
 	const { dictionary } = useLocale();
 	const { currentUser } = useAuth();
 	const trpc = useTRPC();
@@ -54,9 +58,15 @@ export function CreatePostForm() {
 		trpc.posts.createPost.mutationOptions({
 			onSuccess: () => {
 				form.reset();
-				queryClient.invalidateQueries({
-					queryKey: trpc.posts.getLatestsPosts.queryKey(),
-				});
+				if (groupId) {
+					queryClient.invalidateQueries({
+						queryKey: trpc.posts.getLatestsPostsByGroupId.queryKey(),
+					});
+				} else {
+					queryClient.invalidateQueries({
+						queryKey: trpc.posts.getLatestsPosts.queryKey(),
+					});
+				}
 			},
 			onError: () => {
 				toast.error("Failed to create post");
@@ -65,7 +75,7 @@ export function CreatePostForm() {
 	);
 
 	const onSubmit = (data: z.infer<typeof formSchema>) => {
-		createPost.mutate({ content: data.content });
+		createPost.mutate({ content: data.content, groupId });
 	};
 
 	return (

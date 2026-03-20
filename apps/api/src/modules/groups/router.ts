@@ -2,13 +2,29 @@ import { authenticatedProcedure, router } from "@/shared/trpc";
 import { z } from "zod";
 
 import { positiveNumberSchema } from "@/shared/types/schemas";
-import { createGroup, getGroupById, joinGroup, leaveGroup } from "./service";
+import {
+	createGroup,
+	getGroupById,
+	getGroupsByOrganizationId,
+	joinGroup,
+	leaveGroup,
+} from "./service";
 
 export const groupsRouter = router({
+	getGroupsByOrganization: authenticatedProcedure.query(async ({ ctx }) => {
+		return await getGroupsByOrganizationId(
+			ctx.user.organizationId,
+			ctx.user.id,
+		);
+	}),
 	getGroupById: authenticatedProcedure
 		.input(z.object({ groupId: positiveNumberSchema }))
 		.query(async ({ input, ctx }) => {
-			return await getGroupById(input.groupId, ctx.user.organizationId);
+			return await getGroupById(
+				input.groupId,
+				ctx.user.organizationId,
+				ctx.user.id,
+			);
 		}),
 	createGroup: authenticatedProcedure
 		.input(z.object({ name: z.string().min(1).max(100).trim() }))

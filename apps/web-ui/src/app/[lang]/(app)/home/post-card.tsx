@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Heart, MessageCircle, Send } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -54,7 +55,7 @@ function getRelativeTime(date: Date | string): string {
 }
 
 export function PostCard({ post }: PostCardProps) {
-	const { dictionary } = useLocale();
+	const { dictionary, locale } = useLocale();
 	const trpc = useTRPC();
 
 	const [liked, setLiked] = useState(post.isLikedByUser);
@@ -123,7 +124,12 @@ export function PostCard({ post }: PostCardProps) {
 					<AvatarFallback>{getInitials(post.author.name)}</AvatarFallback>
 				</Avatar>
 				<div className="flex items-center gap-2">
-					<span className="text-sm font-semibold">{post.author.name}</span>
+					<Link
+						href={`/${locale}/profile/${post.author.id}`}
+						className="text-sm font-semibold hover:underline"
+					>
+						{post.author.name}
+					</Link>
 					<span className="text-xs text-muted-foreground">
 						{getRelativeTime(post.createdAt)}
 					</span>

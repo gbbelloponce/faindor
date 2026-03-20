@@ -82,4 +82,21 @@ export const es: Dictionary = {
 		},
 		emptyFeed: "No hay publicaciones aún. ¡Sé el primero en compartir algo!",
 	},
+	groups: {
+		title: "Grupos",
+		createGroup: "Crear grupo",
+		cancel: "Cancelar",
+		groupNamePlaceholder: "Nombre del grupo…",
+		noGroups: "Aún no hay grupos. ¡Crea el primero!",
+		members: "miembros",
+		posts: "publicaciones",
+		join: "Unirse",
+		leave: "Salir",
+		backToGroups: "← Volver a grupos",
+		emptyFeed: "Aún no hay publicaciones en este grupo. ¡Sé el primero!",
+	},
+	profile: {
+		posts: "Publicaciones",
+		noPosts: "Aún no hay publicaciones.",
+	},
 };

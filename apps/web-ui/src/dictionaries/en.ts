@@ -80,4 +80,21 @@ export const en: Dictionary = {
 		},
 		emptyFeed: "No posts yet. Be the first to share something!",
 	},
+	groups: {
+		title: "Groups",
+		createGroup: "Create Group",
+		cancel: "Cancel",
+		groupNamePlaceholder: "Group name…",
+		noGroups: "No groups yet. Create the first one!",
+		members: "members",
+		posts: "posts",
+		join: "Join",
+		leave: "Leave",
+		backToGroups: "← Back to groups",
+		emptyFeed: "No posts in this group yet. Be the first to post!",
+	},
+	profile: {
+		posts: "Posts",
+		noPosts: "No posts yet.",
+	},
 };

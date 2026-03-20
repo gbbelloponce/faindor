@@ -1,3 +1,6 @@
+"use client";
+
+import { Calendar, Home, ShoppingBag, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -6,18 +9,18 @@ import {
 	SidebarContent,
 	SidebarFooter,
 } from "@/components/ui/sidebar";
-
-import { Calendar, Home, ImageIcon, ShoppingBag, Users } from "lucide-react";
-
-const navItems = [
-	{ icon: Home, href: "/home", label: "Home" },
-	{ icon: Calendar, href: "/calendar", label: "Events" },
-	{ icon: Users, href: "/communities", label: "Communities" },
-	{ icon: ImageIcon, href: "/photos", label: "Photos" },
-	{ icon: ShoppingBag, href: "/marketplace", label: "Marketplace" },
-];
+import { useLocale } from "@/dictionaries/useLocale";
 
 export function AppSidebar() {
+	const { locale } = useLocale();
+
+	const navItems = [
+		{ icon: Home, href: `/${locale}/home`, label: "Home" },
+		{ icon: Calendar, href: `/${locale}/calendar`, label: "Events" },
+		{ icon: Users, href: `/${locale}/groups`, label: "Groups" },
+		{ icon: ShoppingBag, href: `/${locale}/marketplace`, label: "Marketplace" },
+	];
+
 	return (
 		<Sidebar className="top-16 !h-[calc(100vh-4rem)]">
 			<SidebarContent className="p-6 flex flex-col gap-2">

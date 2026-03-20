@@ -3,16 +3,43 @@ import { TRPCError } from "@trpc/server";
 import { db } from "@/shared/db";
 import { handleError } from "@/shared/utils/errors";
 
-export const getGroupById = async (groupId: number, organizationId: number) => {
+export const getGroupsByOrganizationId = async (
+	organizationId: number,
+	userId: number,
+) => {
+	try {
+		const groups = await db.group.findMany({
+			where: { organizationId, deletedAt: null },
+			include: {
+				members: { where: { memberId: userId }, select: { id: true } },
+				_count: { select: { members: true, posts: true } },
+			},
+			orderBy: { createdAt: "desc" },
+		});
+
+		return groups.map(({ members, ...group }) => ({
+			...group,
+			isMember: members.length > 0,
+		}));
+	} catch (error) {
+		throw handleError(error, {
+			message: `Failed to get groups for organization: ${organizationId}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
+	}
+};
+
+export const getGroupById = async (
+	groupId: number,
+	organizationId: number,
+	userId: number,
+) => {
 	try {
 		const group = await db.group.findFirst({
-			where: {
-				id: groupId,
-				organizationId,
-				deletedAt: null,
-			},
+			where: { id: groupId, organizationId, deletedAt: null },
 			include: {
-				members: true,
+				members: { where: { memberId: userId }, select: { id: true } },
+				_count: { select: { members: true } },
 			},
 		});
 
@@ -23,7 +50,8 @@ export const getGroupById = async (groupId: number, organizationId: number) => {
 			});
 		}
 
-		return group;
+		const { members, ...rest } = group;
+		return { ...rest, isMember: members.length > 0 };
 	} catch (error) {
 		throw handleError(error, {
 			message: `Failed to get group by id: ${groupId}`,

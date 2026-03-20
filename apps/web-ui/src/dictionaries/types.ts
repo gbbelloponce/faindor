@@ -77,4 +77,21 @@ export type Dictionary = {
 		};
 		emptyFeed: string;
 	};
+	groups: {
+		title: string;
+		createGroup: string;
+		cancel: string;
+		groupNamePlaceholder: string;
+		noGroups: string;
+		members: string;
+		posts: string;
+		join: string;
+		leave: string;
+		backToGroups: string;
+		emptyFeed: string;
+	};
+	profile: {
+		posts: string;
+		noPosts: string;
+	};
 };
