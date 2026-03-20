@@ -46,4 +46,5 @@ export type PostWithAuthorAndCounts = {
 		likes: number;
 		comments: number;
 	};
+	isLikedByUser: boolean;
 };

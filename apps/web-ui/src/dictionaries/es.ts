@@ -77,6 +77,8 @@ export const es: Dictionary = {
 		post: {
 			likes: "me gusta",
 			comments: "comentarios",
+			commentPlaceholder: "Escribe un comentario…",
+			noComments: "Sin comentarios aún. ¡Sé el primero!",
 		},
 		emptyFeed: "No hay publicaciones aún. ¡Sé el primero en compartir algo!",
 	},

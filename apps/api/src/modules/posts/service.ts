@@ -76,6 +76,7 @@ export const getPostById = async (
 
 export const getLatestsPostsByOrganizationId = async (
 	organizationId: number,
+	userId: number,
 	page = 1,
 ): Promise<PostWithAuthorAndCounts[]> => {
 	try {
@@ -86,6 +87,7 @@ export const getLatestsPostsByOrganizationId = async (
 			},
 			include: {
 				author: true,
+				likes: { where: { userId }, select: { id: true } },
 				_count: { select: { likes: true, comments: true } },
 			},
 			orderBy: {
@@ -94,7 +96,10 @@ export const getLatestsPostsByOrganizationId = async (
 			...getPaginationArgs(page),
 		});
 
-		return posts as PostWithAuthorAndCounts[];
+		return posts.map(({ likes, ...post }) => ({
+			...post,
+			isLikedByUser: likes.length > 0,
+		})) as PostWithAuthorAndCounts[];
 	} catch (error) {
 		throw handleError(error, {
 			message: `Failed to get latests posts by organization id: ${organizationId}`,
@@ -105,6 +110,7 @@ export const getLatestsPostsByOrganizationId = async (
 
 export const getLatestsPostsByUserId = async (
 	userId: number,
+	currentUserId: number,
 	organizationId: number,
 	page = 1,
 ): Promise<PostWithAuthorAndCounts[]> => {
@@ -117,6 +123,7 @@ export const getLatestsPostsByUserId = async (
 			},
 			include: {
 				author: true,
+				likes: { where: { userId: currentUserId }, select: { id: true } },
 				_count: { select: { likes: true, comments: true } },
 			},
 			orderBy: {
@@ -125,7 +132,10 @@ export const getLatestsPostsByUserId = async (
 			...getPaginationArgs(page),
 		});
 
-		return posts as PostWithAuthorAndCounts[];
+		return posts.map(({ likes, ...post }) => ({
+			...post,
+			isLikedByUser: likes.length > 0,
+		})) as PostWithAuthorAndCounts[];
 	} catch (error) {
 		throw handleError(error, {
 			message: `Failed to get latests posts by user id: ${userId}`,
@@ -137,6 +147,7 @@ export const getLatestsPostsByUserId = async (
 export const getLatestsPostsByGroupId = async (
 	groupId: number,
 	organizationId: number,
+	userId: number,
 	page = 1,
 ): Promise<PostWithAuthorAndCounts[]> => {
 	try {
@@ -148,6 +159,7 @@ export const getLatestsPostsByGroupId = async (
 			},
 			include: {
 				author: true,
+				likes: { where: { userId }, select: { id: true } },
 				_count: { select: { likes: true, comments: true } },
 			},
 			orderBy: {
@@ -156,7 +168,10 @@ export const getLatestsPostsByGroupId = async (
 			...getPaginationArgs(page),
 		});
 
-		return posts as PostWithAuthorAndCounts[];
+		return posts.map(({ likes, ...post }) => ({
+			...post,
+			isLikedByUser: likes.length > 0,
+		})) as PostWithAuthorAndCounts[];
 	} catch (error) {
 		throw handleError(error, {
 			message: `Failed to get latests posts by group id: ${groupId}`,

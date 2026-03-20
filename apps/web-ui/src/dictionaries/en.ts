@@ -75,6 +75,8 @@ export const en: Dictionary = {
 		post: {
 			likes: "likes",
 			comments: "comments",
+			commentPlaceholder: "Write a comment…",
+			noComments: "No comments yet. Be the first!",
 		},
 		emptyFeed: "No posts yet. Be the first to share something!",
 	},

@@ -72,6 +72,8 @@ export type Dictionary = {
 		post: {
 			likes: string;
 			comments: string;
+			commentPlaceholder: string;
+			noComments: string;
 		};
 		emptyFeed: string;
 	};

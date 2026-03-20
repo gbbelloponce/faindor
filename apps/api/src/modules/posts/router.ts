@@ -27,6 +27,7 @@ export const postsRouter = router({
 		.query(async ({ input, ctx }) => {
 			return await getLatestsPostsByOrganizationId(
 				ctx.user.organizationId,
+				ctx.user.id,
 				input.page,
 			);
 		}),
@@ -40,6 +41,7 @@ export const postsRouter = router({
 		.query(async ({ input, ctx }) => {
 			return await getLatestsPostsByUserId(
 				input.userId,
+				ctx.user.id,
 				ctx.user.organizationId,
 				input.page,
 			);
@@ -55,6 +57,7 @@ export const postsRouter = router({
 			return await getLatestsPostsByGroupId(
 				input.groupId,
 				ctx.user.organizationId,
+				ctx.user.id,
 				input.page,
 			);
 		}),

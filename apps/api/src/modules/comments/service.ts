@@ -13,7 +13,11 @@ export const getCommentsByPostId = async (
 	try {
 		const comments = await db.comment.findMany({
 			include: {
-				replies: true,
+				author: { select: { id: true, name: true } },
+				replies: {
+					include: { author: { select: { id: true, name: true } } },
+					where: { deletedAt: null },
+				},
 			},
 			where: {
 				postId,
@@ -53,6 +57,7 @@ export const createComment = async (
 				authorId: userId,
 				...(body.commentId && { repliesToId: body.commentId }),
 			},
+			include: { author: { select: { id: true, name: true } } },
 		});
 
 		if (!comment) {

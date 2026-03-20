@@ -27,6 +27,23 @@ export const createLike = async (
 	}
 };
 
+export const deleteLike = async (postId: number, userId: number) => {
+	try {
+		const like = await db.like.delete({
+			where: {
+				postId_userId: { postId, userId },
+			},
+		});
+
+		return like;
+	} catch (error) {
+		throw handleError(error, {
+			message: `Failed to unlike post with id: ${postId}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
+	}
+};
+
 export const getLikesByPostId = async (
 	postId: number,
 	organizationId: number,
