@@ -92,9 +92,17 @@ Faindor is a workplace social media platform where users log in with work emails
   - Organized imports
 
 ## Environment Variables
+**API (`apps/api/.env`):**
 - `CLIENT_URL`: Frontend URL for CORS
 - `API_PORT`: API server port
-- `DATABASE_URL`: PostgreSQL connection string
+- `DATABASE_URL`: PostgreSQL connection string (Supabase pooled connection)
+- `ACCESS_TOKEN_SECRET`: JWT signing secret for access tokens
+- `REFRESH_TOKEN_SECRET`: JWT signing secret for refresh tokens
+
+**Web UI (`apps/web-ui/.env.local`):**
+- `NEXT_PUBLIC_API_URL`: API endpoint for tRPC client
+- `NEXT_PUBLIC_SUPABASE_URL`: Supabase project URL (for Realtime)
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`: Supabase publishable key (`sb_publishable_...`) — safe to expose, RLS enforces access control
 
 ## Build & Type Generation
 - API builds types that are imported by frontend

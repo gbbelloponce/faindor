@@ -1,9 +1,12 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 
+import { useAuth } from "@/auth/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLocale } from "@/dictionaries/useLocale";
+import { supabase } from "@/lib/supabase";
 import { useTRPC } from "@/trpc/trpc";
 import { PostCard } from "./post-card";
 
@@ -50,10 +53,39 @@ function PostFeedSkeleton() {
 export function PostFeed() {
 	const { dictionary } = useLocale();
 	const trpc = useTRPC();
+	const queryClient = useQueryClient();
+	const { currentUser } = useAuth();
 
 	const postsQuery = useQuery(
 		trpc.posts.getLatestsPosts.queryOptions({ page: 1 }),
 	);
+
+	useEffect(() => {
+		const organizationId = currentUser?.organization.id;
+		if (!organizationId) return;
+
+		const channel = supabase
+			.channel(`posts:org:${organizationId}`)
+			.on(
+				"postgres_changes",
+				{
+					event: "INSERT",
+					schema: "public",
+					table: "posts",
+					filter: `organizationId=eq.${organizationId}`,
+				},
+				() => {
+					queryClient.invalidateQueries({
+						queryKey: trpc.posts.getLatestsPosts.queryKey(),
+					});
+				},
+			)
+			.subscribe();
+
+		return () => {
+			supabase.removeChannel(channel);
+		};
+	}, [currentUser?.organization.id, queryClient, trpc.posts.getLatestsPosts]);
 
 	if (postsQuery.isLoading) {
 		return <PostFeedSkeleton />;
