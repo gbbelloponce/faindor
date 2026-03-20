@@ -81,13 +81,6 @@ A prioritized list of things to add to make the app more robust, secure, and fea
 
 ---
 
-### Real-time feed updates
-**Effort:** ~2 hours
-**Why:** New posts appear without requiring a page refresh.
-**How:** Supabase Realtime — subscribe to `INSERT` events on the `posts` table filtered by `organizationId`. Show a "New posts" banner the user can click to load them in.
-
----
-
 ### User profile editing
 **Effort:** ~half day
 **Why:** Users can view profiles but can't update their own name, bio, or avatar.
