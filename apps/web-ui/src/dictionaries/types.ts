@@ -94,4 +94,11 @@ export type Dictionary = {
 		posts: string;
 		noPosts: string;
 	};
+	notifications: {
+		title: string;
+		empty: string;
+		likedYourPost: string;
+		commentedOnYourPost: string;
+		repliedToYourComment: string;
+	};
 };

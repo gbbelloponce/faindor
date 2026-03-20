@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	Bell,
 	LogOut,
@@ -9,10 +10,14 @@ import {
 	User,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 import { useAuth } from "@/auth/useAuth";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ThemeToggler } from "@/components/theme-toggler";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -28,21 +33,118 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarInput, useSidebar } from "@/components/ui/sidebar";
 import { useLocale } from "@/dictionaries/useLocale";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { supabase } from "@/lib/supabase";
+import { useTRPC } from "@/trpc/trpc";
 import { cn } from "@/utils";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+
+function getInitials(name: string): string {
+	return name
+		.split(" ")
+		.map((part) => part[0])
+		.join("")
+		.toUpperCase()
+		.slice(0, 2);
+}
+
+function getRelativeTime(date: Date | string): string {
+	const now = new Date();
+	const d = new Date(date);
+	const diffMs = now.getTime() - d.getTime();
+	const diffSeconds = Math.floor(diffMs / 1000);
+	const diffMinutes = Math.floor(diffSeconds / 60);
+	const diffHours = Math.floor(diffMinutes / 60);
+	const diffDays = Math.floor(diffHours / 24);
+
+	if (diffSeconds < 60) return "just now";
+	if (diffMinutes < 60) return `${diffMinutes}m`;
+	if (diffHours < 24) return `${diffHours}h`;
+	if (diffDays < 30) return `${diffDays}d`;
+	return d.toLocaleDateString();
+}
 
 export function AppHeader() {
 	const router = useRouter();
-
 	const isMobile = useIsMobile();
 	const { toggleSidebar } = useSidebar();
 	const { currentUser, logOut } = useAuth();
-	const { locale } = useLocale();
+	const { locale, dictionary } = useLocale();
+	const trpc = useTRPC();
+	const queryClient = useQueryClient();
+
+	const notificationsQuery = useQuery(
+		trpc.notifications.getNotifications.queryOptions({ page: 1 }),
+	);
+
+	const unreadCountQuery = useQuery(
+		trpc.notifications.getUnreadCount.queryOptions(),
+	);
+
+	const markAllAsReadMutation = useMutation(
+		trpc.notifications.markAllAsRead.mutationOptions({
+			onSuccess: () => {
+				queryClient.invalidateQueries({
+					queryKey: trpc.notifications.getUnreadCount.queryKey(),
+				});
+				queryClient.invalidateQueries({
+					queryKey: trpc.notifications.getNotifications.queryKey(),
+				});
+			},
+		}),
+	);
+
+	useEffect(() => {
+		const userId = currentUser?.id;
+		if (!userId) return;
+
+		const channel = supabase
+			.channel(`notifications:user:${userId}`)
+			.on(
+				"postgres_changes",
+				{
+					event: "INSERT",
+					schema: "public",
+					table: "notifications",
+					filter: `recipientId=eq.${userId}`,
+				},
+				() => {
+					queryClient.invalidateQueries({
+						queryKey: trpc.notifications.getUnreadCount.queryKey(),
+					});
+					queryClient.invalidateQueries({
+						queryKey: trpc.notifications.getNotifications.queryKey(),
+					});
+				},
+			)
+			.subscribe();
+
+		return () => {
+			supabase.removeChannel(channel);
+		};
+	}, [
+		currentUser?.id,
+		queryClient,
+		trpc.notifications.getUnreadCount,
+		trpc.notifications.getNotifications,
+	]);
 
 	const handleLogOut = () => {
 		logOut();
 		router.push("/login");
+	};
+
+	const unreadCount = unreadCountQuery.data ?? 0;
+
+	const getNotificationText = (type: string) => {
+		switch (type) {
+			case "LIKE":
+				return dictionary.notifications.likedYourPost;
+			case "COMMENT":
+				return dictionary.notifications.commentedOnYourPost;
+			case "REPLY":
+				return dictionary.notifications.repliedToYourComment;
+			default:
+				return "";
+		}
 	};
 
 	return (
@@ -70,6 +172,7 @@ export function AppHeader() {
 					</span>
 				</div>
 			</div>
+
 			<form
 				onSubmit={(e) => e.preventDefault()}
 				className="flex flex-1 items-center justify-center"
@@ -91,34 +194,74 @@ export function AppHeader() {
 			<div className="flex items-center">
 				<ThemeToggler buttonVariant="ghost" />
 				<LocaleSwitcher buttonVariant="ghost" />
-				<DropdownMenu>
+
+				<DropdownMenu
+					onOpenChange={(open) => {
+						if (open && unreadCount > 0) markAllAsReadMutation.mutate();
+					}}
+				>
 					<DropdownMenuTrigger asChild>
-						<Button size="icon" variant="ghost">
+						<Button size="icon" variant="ghost" className="relative">
 							<Bell />
-							<span className="sr-only">Notifications</span>
+							{unreadCount > 0 && (
+								<span className="absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+									{unreadCount > 9 ? "9+" : unreadCount}
+								</span>
+							)}
+							<span className="sr-only">{dictionary.notifications.title}</span>
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent className="w-80" align="end">
 						<DropdownMenuLabel className="text-base font-medium">
-							Notifications
+							{dictionary.notifications.title}
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						<div className="max-h-[calc(60vh-4rem)] overflow-y-auto">
-							<DropdownMenuGroup>
-								{Array.from({ length: 30 }).map((_, i) => (
-									<DropdownMenuItem key={`notification-${i + 1}`}>
-										Notification {i + 1}
-									</DropdownMenuItem>
-								))}
-								<div className="my-2 flex items-center justify-center">
-									<Button size="sm" variant="outline" className="w-1/2">
-										Load More
-									</Button>
-								</div>
-							</DropdownMenuGroup>
+							{!notificationsQuery.data ||
+							notificationsQuery.data.length === 0 ? (
+								<p className="py-6 text-center text-sm text-muted-foreground">
+									{dictionary.notifications.empty}
+								</p>
+							) : (
+								<DropdownMenuGroup>
+									{notificationsQuery.data.map((notification) => (
+										<DropdownMenuItem
+											key={notification.id}
+											asChild
+											className={cn(
+												!notification.readAt &&
+													"bg-blue-50 dark:bg-blue-950/30",
+											)}
+										>
+											<Link
+												href={`/${locale}/profile/${notification.actor.id}`}
+												className="flex items-start gap-3 px-3 py-2"
+											>
+												<Avatar className="size-8 shrink-0">
+													<AvatarFallback className="text-xs">
+														{getInitials(notification.actor.name)}
+													</AvatarFallback>
+												</Avatar>
+												<div className="flex-1 min-w-0">
+													<p className="text-sm leading-snug">
+														<span className="font-semibold">
+															{notification.actor.name}
+														</span>{" "}
+														{getNotificationText(notification.type)}
+													</p>
+													<p className="text-xs text-muted-foreground mt-0.5">
+														{getRelativeTime(notification.createdAt)}
+													</p>
+												</div>
+											</Link>
+										</DropdownMenuItem>
+									))}
+								</DropdownMenuGroup>
+							)}
 						</div>
 					</DropdownMenuContent>
 				</DropdownMenu>
+
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button size="icon" variant="ghost">

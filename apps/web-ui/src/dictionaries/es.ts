@@ -99,4 +99,11 @@ export const es: Dictionary = {
 		posts: "Publicaciones",
 		noPosts: "Aún no hay publicaciones.",
 	},
+	notifications: {
+		title: "Notificaciones",
+		empty: "Aún no hay notificaciones.",
+		likedYourPost: "le dio me gusta a tu publicación",
+		commentedOnYourPost: "comentó en tu publicación",
+		repliedToYourComment: "respondió a tu comentario",
+	},
 };

@@ -16,6 +16,9 @@ model User {
   comments   Comment[]
   savedPosts SavedPost[]
 
+  notificationsReceived Notification[] @relation("NotificationRecipient")
+  notificationsSent     Notification[] @relation("NotificationActor")
+
   createdAt DateTime  @default(now())
   deletedAt DateTime?
 

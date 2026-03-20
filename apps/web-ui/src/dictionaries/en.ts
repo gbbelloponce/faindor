@@ -97,4 +97,11 @@ export const en: Dictionary = {
 		posts: "Posts",
 		noPosts: "No posts yet.",
 	},
+	notifications: {
+		title: "Notifications",
+		empty: "No notifications yet.",
+		likedYourPost: "liked your post",
+		commentedOnYourPost: "commented on your post",
+		repliedToYourComment: "replied to your comment",
+	},
 };

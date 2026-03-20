@@ -1,5 +1,7 @@
+import { createNotification } from "@/modules/notifications/service";
 import { isPostFromOrganization } from "@/modules/posts/service";
 import { db } from "@/shared/db";
+import { NotificationType } from "@/shared/db/generated/prisma/client";
 import { handleError } from "@/shared/utils/errors";
 import { getPaginationArgs } from "@/shared/utils/pagination";
 
@@ -9,13 +11,20 @@ export const createLike = async (
 	organizationId: number,
 ) => {
 	try {
-		await isPostFromOrganization(postId, organizationId);
+		const post = await isPostFromOrganization(postId, organizationId);
 
 		const like = await db.like.create({
 			data: {
 				postId,
 				userId,
 			},
+		});
+
+		void createNotification({
+			type: NotificationType.LIKE,
+			recipientId: post.authorId,
+			actorId: userId,
+			postId,
 		});
 
 		return like;

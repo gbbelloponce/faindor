@@ -1,5 +1,7 @@
+import { createNotification } from "@/modules/notifications/service";
 import { isPostFromOrganization } from "@/modules/posts/service";
 import { db } from "@/shared/db";
+import { NotificationType } from "@/shared/db/generated/prisma/client";
 import { handleError } from "@/shared/utils/errors";
 import { getPaginationArgs } from "@/shared/utils/pagination";
 import { TRPCError } from "@trpc/server";
@@ -48,7 +50,7 @@ export const createComment = async (
 	organizationId: number,
 ) => {
 	try {
-		await isPostFromOrganization(body.postId, organizationId);
+		const post = await isPostFromOrganization(body.postId, organizationId);
 
 		const comment = await db.comment.create({
 			data: {
@@ -64,6 +66,32 @@ export const createComment = async (
 			throw new TRPCError({
 				message: `Failed to create comment with content: ${body.content}.`,
 				code: "INTERNAL_SERVER_ERROR",
+			});
+		}
+
+		if (body.commentId) {
+			// Reply — notify the parent comment's author
+			const parentComment = await db.comment.findUnique({
+				where: { id: body.commentId },
+				select: { authorId: true },
+			});
+			if (parentComment) {
+				void createNotification({
+					type: NotificationType.REPLY,
+					recipientId: parentComment.authorId,
+					actorId: userId,
+					postId: body.postId,
+					commentId: comment.id,
+				});
+			}
+		} else {
+			// Top-level comment — notify the post author
+			void createNotification({
+				type: NotificationType.COMMENT,
+				recipientId: post.authorId,
+				actorId: userId,
+				postId: body.postId,
+				commentId: comment.id,
 			});
 		}
 

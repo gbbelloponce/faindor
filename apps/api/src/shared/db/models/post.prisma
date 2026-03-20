@@ -10,9 +10,10 @@ model Post {
   author       User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
   group        Group?       @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
-  likes        Like[]
-  comments     Comment[]
-  savedByUsers SavedPost[]
+  likes         Like[]
+  comments      Comment[]
+  savedByUsers  SavedPost[]
+  notifications Notification[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -49,6 +50,8 @@ model Comment {
   repliesToId Int?
   repliesTo   Comment?  @relation("CommentToReplies", fields: [repliesToId], references: [id], onDelete: SetNull)
   replies     Comment[] @relation("CommentToReplies")
+
+  notifications Notification[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt

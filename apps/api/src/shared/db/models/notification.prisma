@@ -1,0 +1,27 @@
+enum NotificationType {
+  LIKE
+  COMMENT
+  REPLY
+}
+
+model Notification {
+  id   Int              @id @default(autoincrement())
+  type NotificationType
+
+  recipientId Int
+  recipient   User @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  actorId Int
+  actor   User @relation("NotificationActor", fields: [actorId], references: [id], onDelete: Cascade)
+
+  postId Int?
+  post   Post? @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  commentId Int?
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@map("notifications")
+}
