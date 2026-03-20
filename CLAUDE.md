@@ -37,9 +37,11 @@ Faindor is a workplace social media platform where users log in with work emails
 - **Database**:
   - Prisma 7 ORM with PostgreSQL
   - Prisma Accelerate for edge performance
-  - Schema split across multiple files (user.prisma, organization.prisma, post.prisma, group.prisma)
+  - Single schema file: `src/shared/db/schema.prisma`; model files in `src/shared/db/models/` (user.prisma, organization.prisma, post.prisma, group.prisma)
+  - Migrations in `src/shared/db/migrations/`
   - Config in `prisma.config.ts` (schema path, migrations path, datasource URL)
-  - Generated client output: `src/generated/prisma/` (use relative imports to `generated/prisma/client`, not `@/` alias, to keep API type declarations resolvable by the web-ui)
+  - Generated client output: `src/shared/db/generated/prisma/` (use relative imports to `shared/db/generated/prisma/client`, not `@/` alias, to keep API type declarations resolvable by the web-ui)
+  - Database: Supabase PostgreSQL (migrated from Prisma Postgres/Accelerate)
 - **Authentication**: 
   - Custom JWT implementation (access + refresh tokens)
   - Token utilities in `src/shared/utils/token.ts`
