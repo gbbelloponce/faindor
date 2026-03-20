@@ -2,7 +2,7 @@ import type {
 	Organization,
 	User,
 	UserRole,
-} from "../../generated/prisma/client";
+} from "../db/generated/prisma/client";
 
 export interface LoggedUser {
 	id: number;

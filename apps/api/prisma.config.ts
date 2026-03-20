@@ -1,12 +1,15 @@
-import "dotenv/config";
-import { defineConfig } from "prisma/config";
+import { defineConfig, env } from "prisma/config";
+import { config } from "dotenv";
+
+const envFile = process.env.ENV_FILE ?? ".env.local";
+config({ path: envFile });
 
 export default defineConfig({
-	schema: "src/shared/db/schema",
+	schema: "src/shared/db/",
 	migrations: {
-		path: "src/shared/db/schema/migrations",
+		path: "src/shared/db/migrations",
 	},
 	datasource: {
-		url: process.env.DATABASE_URL,
+		url: env("DIRECT_URL"),
 	},
 });

@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { type User, UserRole } from "../../generated/prisma/client";
+import { type User, UserRole } from "../../shared/db/generated/prisma/client";
 
 import {
 	createOrganization,

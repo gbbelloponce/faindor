@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { sign, verify } from "hono/jwt";
 import { type JWTPayload, JwtTokenExpired } from "hono/utils/jwt/types";
-import type { UserRole } from "../../generated/prisma/client";
+import type { UserRole } from "../db/generated/prisma/client";
 
 import type { LoggedUser } from "@/shared/types/auth";
 

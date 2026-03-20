@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { UserRole } from "../../../generated/prisma/client";
+import { UserRole } from "../../../shared/db/generated/prisma/client";
 
 export const logInWithCredentialsSchema = z.object({
 	email: z.string().email().min(1).trim(),

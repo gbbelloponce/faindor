@@ -14,7 +14,8 @@
 			"migrations/",
 			"tsconfig.*",
 			".next/",
-			"**/src/generated/**"
+			"**/src/generated/**",
+			"**/src/shared/db/generated/**"
 		]
 	},
 	"formatter": {
