@@ -77,7 +77,7 @@ A prioritized list of things to add to make the app more robust, secure, and fea
 ### Post image/file attachments
 **Effort:** ~1 day
 **Why:** Text-only posts limit engagement.
-**How:** Use Supabase Storage (available once DB is migrated) — S3-compatible, generous free tier, direct upload from browser.
+**How:** Use Supabase Storage — S3-compatible, generous free tier, direct upload from browser.
 
 ---
 
@@ -90,8 +90,8 @@ A prioritized list of things to add to make the app more robust, secure, and fea
 
 ### Notifications
 **Effort:** ~2-3 days
-**Why:** Alert users when someone likes/comments on their post or mentions them.
-**How:** `Notification` model in DB + Supabase Realtime for delivery.
+**Why:** Alert users when someone likes/comments on their post.
+**How:** `Notification` model in DB + Supabase Realtime for delivery. Replace the hardcoded dummy items in `AppHeader`.
 
 ---
 
