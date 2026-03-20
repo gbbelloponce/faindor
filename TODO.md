@@ -4,21 +4,6 @@ A prioritized list of things to add to make the app more robust, secure, and fea
 
 ---
 
-## Infrastructure
-
-### Migrate DB to Supabase Postgres
-**Effort:** ~30 min
-**Why:** Better free tier, built-in realtime (needed later), better dashboard, pgvector for AI features, connection pooling via Supavisor. No schema/query changes needed — just swap the connection string and remove Prisma Accelerate.
-
-**What to do:**
-1. Create a Supabase project, copy the `postgresql://` connection string (use the pooled one)
-2. Remove `@prisma/extension-accelerate` from `apps/api/package.json`
-3. Remove `withAccelerate()` from `apps/api/src/shared/db/index.ts`
-4. Update `DATABASE_URL` in `.env`
-5. Run `bun run db:migrate` to apply schema to the new DB
-
----
-
 ## Security
 
 ### Rate limiting on auth endpoints
@@ -103,12 +88,6 @@ A prioritized list of things to add to make the app more robust, secure, and fea
 
 ---
 
-### Comments & likes on the UI
-**Effort:** ~1-2 days
-**Why:** The API already supports comments and likes; the UI just needs the components.
-
----
-
 ### Notifications
 **Effort:** ~2-3 days
 **Why:** Alert users when someone likes/comments on their post or mentions them.
@@ -137,13 +116,6 @@ A prioritized list of things to add to make the app more robust, secure, and fea
 ---
 
 ## Developer Experience
-
-### Input validation hardening
-- Add format validation to `Organization.domain` (should be a valid domain string)
-- Add email format validation at the DB/service level, not just Zod
-
-### Environment variable validation on startup
-- Use `zod` to parse and validate all required env vars at boot time instead of letting missing vars cause cryptic runtime errors
 
 ### Error monitoring
 - Add [Sentry](https://sentry.io) to both apps for runtime error tracking

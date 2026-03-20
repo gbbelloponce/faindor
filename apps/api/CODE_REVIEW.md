@@ -82,7 +82,5 @@ Login, registration, token refresh, and content creation are all unprotected aga
 ### 15. Offset-Based Pagination
 Works fine now but cursor-based would be more reliable and performant as data grows. Deferred — offset-based pagination helper was just extracted.
 
-### 16. Weak Domain Validation
-**File:** `src/modules/organizations/types/request.ts`
-
-`domain: z.string()` has no format constraints. Could accept any arbitrary string.
+### 16. ~~Weak Domain Validation~~ (FIXED)
+Added `.regex()` to `createOrganizationSchema.domain` enforcing valid domain format (e.g. `company.com`).
