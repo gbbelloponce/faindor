@@ -46,7 +46,7 @@ Faindor is a workplace social media platform where users log in with work emails
   - Custom JWT implementation (access + refresh tokens)
   - Token utilities in `src/shared/utils/token.ts`
 - **Module Structure**:
-  - Each feature has its own module: auth, users, organizations, posts, comments, likes, groups, notifications
+  - Each feature has its own module: auth, users, organizations, posts, comments, likes, groups, notifications, search
   - Modules contain: router.ts, service.ts (optional), types/request.ts
 - **Key Patterns**:
   - tRPC procedures: `publicProcedure` and `authenticatedProcedure`
@@ -76,7 +76,7 @@ Faindor is a workplace social media platform where users log in with work emails
   - Toast notifications (sonner)
 
 ## Database Schema
-- **Users**: Email-based authentication, role system (USER, APP_ADMIN)
+- **Users**: Email-based authentication, role system (USER, APP_ADMIN); optional `bio` and `avatarUrl` fields for profile customization
 - **Organizations**: Domain-based grouping (e.g., @company.com)
 - **Posts, Comments, Likes**: Social features
 - **Groups**: Organization-specific groups with membership

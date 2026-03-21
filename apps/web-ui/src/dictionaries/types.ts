@@ -93,6 +93,15 @@ export type Dictionary = {
 	profile: {
 		posts: string;
 		noPosts: string;
+		editProfile: string;
+		saveChanges: string;
+		cancel: string;
+		bio: string;
+		namePlaceholder: string;
+		bioPlaceholder: string;
+		avatarLabel: string;
+		updateSuccess: string;
+		updateError: string;
 	};
 	notifications: {
 		title: string;

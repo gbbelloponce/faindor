@@ -98,6 +98,15 @@ export const es: Dictionary = {
 	profile: {
 		posts: "Publicaciones",
 		noPosts: "Aún no hay publicaciones.",
+		editProfile: "Editar perfil",
+		saveChanges: "Guardar cambios",
+		cancel: "Cancelar",
+		bio: "Biografía",
+		namePlaceholder: "Tu nombre",
+		bioPlaceholder: "Cuéntanos sobre ti…",
+		avatarLabel: "Foto de perfil",
+		updateSuccess: "Perfil actualizado",
+		updateError: "Error al actualizar perfil",
 	},
 	notifications: {
 		title: "Notificaciones",

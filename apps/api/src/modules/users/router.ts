@@ -2,9 +2,20 @@ import { z } from "zod";
 
 import { authenticatedProcedure, router } from "@/shared/trpc";
 import { positiveNumberSchema } from "@/shared/types/schemas";
-import { getPublicUserInfoById, getUserByEmail, getUserById } from "./service";
+import {
+	getPublicUserInfoById,
+	getUserByEmail,
+	getUserById,
+	updateProfile,
+} from "./service";
+import { updateProfileSchema } from "./types/request";
 
 export const usersRouter = router({
+	updateProfile: authenticatedProcedure
+		.input(updateProfileSchema)
+		.mutation(async ({ input, ctx }) => {
+			return await updateProfile(ctx.user.id, input);
+		}),
 	getPublicUserInfoById: authenticatedProcedure
 		.input(z.object({ id: positiveNumberSchema }))
 		.query(async ({ input }) => {

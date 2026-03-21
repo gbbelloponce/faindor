@@ -1,10 +1,12 @@
 model User {
   id       Int      @id @default(autoincrement())
-  name     String
-  email    String   @unique
-  password String
-  role     UserRole @default(USER)
-  active   Boolean  @default(true)
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole @default(USER)
+  active    Boolean  @default(true)
+  bio       String?
+  avatarUrl String?
 
   organizationId Int
 

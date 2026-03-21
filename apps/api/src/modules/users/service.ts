@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { type User, UserRole } from "../../shared/db/generated/prisma/client";
+import type { UpdateProfileBody } from "./types/request";
 
 import {
 	createOrganization,
@@ -116,6 +117,30 @@ export const getUserByCredentials = async ({
 	} catch (error) {
 		throw handleError(error, {
 			message: `Failed to get user by credentials with email: ${email}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
+	}
+};
+
+export const updateProfile = async (
+	userId: number,
+	data: UpdateProfileBody,
+) => {
+	try {
+		const user = await db.user.update({
+			where: { id: userId },
+			data,
+			select: {
+				id: true,
+				name: true,
+				bio: true,
+				avatarUrl: true,
+			},
+		});
+		return user;
+	} catch (error) {
+		throw handleError(error, {
+			message: `Failed to update profile for user: ${userId}`,
 			code: "INTERNAL_SERVER_ERROR",
 		});
 	}
