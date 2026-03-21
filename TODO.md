@@ -84,6 +84,30 @@ A prioritized list of things to add to make the app more robust, secure, and fea
 
 
 
+### Marketplace
+**Effort:** ~2-3 days
+**Why:** Org members often want to buy/sell/trade items with colleagues (gear, books, furniture, etc.) or offer services. A lightweight internal marketplace keeps this within the platform.
+**What to do:**
+- Add `Listing` model: title, description, price (optional — can be free or negotiable), category, imageUrl, status (ACTIVE, SOLD, CLOSED), authorId, organizationId
+- Categories: Items for Sale, Free, Services, Housing, Jobs
+- API: `listings.createListing`, `listings.getListings` (org-scoped, filterable by category), `listings.getListingById`, `listings.closeListing`
+- Web-UI: `/marketplace` page with category filters and listing cards; listing detail page; create listing form (reuse image upload from posts)
+- Contact: clicking "Contact seller" opens a mailto or links to their profile (no in-app messaging needed yet)
+
+---
+
+### Organizational Events
+**Effort:** ~2 days
+**Why:** Teams need a place to announce and coordinate org-wide or group-specific events (town halls, workshops, socials, hackathons).
+**What to do:**
+- Add `Event` model: title, description, startsAt, endsAt, location (optional string), onlineUrl (optional), organizationId, authorId, groupId (optional — scoped to a group)
+- Add `EventRsvp` model: eventId, userId, status (GOING, NOT_GOING)
+- API: `events.createEvent`, `events.getEvents` (org-scoped, upcoming first), `events.getEventById`, `events.rsvp`
+- Web-UI: `/events` page with upcoming events list; event detail page with RSVP button and attendee count; create event form (admins or all users, TBD)
+- Sidebar: add Events nav item
+
+---
+
 ### Kudos system
 **Effort:** TBD
 **Why:** Core differentiating feature — peer recognition with AI-generated images.
