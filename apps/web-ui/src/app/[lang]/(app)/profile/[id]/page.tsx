@@ -104,7 +104,7 @@ export default function ProfilePage() {
 	const [isDragging, setIsDragging] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
-	const MAX_AVATAR_SIZE_MB = 5;
+	const MAX_AVATAR_SIZE_MB = 2;
 	const ACCEPTED_IMAGE_TYPES = [
 		"image/jpeg",
 		"image/png",
@@ -114,7 +114,9 @@ export default function ProfilePage() {
 
 	const applyAvatarFile = (file: File) => {
 		if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-			toast.error("Only JPEG, PNG, WebP, or GIF images are accepted.");
+			toast.error(
+				"Only JPEG, PNG, WebP, or GIF images are accepted for profile pictures.",
+			);
 			return;
 		}
 		if (file.size > MAX_AVATAR_SIZE_MB * 1024 * 1024) {

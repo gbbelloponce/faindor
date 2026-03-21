@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Heart, MessageCircle, Send } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -16,6 +17,7 @@ type PostCardProps = {
 	post: {
 		id: number;
 		content: string;
+		imageUrl: string | null;
 		createdAt: Date | string;
 		isLikedByUser: boolean;
 		author: {
@@ -137,6 +139,18 @@ export function PostCard({ post }: PostCardProps) {
 			</div>
 
 			<p className="mt-3 text-sm whitespace-pre-wrap">{post.content}</p>
+
+			{post.imageUrl && (
+				<div className="mt-3">
+					<Image
+						src={post.imageUrl}
+						alt="Post image"
+						width={600}
+						height={400}
+						className="rounded-lg object-cover w-full max-h-96"
+					/>
+				</div>
+			)}
 
 			<div className="mt-3 flex items-center gap-4">
 				<button

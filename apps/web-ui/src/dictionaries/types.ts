@@ -68,6 +68,10 @@ export type Dictionary = {
 		createPost: {
 			placeholder: string;
 			button: string;
+			attachImage: string;
+			removeImage: string;
+			imageTooBig: string;
+			imageInvalidType: string;
 		};
 		post: {
 			likes: string;

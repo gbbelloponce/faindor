@@ -73,6 +73,10 @@ export const es: Dictionary = {
 		createPost: {
 			placeholder: "¿Qué tienes en mente?",
 			button: "Publicar",
+			attachImage: "Adjuntar imagen",
+			removeImage: "Eliminar imagen",
+			imageTooBig: "La imagen debe pesar menos de 5 MB.",
+			imageInvalidType: "Solo se aceptan imágenes JPEG, PNG, WebP o GIF.",
 		},
 		post: {
 			likes: "me gusta",

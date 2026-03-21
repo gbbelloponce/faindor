@@ -4,6 +4,7 @@ import { z } from "zod";
 export const createPostSchema = z.object({
 	content: z.string().min(1).max(5000).trim(),
 	groupId: z.number().optional(),
+	imageUrl: z.string().url({ error: "Invalid URL" }).optional().nullable(),
 });
 
 export const updatePostSchema = z.object({
@@ -14,6 +15,7 @@ export const updatePostSchema = z.object({
 export type CreatePostBody = {
 	content: string;
 	groupId?: number;
+	imageUrl?: string | null;
 	organizationId: number;
 	userId: number;
 };
@@ -26,6 +28,7 @@ export type UpdatePostBody = {
 export type PostWithAuthorAndCounts = {
 	id: number;
 	content: string;
+	imageUrl: string | null;
 	organizationId: number;
 	authorId: number;
 	groupId: number | null;

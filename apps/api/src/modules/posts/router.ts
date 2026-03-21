@@ -69,6 +69,7 @@ export const postsRouter = router({
 			return await createPost({
 				content: input.content,
 				groupId: input.groupId,
+				imageUrl: input.imageUrl,
 				organizationId: ctx.user.organizationId,
 				userId: ctx.user.id,
 			});

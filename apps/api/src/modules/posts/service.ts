@@ -196,6 +196,7 @@ export const createPost = async (body: CreatePostBody): Promise<Post> => {
 			data: {
 				content: body.content,
 				groupId: body.groupId,
+				imageUrl: body.imageUrl,
 				organizationId: body.organizationId,
 				authorId: body.userId,
 			},

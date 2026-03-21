@@ -82,12 +82,6 @@ A prioritized list of things to add to make the app more robust, secure, and fea
 
 ---
 
-### Post image/file attachments
-**Effort:** ~1 day
-**Why:** Text-only posts limit engagement.
-**How:** Use Supabase Storage — S3-compatible, generous free tier, direct upload from browser.
-
----
 
 
 ### Kudos system
