@@ -99,6 +99,8 @@ Faindor is a workplace social media platform where users log in with work emails
 - `DATABASE_URL`: PostgreSQL connection string (Supabase pooled connection)
 - `ACCESS_TOKEN_SECRET`: JWT signing secret for access tokens
 - `REFRESH_TOKEN_SECRET`: JWT signing secret for refresh tokens
+- `SUPABASE_URL`: Supabase project URL (e.g. `https://<ref>.supabase.co`)
+- `SUPABASE_SERVICE_ROLE_KEY`: Supabase service role key — **never expose to client**; used to create signed upload URLs
 
 **Web UI (`apps/web-ui/.env.local`):**
 - `NEXT_PUBLIC_API_URL`: API endpoint for tRPC client

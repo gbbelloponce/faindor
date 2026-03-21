@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { prettyJSON } from "hono/pretty-json";
 
+import { uploadRoute } from "@/modules/upload/route";
 import { appRouter } from "@/router";
 import { createContext } from "@/shared/trpc/context";
 import { validateEnv } from "@/shared/utils/env";
@@ -13,6 +14,8 @@ const app = new Hono();
 
 app.use(cors({ origin: [process.env.CLIENT_URL] }));
 app.use(prettyJSON());
+
+app.route("/upload", uploadRoute);
 
 app.use(
 	"/trpc/*",

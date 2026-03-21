@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { useLocale } from "@/dictionaries/useLocale";
-import { supabase } from "@/lib/supabase";
+import { uploadToStorage } from "@/lib/upload";
 import { useTRPC } from "@/trpc/trpc";
 
 const MAX_POST_IMAGE_MB = 5;
@@ -46,17 +46,6 @@ function getInitials(name: string): string {
 		.join("")
 		.toUpperCase()
 		.slice(0, 2);
-}
-
-async function uploadPostImage(file: File, userId: number): Promise<string> {
-	const ext = file.name.split(".").pop();
-	const path = `${userId}/${Date.now()}.${ext}`;
-	const { data, error } = await supabase.storage
-		.from("post-images")
-		.upload(path, file, { upsert: true });
-	if (error) throw error;
-	return supabase.storage.from("post-images").getPublicUrl(data.path).data
-		.publicUrl;
 }
 
 type CreatePostFormProps = {
@@ -135,9 +124,9 @@ export function CreatePostForm({ groupId }: CreatePostFormProps = {}) {
 	const onSubmit = async (data: z.infer<typeof formSchema>) => {
 		let imageUrl: string | null = null;
 
-		if (imageFile && currentUser) {
+		if (imageFile) {
 			try {
-				imageUrl = await uploadPostImage(imageFile, currentUser.id);
+				imageUrl = await uploadToStorage(imageFile, "post-images");
 			} catch {
 				toast.error("Failed to upload image");
 				return;

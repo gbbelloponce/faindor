@@ -4,6 +4,8 @@ const REQUIRED_ENV_VARS = [
 	"DATABASE_URL",
 	"CLIENT_URL",
 	"API_PORT",
+	"SUPABASE_URL",
+	"SUPABASE_SERVICE_ROLE_KEY",
 ] as const;
 
 export const validateEnv = () => {

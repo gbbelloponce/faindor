@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useLocale } from "@/dictionaries/useLocale";
-import { supabase } from "@/lib/supabase";
+import { uploadToStorage } from "@/lib/upload";
 import { useTRPC } from "@/trpc/trpc";
 import { PostCard } from "../../home/post-card";
 
@@ -42,17 +42,6 @@ function getInitials(name: string): string {
 		.join("")
 		.toUpperCase()
 		.slice(0, 2);
-}
-
-async function uploadAvatar(file: File, userId: number): Promise<string> {
-	const ext = file.name.split(".").pop();
-	const path = `${userId}/${Date.now()}.${ext}`;
-	const { data, error } = await supabase.storage
-		.from("avatars")
-		.upload(path, file, { upsert: true });
-	if (error) throw error;
-	return supabase.storage.from("avatars").getPublicUrl(data.path).data
-		.publicUrl;
 }
 
 function ProfileHeaderSkeleton() {
@@ -203,7 +192,7 @@ export default function ProfilePage() {
 
 		if (avatarFile) {
 			try {
-				avatarUrl = await uploadAvatar(avatarFile, userId);
+				avatarUrl = await uploadToStorage(avatarFile, "avatars");
 			} catch {
 				toast.error(dictionary.profile.updateError);
 				return;
