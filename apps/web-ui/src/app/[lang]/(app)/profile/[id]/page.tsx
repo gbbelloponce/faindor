@@ -101,7 +101,29 @@ export default function ProfilePage() {
 	const [isEditing, setIsEditing] = useState(false);
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+	const [isDragging, setIsDragging] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+
+	const MAX_AVATAR_SIZE_MB = 5;
+	const ACCEPTED_IMAGE_TYPES = [
+		"image/jpeg",
+		"image/png",
+		"image/webp",
+		"image/gif",
+	];
+
+	const applyAvatarFile = (file: File) => {
+		if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+			toast.error("Only JPEG, PNG, WebP, or GIF images are accepted.");
+			return;
+		}
+		if (file.size > MAX_AVATAR_SIZE_MB * 1024 * 1024) {
+			toast.error(`Image must be smaller than ${MAX_AVATAR_SIZE_MB} MB.`);
+			return;
+		}
+		setAvatarFile(file);
+		setAvatarPreview(URL.createObjectURL(file));
+	};
 
 	const userQuery = useQuery(
 		trpc.users.getPublicUserInfoById.queryOptions({ id: userId }),
@@ -156,9 +178,22 @@ export default function ProfilePage() {
 
 	const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
-		if (!file) return;
-		setAvatarFile(file);
-		setAvatarPreview(URL.createObjectURL(file));
+		if (file) applyAvatarFile(file);
+		e.target.value = "";
+	};
+
+	const handleDragOver = (e: React.DragEvent) => {
+		e.preventDefault();
+		setIsDragging(true);
+	};
+
+	const handleDragLeave = () => setIsDragging(false);
+
+	const handleDrop = (e: React.DragEvent) => {
+		e.preventDefault();
+		setIsDragging(false);
+		const file = e.dataTransfer.files?.[0];
+		if (file) applyAvatarFile(file);
 	};
 
 	const onSubmit = async (values: EditProfileValues) => {
@@ -200,8 +235,13 @@ export default function ProfilePage() {
 										aria-label={dictionary.profile.avatarLabel}
 										className="relative shrink-0 group"
 										onClick={() => fileInputRef.current?.click()}
+										onDragOver={handleDragOver}
+										onDragLeave={handleDragLeave}
+										onDrop={handleDrop}
 									>
-										<Avatar className="size-16">
+										<Avatar
+											className={`size-16 transition-opacity ${isDragging ? "opacity-60" : ""}`}
+										>
 											{displayAvatarUrl && (
 												<AvatarImage src={displayAvatarUrl} alt={user.name} />
 											)}
@@ -209,14 +249,16 @@ export default function ProfilePage() {
 												{getInitials(user.name)}
 											</AvatarFallback>
 										</Avatar>
-										<div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+										<div
+											className={`absolute inset-0 flex items-center justify-center rounded-full bg-black/40 transition-opacity ${isDragging ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+										>
 											<Pencil className="size-4 text-white" />
 										</div>
 									</button>
 									<input
 										ref={fileInputRef}
 										type="file"
-										accept="image/*"
+										accept="image/jpeg,image/png,image/webp,image/gif"
 										className="hidden"
 										onChange={handleAvatarChange}
 									/>

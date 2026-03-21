@@ -74,6 +74,14 @@ A prioritized list of things to add to make the app more robust, secure, and fea
 
 ## Core Features
 
+### Avatar image optimization
+**Effort:** ~1 hour (when on Supabase Pro)
+**Why:** Currently whatever the user uploads is stored and served as-is. Supabase Storage has a built-in CDN image transformation API (`transform: { width, height, format: "webp", quality }` on `getPublicUrl`) that resizes and converts on the edge — no extra infrastructure needed.
+**Blocked by:** Supabase Pro plan (image transforms are not available on the free tier).
+**What to do:** In `uploadAvatar()`, use the transform option on `getPublicUrl` to save a `200x200` webp URL to the DB instead of the raw upload URL.
+
+---
+
 ### Post image/file attachments
 **Effort:** ~1 day
 **Why:** Text-only posts limit engagement.
