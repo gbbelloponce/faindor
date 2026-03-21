@@ -48,13 +48,19 @@ export const isPostFromOrganization = async (
 export const getPostById = async (
 	id: number,
 	organizationId: number,
-): Promise<Post> => {
+	userId: number,
+): Promise<PostWithAuthorAndCounts> => {
 	try {
 		const result = await db.post.findFirst({
 			where: {
 				id,
 				organizationId,
 				deletedAt: null,
+			},
+			include: {
+				author: true,
+				likes: { where: { userId }, select: { id: true } },
+				_count: { select: { likes: true, comments: true } },
 			},
 		});
 
@@ -65,7 +71,11 @@ export const getPostById = async (
 			});
 		}
 
-		return result;
+		const { likes, ...post } = result;
+		return {
+			...post,
+			isLikedByUser: likes.length > 0,
+		} as PostWithAuthorAndCounts;
 	} catch (error) {
 		throw handleError(error, {
 			message: `Failed to get post by id: ${id}`,

@@ -106,4 +106,10 @@ export const es: Dictionary = {
 		commentedOnYourPost: "comentó en tu publicación",
 		repliedToYourComment: "respondió a tu comentario",
 	},
+	search: {
+		placeholder: "Buscar…",
+		users: "Usuarios",
+		posts: "Publicaciones",
+		noResults: "Sin resultados.",
+	},
 };

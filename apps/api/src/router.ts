@@ -5,6 +5,7 @@ import { likesRouter } from "@/modules/likes/router";
 import { notificationsRouter } from "@/modules/notifications/router";
 import { organizationsRouter } from "@/modules/organizations/router";
 import { postsRouter } from "@/modules/posts/router";
+import { searchRouter } from "@/modules/search/router";
 import { usersRouter } from "@/modules/users/router";
 import { publicProcedure, router } from "@/shared/trpc";
 
@@ -20,6 +21,7 @@ export const appRouter = router({
 	comments: commentsRouter,
 	groups: groupsRouter,
 	notifications: notificationsRouter,
+	search: searchRouter,
 });
 
 export type AppRouter = typeof appRouter;

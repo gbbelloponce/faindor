@@ -82,22 +82,13 @@ A prioritized list of things to add to make the app more robust, secure, and fea
 ---
 
 ### User profile editing
-**Effort:** ~half day
+**Effort:** ~half day *(in progress)*
 **Why:** Users can view profiles but can't update their own name, bio, or avatar.
 **What to do:**
 - Add `bio: String?` and `avatarUrl: String?` to the `User` model
 - Add a `users.updateProfile` tRPC procedure
 - Add an edit form to the profile page (only visible to the profile owner)
 - For avatar upload: use Supabase Storage
-
----
-
-### Search
-**Effort:** ~1 day
-**Why:** The search bar in the header is a placeholder — it does nothing.
-**What to do:**
-- Add a `search` tRPC procedure that queries posts and users by keyword
-- Wire up the header search input to navigate to a `/search?q=` page with results
 
 ---
 

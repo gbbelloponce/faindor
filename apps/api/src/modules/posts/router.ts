@@ -18,9 +18,11 @@ export const postsRouter = router({
 	getPostById: authenticatedProcedure
 		.input(z.object({ postId: positiveNumberSchema }))
 		.query(async ({ input, ctx }) => {
-			const post = await getPostById(input.postId, ctx.user.organizationId);
-
-			return post;
+			return await getPostById(
+				input.postId,
+				ctx.user.organizationId,
+				ctx.user.id,
+			);
 		}),
 	getLatestsPosts: authenticatedProcedure
 		.input(z.object({ page: positiveNumberSchema }))

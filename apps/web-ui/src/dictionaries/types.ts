@@ -101,4 +101,10 @@ export type Dictionary = {
 		commentedOnYourPost: string;
 		repliedToYourComment: string;
 	};
+	search: {
+		placeholder: string;
+		users: string;
+		posts: string;
+		noResults: string;
+	};
 };

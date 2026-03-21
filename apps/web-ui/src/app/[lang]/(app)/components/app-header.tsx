@@ -12,7 +12,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { useAuth } from "@/auth/useAuth";
 import { LocaleSwitcher } from "@/components/locale-switcher";
@@ -29,6 +29,11 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
+import {
+	Popover,
+	PopoverAnchor,
+	PopoverContent,
+} from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInput, useSidebar } from "@/components/ui/sidebar";
 import { useLocale } from "@/dictionaries/useLocale";
@@ -78,6 +83,19 @@ export function AppHeader() {
 	const unreadCountQuery = useQuery(
 		trpc.notifications.getUnreadCount.queryOptions(),
 	);
+
+	const [query, setQuery] = useState("");
+	const [debouncedQuery, setDebouncedQuery] = useState("");
+
+	useEffect(() => {
+		const timer = setTimeout(() => setDebouncedQuery(query.trim()), 300);
+		return () => clearTimeout(timer);
+	}, [query]);
+
+	const searchQuery = useQuery({
+		...trpc.search.search.queryOptions({ query: debouncedQuery }),
+		enabled: debouncedQuery.length >= 2,
+	});
 
 	const markAllAsReadMutation = useMutation(
 		trpc.notifications.markAllAsRead.mutationOptions({
@@ -177,18 +195,90 @@ export function AppHeader() {
 				onSubmit={(e) => e.preventDefault()}
 				className="flex flex-1 items-center justify-center"
 			>
-				<div className={cn("relative max-w-96", isMobile ? "w-full" : "w-3/4")}>
-					<Label htmlFor="search" className="sr-only">
-						Search
-					</Label>
-					<SidebarInput
-						id="search"
-						role="search"
-						className="h-10 pl-8 w-full"
-						placeholder="Search..."
-					/>
-					<Search className="pointer-events-none absolute left-2 top-1/2 size-4 -translate-y-1/2 select-none opacity-50" />
-				</div>
+				<Popover
+					open={debouncedQuery.length >= 2}
+					onOpenChange={(open) => {
+						if (!open) setQuery("");
+					}}
+				>
+					<PopoverAnchor asChild>
+						<div
+							className={cn("relative max-w-96", isMobile ? "w-full" : "w-3/4")}
+						>
+							<Label htmlFor="search" className="sr-only">
+								Search
+							</Label>
+							<SidebarInput
+								id="search"
+								role="search"
+								className="h-10 pl-8 w-full"
+								placeholder={dictionary.search.placeholder}
+								value={query}
+								onChange={(e) => setQuery(e.target.value)}
+							/>
+							<Search className="pointer-events-none absolute left-2 top-1/2 size-4 -translate-y-1/2 select-none opacity-50" />
+						</div>
+					</PopoverAnchor>
+					<PopoverContent
+						className="w-[var(--radix-popover-anchor-width)] p-2"
+						onOpenAutoFocus={(e) => e.preventDefault()}
+						align="start"
+					>
+						{!searchQuery.data ||
+						(searchQuery.data.users.length === 0 &&
+							searchQuery.data.posts.length === 0) ? (
+							<p className="text-sm text-muted-foreground text-center py-2">
+								{searchQuery.isLoading ? "…" : dictionary.search.noResults}
+							</p>
+						) : (
+							<div className="space-y-3">
+								{searchQuery.data.users.length > 0 && (
+									<div>
+										<p className="text-xs font-medium text-muted-foreground px-2 pb-1">
+											{dictionary.search.users}
+										</p>
+										{searchQuery.data.users.map((user) => (
+											<Link
+												key={user.id}
+												href={`/${locale}/profile/${user.id}`}
+												onClick={() => setQuery("")}
+												className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent"
+											>
+												<Avatar className="size-6 shrink-0">
+													<AvatarFallback className="text-xs">
+														{getInitials(user.name)}
+													</AvatarFallback>
+												</Avatar>
+												<span>{user.name}</span>
+											</Link>
+										))}
+									</div>
+								)}
+								{searchQuery.data.posts.length > 0 && (
+									<div>
+										<p className="text-xs font-medium text-muted-foreground px-2 pb-1">
+											{dictionary.search.posts}
+										</p>
+										{searchQuery.data.posts.map((post) => (
+											<Link
+												key={post.id}
+												href={`/${locale}/posts/${post.id}`}
+												onClick={() => setQuery("")}
+												className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent"
+											>
+												<span className="truncate text-muted-foreground">
+													{post.content.length > 80
+														? `${post.content.slice(0, 80)}…`
+														: post.content}
+												</span>
+											</Link>
+										))}
+									</div>
+								)}
+							</div>
+						)}
+					</PopoverContent>
+				</Popover>
 			</form>
 
 			<div className="flex items-center">
