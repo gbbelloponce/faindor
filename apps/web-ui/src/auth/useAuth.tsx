@@ -212,6 +212,12 @@ export const useAuth = () => {
 	};
 
 	const logOut = () => {
+		// Best-effort server-side revocation — fire and forget
+		const refreshToken = Cookies.get(REFRESH_TOKEN_COOKIE_KEY);
+		if (refreshToken) {
+			void trpc.auth.logOut.mutate({ refreshToken });
+		}
+
 		Cookies.remove(ACCESS_TOKEN_COOKIE_KEY);
 		Cookies.remove(REFRESH_TOKEN_COOKIE_KEY);
 		setCurrentUser(null);

@@ -13,12 +13,19 @@ export const createAccessToken = async ({
 	userId,
 	userRole,
 	organizationId,
-}: { userId: number; userRole: UserRole; organizationId: number }) => {
+	tokenVersion,
+}: {
+	userId: number;
+	userRole: UserRole;
+	organizationId: number;
+	tokenVersion: number;
+}) => {
 	const token = await sign(
 		{
 			userId,
 			userRole,
 			organizationId,
+			tokenVersion,
 			exp: Math.floor(Date.now() / 1000) + ACCESS_TOKEN_EXPIRY,
 		},
 		process.env.ACCESS_TOKEN_SECRET,
@@ -70,7 +77,12 @@ export const decodeAccessToken = async (accessToken: string) => {
 		});
 	}
 
-	if (!payload.userId || !payload.organizationId || !payload.userRole) {
+	if (
+		!payload.userId ||
+		!payload.organizationId ||
+		!payload.userRole ||
+		payload.tokenVersion === undefined
+	) {
 		throw new TRPCError({
 			message: "Invalid access token.",
 			code: "UNAUTHORIZED",
@@ -81,6 +93,7 @@ export const decodeAccessToken = async (accessToken: string) => {
 		id: Number(payload.userId),
 		role: payload.userRole,
 		organizationId: Number(payload.organizationId),
+		tokenVersion: Number(payload.tokenVersion),
 	} as LoggedUser;
 };
 

@@ -30,6 +30,7 @@ export const getPublicUserInfoById = async (id: number) => {
 				active: true,
 				password: true,
 				role: true,
+				tokenVersion: true,
 			},
 		});
 

@@ -23,6 +23,8 @@ Shared code lives in `src/shared/`:
 - Always use `ctx.user.id` for the current user's ID in authenticated procedures. Never accept userId from client input for ownership/authorship.
 - Access tokens expire in 15 minutes, refresh tokens in 30 days.
 - Tokens are signed with `ACCESS_TOKEN_SECRET` and `REFRESH_TOKEN_SECRET` env vars.
+- `tokenVersion` is stored on `User` and embedded in the access token. On every authenticated request, `createContext` fetches the user's current `tokenVersion` from DB and rejects the token if it doesn't match. Incrementing `tokenVersion` (via `auth.logOut` or future deactivation logic) immediately invalidates all existing tokens for that user.
+- Rate limiting is applied in `src/index.ts` via `hono-rate-limiter`: 15 login attempts / 15 min, 10 register attempts / hour, 30 refresh attempts / 15 min (all per IP).
 
 ### Error Handling
 - Wrap service logic in try/catch and use `handleError(error, { message, code })` from `src/shared/utils/errors.ts`.
@@ -30,8 +32,8 @@ Shared code lives in `src/shared/`:
 
 ### Database
 - Prisma 7 with config in `prisma.config.ts` (schema path, migrations, datasource URL).
-- Prisma schema is split across `src/shared/db/schema/`: `schema.prisma` (generator + datasource), `user.prisma`, `organization.prisma`, `post.prisma`, `group.prisma`.
-- Generated client lives at `src/generated/prisma/` — use relative imports to `generated/prisma/client` (not `@/` alias or `@prisma/client`), so API type declarations are resolvable by the web-ui.
+- Prisma schema is split across `src/shared/db/`: `schema.prisma` (generator + datasource), `user.prisma`, `organization.prisma`, `post.prisma`, `group.prisma`.
+- Generated client lives at `src/shared/db/generated/prisma/` — use relative imports to `shared/db/generated/prisma/client` (not `@/` alias or `@prisma/client`), so API type declarations are resolvable by the web-ui.
 - Use `findUnique()` for fields with unique constraints (email, domain), not `findFirst()`.
 - Soft deletes use `deletedAt` — always filter with `deletedAt: null` in queries.
 - Pagination uses offset-based via `getPaginationArgs(page)` from `src/shared/utils/pagination.ts`.
@@ -51,8 +53,5 @@ Shared code lives in `src/shared/`:
 - **Install packages:** `cd apps/api && bun add <package>` (not `--filter`)
 
 ## Known Issues
-See `CODE_REVIEW.md` for a full list. Remaining open issues:
-- No rate limiting on auth and content creation endpoints (#7)
-- No admin-only route enforcement (#9)
-- Offset-based pagination could be cursor-based for better performance at scale (#15)
-- Domain field has no format validation (#16)
+- No admin-only route enforcement — `UserRole.APP_ADMIN` exists but is never checked in any procedure
+- Offset-based pagination — works fine now; cursor-based would be more reliable at scale

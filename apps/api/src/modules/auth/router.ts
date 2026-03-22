@@ -3,6 +3,7 @@ import {
 	getUserByCredentials,
 	getUserById,
 } from "@/modules/users/service";
+import { db } from "@/shared/db";
 import { publicProcedure, router } from "@/shared/trpc";
 import { handleError } from "@/shared/utils/errors";
 import {
@@ -32,6 +33,7 @@ export const authRouter = router({
 					userId: user.id,
 					userRole: user.role,
 					organizationId: user.organizationId,
+					tokenVersion: user.tokenVersion,
 				});
 
 				const refreshToken = await createRefreshToken({
@@ -72,6 +74,7 @@ export const authRouter = router({
 					userId: user.id,
 					userRole: user.role,
 					organizationId: user.organizationId,
+					tokenVersion: user.tokenVersion,
 				});
 
 				const refreshToken = await createRefreshToken({
@@ -92,6 +95,20 @@ export const authRouter = router({
 		.mutation(async ({ input }) => {
 			try {
 				return await createUser(input);
+			} catch (error) {
+				throw handleError(error);
+			}
+		}),
+	logOut: publicProcedure
+		.input(z.object({ refreshToken: z.string() }))
+		.mutation(async ({ input }) => {
+			try {
+				const { userId } = await decodeRefreshToken(input.refreshToken);
+				await db.user.update({
+					where: { id: userId },
+					data: { tokenVersion: { increment: 1 } },
+				});
+				return { success: true };
 			} catch (error) {
 				throw handleError(error);
 			}

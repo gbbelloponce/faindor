@@ -55,7 +55,5 @@ Next.js App Router with dynamic `[lang]` locale prefix:
 - `NODE_ENV` — used for cookie security flags (secure: true in production).
 
 ## Known Issues
-See `CODE_REVIEW.md` for the full list. Remaining:
-- No loading/error state patterns for tRPC queries (ongoing — will be addressed as pages are built)
-- Hardcoded dummy notifications in app header (placeholder)
-- Sidebar nav items are placeholders (ongoing)
+- No consistent loading/error state patterns for tRPC queries — will be addressed as pages are built
+- Sidebar nav items are placeholders — will be wired up as features are added

@@ -6,13 +6,11 @@ A prioritized list of things to add to make the app more robust, secure, and fea
 
 ## Security
 
-### Rate limiting on auth endpoints
-**Effort:** ~2 hours
-**Why:** `/auth.logInWithCredentials`, `/auth.register`, `/auth.refreshToken` are publicly callable with no throttling — vulnerable to brute force and credential stuffing.
-
-**What to do:**
-- Add Hono middleware (e.g. [`hono-rate-limiter`](https://github.com/rhinobase/hono-rate-limiter)) to the auth routes
-- Stricter limits on login (e.g. 5 attempts / 15 min per IP) than on register
+### ~~Rate limiting on auth endpoints~~ ✅ Done
+`hono-rate-limiter` added in `apps/api/src/index.ts`:
+- Login: 15 attempts / 15 min per IP
+- Register: 10 attempts / hour per IP
+- Refresh token: 30 attempts / 15 min per IP
 
 ---
 
@@ -29,24 +27,17 @@ A prioritized list of things to add to make the app more robust, secure, and fea
 
 ---
 
-### Fix refresh token race condition
-**Effort:** ~2 hours
-**Why:** If two concurrent requests fail with 401, both trigger a token refresh simultaneously. They produce two different token pairs; whichever finishes second wins, potentially invalidating the first.
-
-**What to do:**
-- In `app-trpc-provider.tsx`, add a refresh lock (a `Promise` ref) — if a refresh is in flight, queue subsequent 401s to wait on it rather than each triggering their own refresh
+### ~~Fix refresh token race condition~~ ✅ Done
+Added a module-level `refreshPromise` lock in `app-trpc-provider.tsx`. Concurrent 401s now share a single in-flight refresh instead of each triggering their own.
 
 ---
 
-### Token revocation on logout / user deletion
-**Effort:** ~3 hours
-**Why:** Currently, logging out just deletes the cookies client-side. The JWT is still cryptographically valid until expiry. A stolen token remains usable for up to 15 min (access) or 30 days (refresh).
-
-**What to do:**
-- Add a `tokenVersion: Int @default(0)` field to `User`
-- Include `tokenVersion` in the access token payload
-- On logout or user deactivation, increment `tokenVersion` in the DB
-- In `authenticatedProcedure`, verify that `tokenVersion` in the JWT matches the DB value
+### ~~Token revocation on logout / user deletion~~ ✅ Done
+- `tokenVersion Int @default(0)` added to `User` model (migrated)
+- `tokenVersion` included in access token payload
+- `createContext` verifies JWT `tokenVersion` matches DB on every authenticated request
+- `auth.logOut` procedure increments `tokenVersion` via the refresh token (works even with an expired access token)
+- `logOut()` in `useAuth.tsx` fires revocation call best-effort before clearing cookies
 
 ---
 

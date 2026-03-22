@@ -15,6 +15,9 @@ import {
 } from "../auth/constants";
 import { TRPCProvider } from "./trpc";
 
+// Shared lock so concurrent 401s don't each trigger their own refresh
+let refreshPromise: Promise<string | null> | null = null;
+
 const makeQueryClient = () => {
 	return new QueryClient({
 		defaultOptions: {
@@ -68,54 +71,60 @@ export function AppTRPCProvider({ children }: { children: React.ReactNode }) {
 					fetch: async (url: URL | RequestInfo, options?: RequestInit) => {
 						const response = await fetch(url, options);
 
-						// For 401s, it retries them with a refreshed token
+						// For 401s, retry with a refreshed token
 						if (response.status === 401) {
 							const refreshToken = Cookies.get(REFRESH_TOKEN_COOKIE_KEY);
 
 							if (refreshToken) {
-								try {
-									const refreshResponse = await fetch(
-										`${process.env.NEXT_PUBLIC_API_URL}/auth.refreshToken`,
-										{
-											method: "POST",
-											headers: {
-												"Content-Type": "application/json",
-											},
-											body: JSON.stringify({
-												refreshToken,
-											}),
+								// If a refresh is already in flight, reuse it instead of starting another
+								if (!refreshPromise) {
+									refreshPromise = (async () => {
+										try {
+											const refreshResponse = await fetch(
+												`${process.env.NEXT_PUBLIC_API_URL}/auth.refreshToken`,
+												{
+													method: "POST",
+													headers: { "Content-Type": "application/json" },
+													body: JSON.stringify({ refreshToken }),
+												},
+											);
+
+											if (refreshResponse.ok) {
+												const data = await refreshResponse.json();
+												const newToken = data.result.data.accessToken as string;
+												const newRefreshToken = data.result.data
+													.refreshToken as string;
+												Cookies.set(
+													ACCESS_TOKEN_COOKIE_KEY,
+													newToken,
+													ACCESS_TOKEN_COOKIE_CONFIG,
+												);
+												Cookies.set(
+													REFRESH_TOKEN_COOKIE_KEY,
+													newRefreshToken,
+													REFRESH_TOKEN_COOKIE_CONFIG,
+												);
+												return newToken;
+											}
+											return null;
+										} catch (error) {
+											console.error("Failed to refresh token:", error);
+											return null;
+										} finally {
+											refreshPromise = null;
+										}
+									})();
+								}
+
+								const newToken = await refreshPromise;
+								if (newToken) {
+									return fetch(url, {
+										...options,
+										headers: {
+											...options?.headers,
+											Authorization: `Bearer ${newToken}`,
 										},
-									);
-
-									if (refreshResponse.ok) {
-										const data = await refreshResponse.json();
-										Cookies.set(
-											ACCESS_TOKEN_COOKIE_KEY,
-											data.result.data.token,
-											ACCESS_TOKEN_COOKIE_CONFIG,
-										);
-										Cookies.set(
-											REFRESH_TOKEN_COOKIE_KEY,
-											data.result.data.refreshToken,
-											REFRESH_TOKEN_COOKIE_CONFIG,
-										);
-
-										const newOptions = {
-											...options,
-											headers: options?.headers
-												? {
-														...options.headers,
-														Authorization: `Bearer ${data.result.data.token}`,
-													}
-												: {
-														Authorization: `Bearer ${data.result.data.token}`,
-													},
-										};
-
-										return fetch(url, newOptions);
-									}
-								} catch (error) {
-									console.error("Failed to refresh token:", error);
+									});
 								}
 							}
 						}

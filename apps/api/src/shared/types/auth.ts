@@ -8,6 +8,7 @@ export interface LoggedUser {
 	id: number;
 	role: UserRole;
 	organizationId: number;
+	tokenVersion: number;
 }
 
 export interface UserWithOrganization extends User {
