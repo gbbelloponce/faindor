@@ -123,6 +123,21 @@ export const en: Dictionary = {
 		posts: "Posts",
 		noResults: "No results found.",
 	},
+	emailVerification: {
+		title: "Check your inbox",
+		subtitle:
+			"We sent a verification email to your address. Click the link in the email to activate your account.",
+		resend: "Resend email",
+		resendSuccess: "Verification email sent",
+		verifying: "Verifying…",
+		verifiedTitle: "Email verified!",
+		verifiedSubtitle: "Your account is ready. Taking you to the app…",
+		errorTitle: "Verification failed",
+		errorSubtitle:
+			"The link may have expired or already been used. Request a new one.",
+		backToLogin: "Back to login",
+		goToApp: "Go to app",
+	},
 	events: {
 		title: "Events",
 		createEvent: "Create Event",

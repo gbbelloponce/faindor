@@ -7,7 +7,8 @@ model User {
   active       Boolean  @default(true)
   bio          String?
   avatarUrl    String?
-  tokenVersion Int      @default(0)
+  tokenVersion     Int       @default(0)
+  emailVerifiedAt  DateTime?
 
   organizationId Int
 

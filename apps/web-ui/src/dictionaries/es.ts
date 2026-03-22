@@ -125,6 +125,21 @@ export const es: Dictionary = {
 		posts: "Publicaciones",
 		noResults: "Sin resultados.",
 	},
+	emailVerification: {
+		title: "Revisa tu correo",
+		subtitle:
+			"Te enviamos un correo de verificación. Haz clic en el enlace del correo para activar tu cuenta.",
+		resend: "Reenviar correo",
+		resendSuccess: "Correo de verificación enviado",
+		verifying: "Verificando…",
+		verifiedTitle: "¡Correo verificado!",
+		verifiedSubtitle: "Tu cuenta está lista. Te llevamos a la app…",
+		errorTitle: "Error de verificación",
+		errorSubtitle:
+			"El enlace puede haber expirado o ya fue usado. Solicita uno nuevo.",
+		backToLogin: "Volver al inicio de sesión",
+		goToApp: "Ir a la app",
+	},
 	events: {
 		title: "Eventos",
 		createEvent: "Crear evento",

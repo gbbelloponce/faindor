@@ -3,6 +3,7 @@ export interface User {
 	name: string;
 	role: string;
 	email: string;
+	emailVerifiedAt?: string | Date | null;
 }
 export interface Organization {
 	id: number;

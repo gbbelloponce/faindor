@@ -14,16 +14,16 @@ A prioritized list of things to add to make the app more robust, secure, and fea
 
 ---
 
-### Email verification for email/password signups
-**Effort:** ~1 day
-**Why:** Currently users can register with any email — fake or mistyped — which breaks the org-assignment logic (a typo in a corporate email puts someone in the wrong org).
-
-**What to do:**
-1. Add `emailVerifiedAt: DateTime?` to the `User` model
-2. On register: generate a signed, time-limited verification token (can reuse the JWT utils), store it, send an email with a verification link
-3. Add a `auth.verifyEmail` tRPC procedure that validates the token and sets `emailVerifiedAt`
-4. Gate access to the app (in proxy or `RequireAuthProvider`) until email is verified
-5. For email sending: use [Resend](https://resend.com) — simple API, generous free tier, good DX
+### ~~Email verification for email/password signups~~ ✅ Done
+- `emailVerifiedAt DateTime?` added to `User` model and migrated
+- On register: verification email sent via Resend (fire-and-forget, won't fail registration)
+- `auth.verifyEmail` (public): validates signed JWT token, sets `emailVerifiedAt`
+- `auth.sendVerificationEmail` (authenticated): resends the verification email
+- `RequireAuthProvider` redirects unverified users to `/verify-email`
+- `/verify-email` page handles: "check your inbox" state, auto-verify via `?token=...`, resend button, expired/invalid token error state
+- Set `RESEND_API_KEY` in `apps/api/.env` to enable sending (free tier: 3k emails/month)
+- Optionally set `RESEND_FROM_EMAIL` (defaults to `onboarding@resend.dev` sandbox)
+- For prod with a custom domain: add domain in Resend dashboard, set `RESEND_FROM_EMAIL=noreply@yourdomain.com`
 
 ---
 

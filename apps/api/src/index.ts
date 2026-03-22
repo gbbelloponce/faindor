@@ -59,6 +59,16 @@ app.use(
 	}),
 );
 
+// 5 resend attempts per hour per IP
+app.use(
+	"/trpc/auth.sendVerificationEmail",
+	rateLimiter({
+		windowMs: 60 * 60 * 1000,
+		limit: 5,
+		keyGenerator: ipKeyGenerator,
+	}),
+);
+
 app.route("/upload", uploadRoute);
 
 app.use(

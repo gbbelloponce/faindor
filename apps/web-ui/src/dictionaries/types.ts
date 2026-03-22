@@ -120,6 +120,19 @@ export type Dictionary = {
 		posts: string;
 		noResults: string;
 	};
+	emailVerification: {
+		title: string;
+		subtitle: string;
+		resend: string;
+		resendSuccess: string;
+		verifying: string;
+		verifiedTitle: string;
+		verifiedSubtitle: string;
+		errorTitle: string;
+		errorSubtitle: string;
+		backToLogin: string;
+		goToApp: string;
+	};
 	events: {
 		title: string;
 		createEvent: string;

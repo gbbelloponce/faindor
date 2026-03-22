@@ -76,7 +76,7 @@ Faindor is a workplace social media platform where users log in with work emails
   - Toast notifications (sonner)
 
 ## Database Schema
-- **Users**: Email-based authentication, role system (USER, APP_ADMIN); optional `bio` and `avatarUrl` fields for profile customization; `tokenVersion` for token revocation; `active` flag for account suspension
+- **Users**: Email-based authentication, role system (USER, APP_ADMIN); optional `bio` and `avatarUrl` fields for profile customization; `tokenVersion` for token revocation; `active` flag for account suspension; `emailVerifiedAt DateTime?` for email verification gating
 - **Events**: `Event` model (title, description, startsAt, endsAt, location, onlineUrl, organizationId, authorId); `EventRsvp` (eventId, userId, status GOING/NOT_GOING)
 - **Admin**: No separate model — admin capabilities are enforced via `adminProcedure` tRPC middleware that checks `ctx.user.role === APP_ADMIN`
 - **Organizations**: Domain-based grouping (e.g., @company.com)

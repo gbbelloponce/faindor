@@ -25,7 +25,8 @@ Shared code lives in `src/shared/`:
 - Access tokens expire in 15 minutes, refresh tokens in 30 days.
 - Tokens are signed with `ACCESS_TOKEN_SECRET` and `REFRESH_TOKEN_SECRET` env vars.
 - `tokenVersion` is stored on `User` and embedded in the access token. On every authenticated request, `createContext` fetches the user's current `tokenVersion` from DB and rejects the token if it doesn't match. Incrementing `tokenVersion` (via `auth.logOut` or future deactivation logic) immediately invalidates all existing tokens for that user.
-- Rate limiting is applied in `src/index.ts` via `hono-rate-limiter`: 15 login attempts / 15 min, 10 register attempts / hour, 30 refresh attempts / 15 min (all per IP).
+- Rate limiting is applied in `src/index.ts` via `hono-rate-limiter`: 15 login attempts / 15 min, 10 register attempts / hour, 30 refresh attempts / 15 min, 5 resend-verification attempts / hour (all per IP).
+- Email verification: `auth.register` sends a verification email via Resend (fire-and-forget). `auth.verifyEmail` (public) validates the signed token and sets `emailVerifiedAt`. `auth.sendVerificationEmail` (authenticated) resends the email. Verification tokens are signed JWTs with `type: "emailVerification"` and 24h expiry. Set `RESEND_API_KEY` (and optionally `RESEND_FROM_EMAIL`) in `.env` to enable email sending; if unset, a warning is logged and emails are skipped.
 
 ### Error Handling
 - Wrap service logic in try/catch and use `handleError(error, { message, code })` from `src/shared/utils/errors.ts`.

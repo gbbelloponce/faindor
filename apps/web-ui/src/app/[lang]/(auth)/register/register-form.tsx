@@ -38,7 +38,7 @@ const formSchema = z
 export function RegisterForm() {
 	const router = useRouter();
 
-	const { dictionary } = useLocale();
+	const { dictionary, locale } = useLocale();
 
 	const { register, isLoading } = useAuth();
 
@@ -62,8 +62,7 @@ export function RegisterForm() {
 		);
 
 		if (response.success) {
-			toast.success(dictionary.auth.messages.registered);
-			router.push("/home");
+			router.push(`/${locale}/verify-email`);
 		} else {
 			toast.error(
 				dictionary.auth.messages.errors.register[response.error.code].title,

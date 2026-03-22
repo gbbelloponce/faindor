@@ -8,6 +8,7 @@ import type { LoggedUser } from "@/shared/types/auth";
 // Token expiration times in seconds
 export const ACCESS_TOKEN_EXPIRY = 15 * 60; // 15 minutes
 export const REFRESH_TOKEN_EXPIRY = 30 * 24 * 60 * 60; // 30 days
+export const EMAIL_VERIFICATION_TOKEN_EXPIRY = 24 * 60 * 60; // 24 hours
 
 export const createAccessToken = async ({
 	userId,
@@ -95,6 +96,66 @@ export const decodeAccessToken = async (accessToken: string) => {
 		organizationId: Number(payload.organizationId),
 		tokenVersion: Number(payload.tokenVersion),
 	} as LoggedUser;
+};
+
+export const createEmailVerificationToken = async ({
+	userId,
+	email,
+}: {
+	userId: number;
+	email: string;
+}) => {
+	return await sign(
+		{
+			userId,
+			email,
+			type: "emailVerification",
+			exp: Math.floor(Date.now() / 1000) + EMAIL_VERIFICATION_TOKEN_EXPIRY,
+		},
+		process.env.ACCESS_TOKEN_SECRET,
+	);
+};
+
+export const decodeEmailVerificationToken = async (token: string) => {
+	if (!token) {
+		throw new TRPCError({
+			message: "No token provided.",
+			code: "BAD_REQUEST",
+		});
+	}
+
+	let payload: JWTPayload;
+	try {
+		payload = await verify(token, process.env.ACCESS_TOKEN_SECRET, "HS256");
+	} catch (error) {
+		if (error instanceof JwtTokenExpired) {
+			throw new TRPCError({
+				message: "Verification link has expired.",
+				code: "BAD_REQUEST",
+				cause: "TOKEN_EXPIRED",
+			});
+		}
+		throw new TRPCError({
+			message: "Invalid verification token.",
+			code: "BAD_REQUEST",
+		});
+	}
+
+	if (
+		!payload.userId ||
+		!payload.email ||
+		payload.type !== "emailVerification"
+	) {
+		throw new TRPCError({
+			message: "Invalid verification token.",
+			code: "BAD_REQUEST",
+		});
+	}
+
+	return {
+		userId: Number(payload.userId),
+		email: String(payload.email),
+	};
 };
 
 export const decodeRefreshToken = async (refreshToken: string) => {

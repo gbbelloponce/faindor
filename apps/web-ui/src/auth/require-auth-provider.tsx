@@ -2,17 +2,22 @@
 
 import Cookies from "js-cookie";
 import { Loader2 } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { ACCESS_TOKEN_COOKIE_KEY } from "./constants";
 import { useAuth } from "./useAuth";
+import { useAuthStore } from "./useAuth";
 
 export function RequireAuthProvider({
 	children,
 }: { children: React.ReactNode }) {
 	const { isLoading, logInWithAccessToken, refreshAccessToken, logOut } =
 		useAuth();
+	const { currentUser } = useAuthStore();
 	const [isInitialized, setIsInitialized] = useState(false);
+	const router = useRouter();
+	const params = useParams<{ lang: string }>();
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: This should only run once on mount
 	useEffect(() => {
@@ -42,6 +47,13 @@ export function RequireAuthProvider({
 
 		initAuth();
 	}, []);
+
+	// Redirect to email verification page if email is not verified
+	useEffect(() => {
+		if (isInitialized && currentUser && !currentUser.emailVerifiedAt) {
+			router.replace(`/${params.lang}/verify-email`);
+		}
+	}, [isInitialized, currentUser, router, params.lang]);
 
 	if (!isInitialized || isLoading) {
 		return (
