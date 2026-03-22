@@ -1,5 +1,6 @@
 import { TRPCError, initTRPC } from "@trpc/server";
 
+import { UserRole } from "../db/generated/prisma/client";
 import type { createContext } from "./context";
 
 export const t = initTRPC
@@ -16,6 +17,19 @@ export const authenticatedProcedure = t.procedure.use(
 			throw new TRPCError({
 				message: "Not authenticated.",
 				code: "UNAUTHORIZED",
+			});
+		}
+
+		return next({ ctx: { user: ctx.user } });
+	}),
+);
+
+export const adminProcedure = authenticatedProcedure.use(
+	t.middleware(({ ctx, next }) => {
+		if (!ctx.user || ctx.user.role !== UserRole.APP_ADMIN) {
+			throw new TRPCError({
+				message: "Forbidden.",
+				code: "FORBIDDEN",
 			});
 		}
 

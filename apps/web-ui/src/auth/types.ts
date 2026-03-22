@@ -7,6 +7,7 @@ export interface User {
 export interface Organization {
 	id: number;
 	name: string;
+	description?: string | null;
 }
 
 export interface UserWithOrganization extends User {

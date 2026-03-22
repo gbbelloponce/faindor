@@ -120,4 +120,67 @@ export type Dictionary = {
 		posts: string;
 		noResults: string;
 	};
+	events: {
+		title: string;
+		createEvent: string;
+		noEvents: string;
+		going: string;
+		notGoing: string;
+		rsvp: string;
+		location: string;
+		onlineEvent: string;
+		startsAt: string;
+		endsAt: string;
+		titleLabel: string;
+		description: string;
+		cancel: string;
+		createSuccess: string;
+		createError: string;
+		rsvpSuccess: string;
+	};
+	admin: {
+		title: string;
+		tabs: {
+			users: string;
+			orgSettings: string;
+			events: string;
+			content: string;
+		};
+		users: {
+			name: string;
+			email: string;
+			role: string;
+			status: string;
+			joined: string;
+			active: string;
+			suspended: string;
+			deleted: string;
+			suspend: string;
+			activate: string;
+			delete: string;
+			promoteToAdmin: string;
+			revokeAdmin: string;
+			noUsers: string;
+			confirmSuspend: string;
+			confirmDelete: string;
+			actionSuccess: string;
+			actionError: string;
+		};
+		orgSettings: {
+			name: string;
+			description: string;
+			namePlaceholder: string;
+			descriptionPlaceholder: string;
+			save: string;
+			updateSuccess: string;
+			updateError: string;
+		};
+		content: {
+			deletePost: string;
+			confirmDeletePost: string;
+			deleteSuccess: string;
+			deleteError: string;
+			noPosts: string;
+		};
+	};
 };

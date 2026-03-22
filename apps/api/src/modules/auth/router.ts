@@ -12,6 +12,7 @@ import {
 	decodeAccessToken,
 	decodeRefreshToken,
 } from "@/shared/utils/token";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
 	logInWithAccessTokenSchema,
@@ -69,6 +70,14 @@ export const authRouter = router({
 			try {
 				const { userId } = await decodeRefreshToken(input.refreshToken);
 				const user = await getUserById(userId);
+
+				if (!user.active) {
+					throw new TRPCError({
+						message: "Account is suspended.",
+						code: "UNAUTHORIZED",
+						cause: "ACCOUNT_SUSPENDED",
+					});
+				}
 
 				const accessToken = await createAccessToken({
 					userId: user.id,

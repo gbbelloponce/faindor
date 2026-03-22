@@ -1,9 +1,10 @@
 "use client";
 
-import { Calendar, Home, ShoppingBag, Users } from "lucide-react";
+import { Calendar, Home, Shield, ShoppingBag, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { useAuthStore } from "@/auth/useAuth";
 import {
 	Sidebar,
 	SidebarContent,
@@ -13,12 +14,16 @@ import { useLocale } from "@/dictionaries/useLocale";
 
 export function AppSidebar() {
 	const { locale } = useLocale();
+	const { currentUser } = useAuthStore();
 
 	const navItems = [
 		{ icon: Home, href: `/${locale}/home`, label: "Home" },
-		{ icon: Calendar, href: `/${locale}/calendar`, label: "Events" },
+		{ icon: Calendar, href: `/${locale}/events`, label: "Events" },
 		{ icon: Users, href: `/${locale}/groups`, label: "Groups" },
 		{ icon: ShoppingBag, href: `/${locale}/marketplace`, label: "Marketplace" },
+		...(currentUser?.role === "APP_ADMIN"
+			? [{ icon: Shield, href: `/${locale}/admin`, label: "Admin" }]
+			: []),
 	];
 
 	return (

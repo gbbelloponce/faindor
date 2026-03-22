@@ -1,0 +1,40 @@
+model Event {
+  id             Int       @id @default(autoincrement())
+  title          String
+  description    String?
+  startsAt       DateTime
+  endsAt         DateTime?
+  location       String?
+  onlineUrl      String?
+  organizationId Int
+  authorId       Int
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  author       User         @relation("EventAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  rsvps        EventRsvp[]
+
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  @@map("events")
+}
+
+model EventRsvp {
+  id      Int        @id @default(autoincrement())
+  eventId Int
+  userId  Int
+  status  RsvpStatus
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation("EventRsvpUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([eventId, userId])
+  @@map("event_rsvps")
+}
+
+enum RsvpStatus {
+  GOING
+  NOT_GOING
+}

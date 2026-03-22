@@ -22,6 +22,9 @@ model User {
   notificationsReceived Notification[] @relation("NotificationRecipient")
   notificationsSent     Notification[] @relation("NotificationActor")
 
+  createdEvents Event[]     @relation("EventAuthor")
+  eventRsvps    EventRsvp[] @relation("EventRsvpUser")
+
   createdAt DateTime  @default(now())
   deletedAt DateTime?
 

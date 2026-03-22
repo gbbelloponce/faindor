@@ -17,7 +17,8 @@ Shared code lives in `src/shared/`:
 
 ### Procedures
 - `publicProcedure` — no auth required (login, register)
-- `authenticatedProcedure` — requires valid JWT; provides `ctx.user` with `id`, `email`, `organizationId`, `userRole`
+- `authenticatedProcedure` — requires valid JWT; provides `ctx.user` with `id`, `role`, `organizationId`, `tokenVersion`
+- `adminProcedure` — extends `authenticatedProcedure`; additionally requires `ctx.user.role === APP_ADMIN`, throws `FORBIDDEN` otherwise
 
 ### Auth
 - Always use `ctx.user.id` for the current user's ID in authenticated procedures. Never accept userId from client input for ownership/authorship.
@@ -53,5 +54,4 @@ Shared code lives in `src/shared/`:
 - **Install packages:** `cd apps/api && bun add <package>` (not `--filter`)
 
 ## Known Issues
-- No admin-only route enforcement — `UserRole.APP_ADMIN` exists but is never checked in any procedure
 - Offset-based pagination — works fine now; cursor-based would be more reliable at scale

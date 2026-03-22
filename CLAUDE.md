@@ -37,7 +37,7 @@ Faindor is a workplace social media platform where users log in with work emails
 - **Database**:
   - Prisma 7 ORM with PostgreSQL
   - Prisma Accelerate for edge performance
-  - Single schema file: `src/shared/db/schema.prisma`; model files in `src/shared/db/models/` (user.prisma, organization.prisma, post.prisma, group.prisma)
+  - Single schema file: `src/shared/db/schema.prisma`; model files in `src/shared/db/models/` (user.prisma, organization.prisma, post.prisma, group.prisma, event.prisma)
   - Migrations in `src/shared/db/migrations/`
   - Config in `prisma.config.ts` (schema path, migrations path, datasource URL)
   - Generated client output: `src/shared/db/generated/prisma/` (use relative imports to `shared/db/generated/prisma/client`, not `@/` alias, to keep API type declarations resolvable by the web-ui)
@@ -46,7 +46,7 @@ Faindor is a workplace social media platform where users log in with work emails
   - Custom JWT implementation (access + refresh tokens)
   - Token utilities in `src/shared/utils/token.ts`
 - **Module Structure**:
-  - Each feature has its own module: auth, users, organizations, posts, comments, likes, groups, notifications, search
+  - Each feature has its own module: auth, users, organizations, posts, comments, likes, groups, notifications, search, events, admin
   - Modules contain: router.ts, service.ts (optional), types/request.ts
 - **Key Patterns**:
   - tRPC procedures: `publicProcedure` and `authenticatedProcedure`
@@ -76,7 +76,9 @@ Faindor is a workplace social media platform where users log in with work emails
   - Toast notifications (sonner)
 
 ## Database Schema
-- **Users**: Email-based authentication, role system (USER, APP_ADMIN); optional `bio` and `avatarUrl` fields for profile customization
+- **Users**: Email-based authentication, role system (USER, APP_ADMIN); optional `bio` and `avatarUrl` fields for profile customization; `tokenVersion` for token revocation; `active` flag for account suspension
+- **Events**: `Event` model (title, description, startsAt, endsAt, location, onlineUrl, organizationId, authorId); `EventRsvp` (eventId, userId, status GOING/NOT_GOING)
+- **Admin**: No separate model — admin capabilities are enforced via `adminProcedure` tRPC middleware that checks `ctx.user.role === APP_ADMIN`
 - **Organizations**: Domain-based grouping (e.g., @company.com)
 - **Posts, Comments, Likes**: Social features
 - **Groups**: Organization-specific groups with membership

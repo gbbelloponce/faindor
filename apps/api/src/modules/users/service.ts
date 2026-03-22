@@ -114,6 +114,14 @@ export const getUserByCredentials = async ({
 			});
 		}
 
+		if (!user.active) {
+			throw new TRPCError({
+				message: "Account is suspended.",
+				code: "UNAUTHORIZED",
+				cause: "ACCOUNT_SUSPENDED",
+			});
+		}
+
 		return user;
 	} catch (error) {
 		throw handleError(error, {

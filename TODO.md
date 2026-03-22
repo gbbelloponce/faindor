@@ -87,15 +87,11 @@ Added a module-level `refreshPromise` lock in `app-trpc-provider.tsx`. Concurren
 
 ---
 
-### Organizational Events
-**Effort:** ~2 days
-**Why:** Teams need a place to announce and coordinate org-wide or group-specific events (town halls, workshops, socials, hackathons).
-**What to do:**
-- Add `Event` model: title, description, startsAt, endsAt, location (optional string), onlineUrl (optional), organizationId, authorId, groupId (optional — scoped to a group)
-- Add `EventRsvp` model: eventId, userId, status (GOING, NOT_GOING)
-- API: `events.createEvent`, `events.getEvents` (org-scoped, upcoming first), `events.getEventById`, `events.rsvp`
-- Web-UI: `/events` page with upcoming events list; event detail page with RSVP button and attendee count; create event form (admins or all users, TBD)
-- Sidebar: add Events nav item
+### ~~Organizational Events~~ ✅ Done
+- `Event` + `EventRsvp` models added and migrated
+- API: `events.createEvent` (admin-only), `events.getEvents`, `events.getEventById`, `events.rsvp`, `events.getMyRsvp`
+- Web-UI: `/events` page with RSVP (Going/Not Going); event creation in admin Events tab
+- Sidebar Events link wired up (was pointing to `/calendar` before)
 
 ---
 
@@ -108,13 +104,11 @@ Added a module-level `refreshPromise` lock in `app-trpc-provider.tsx`. Concurren
 
 ## Admin
 
-### Admin UI for organization management
-**Effort:** ~2-3 days
-**Why:** The first user becomes admin but there's no UI to exercise those powers.
-**What to do:** Build an `/admin` section with:
-- User list with role management
-- Content moderation (delete posts/comments)
-- Org settings (name, allowed domains)
+### ~~Admin UI for organization management~~ ✅ Done
+- `adminProcedure` enforces `APP_ADMIN` role on all admin API routes
+- `/admin` page with 4 tabs: Users (suspend/activate/delete/promote/revoke), Org Settings (name + description), Events (create events), Content (delete posts)
+- Suspended users have `tokenVersion` incremented → existing tokens immediately invalid
+- Admin link in sidebar visible only to `APP_ADMIN` users; non-admins redirected away from `/admin`
 
 ---
 
