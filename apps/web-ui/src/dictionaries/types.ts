@@ -98,6 +98,7 @@ export type Dictionary = {
 		posts: string;
 		noPosts: string;
 		editProfile: string;
+		message: string;
 		saveChanges: string;
 		cancel: string;
 		bio: string;
@@ -119,6 +120,15 @@ export type Dictionary = {
 		users: string;
 		posts: string;
 		noResults: string;
+	};
+	messages: {
+		title: string;
+		noConversations: string;
+		noConversationsHint: string;
+		selectConversation: string;
+		messagePlaceholder: string;
+		you: string;
+		unreadBadgeLabel: string;
 	};
 	emailVerification: {
 		title: string;

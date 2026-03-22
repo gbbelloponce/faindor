@@ -103,6 +103,7 @@ export const es: Dictionary = {
 		posts: "Publicaciones",
 		noPosts: "Aún no hay publicaciones.",
 		editProfile: "Editar perfil",
+		message: "Mensaje",
 		saveChanges: "Guardar cambios",
 		cancel: "Cancelar",
 		bio: "Biografía",
@@ -124,6 +125,15 @@ export const es: Dictionary = {
 		users: "Usuarios",
 		posts: "Publicaciones",
 		noResults: "Sin resultados.",
+	},
+	messages: {
+		title: "Mensajes",
+		noConversations: "Sin conversaciones.",
+		noConversationsHint: "Envía un mensaje a un compañero visitando su perfil.",
+		selectConversation: "Selecciona una conversación para comenzar.",
+		messagePlaceholder: "Escribe un mensaje…",
+		you: "Tú",
+		unreadBadgeLabel: "mensajes sin leer",
 	},
 	emailVerification: {
 		title: "Revisa tu correo",

@@ -4,6 +4,7 @@ import { commentsRouter } from "@/modules/comments/router";
 import { eventsRouter } from "@/modules/events/router";
 import { groupsRouter } from "@/modules/groups/router";
 import { likesRouter } from "@/modules/likes/router";
+import { messagesRouter } from "@/modules/messages/router";
 import { notificationsRouter } from "@/modules/notifications/router";
 import { organizationsRouter } from "@/modules/organizations/router";
 import { postsRouter } from "@/modules/posts/router";
@@ -26,6 +27,7 @@ export const appRouter = router({
 	search: searchRouter,
 	events: eventsRouter,
 	admin: adminRouter,
+	messages: messagesRouter,
 });
 
 export type AppRouter = typeof appRouter;

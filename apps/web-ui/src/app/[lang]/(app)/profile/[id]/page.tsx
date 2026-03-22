@@ -2,8 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Pencil } from "lucide-react";
-import { useParams } from "next/navigation";
+import { Loader2, MessageSquare, Pencil } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -84,6 +84,8 @@ export default function ProfilePage() {
 	const trpc = useTRPC();
 	const queryClient = useQueryClient();
 	const { currentUser } = useAuth();
+	const router = useRouter();
+	const { locale } = useLocale();
 
 	const isOwnProfile = currentUser?.id === userId;
 
@@ -326,15 +328,26 @@ export default function ProfilePage() {
 								</AvatarFallback>
 							</Avatar>
 							<div className="flex-1 min-w-0">
-								<div className="flex items-center gap-3">
+								<div className="flex items-center gap-3 flex-wrap">
 									<h1 className="text-xl font-bold">{user.name}</h1>
-									{isOwnProfile && (
+									{isOwnProfile ? (
 										<Button
 											size="sm"
 											variant="outline"
 											onClick={handleEditClick}
 										>
 											{dictionary.profile.editProfile}
+										</Button>
+									) : (
+										<Button
+											size="sm"
+											variant="outline"
+											onClick={() =>
+												router.push(`/${locale}/messages?with=${userId}`)
+											}
+										>
+											<MessageSquare className="size-3.5 mr-1" />
+											{dictionary.profile.message}
 										</Button>
 									)}
 								</div>

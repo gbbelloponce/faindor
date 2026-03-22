@@ -1,0 +1,15 @@
+model DirectMessage {
+  id         Int       @id @default(autoincrement())
+  senderId   Int
+  receiverId Int
+  content    String
+  readAt     DateTime?
+
+  sender   User @relation("DmSender",   fields: [senderId],   references: [id], onDelete: Cascade)
+  receiver User @relation("DmReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([receiverId, readAt])
+  @@map("direct_messages")
+}

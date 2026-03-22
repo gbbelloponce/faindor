@@ -101,6 +101,7 @@ export const en: Dictionary = {
 		posts: "Posts",
 		noPosts: "No posts yet.",
 		editProfile: "Edit Profile",
+		message: "Message",
 		saveChanges: "Save Changes",
 		cancel: "Cancel",
 		bio: "Bio",
@@ -122,6 +123,15 @@ export const en: Dictionary = {
 		users: "Users",
 		posts: "Posts",
 		noResults: "No results found.",
+	},
+	messages: {
+		title: "Messages",
+		noConversations: "No conversations yet.",
+		noConversationsHint: "Message a colleague by visiting their profile.",
+		selectConversation: "Select a conversation to start chatting.",
+		messagePlaceholder: "Write a message…",
+		you: "You",
+		unreadBadgeLabel: "unread messages",
 	},
 	emailVerification: {
 		title: "Check your inbox",

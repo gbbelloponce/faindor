@@ -26,6 +26,9 @@ model User {
   createdEvents Event[]     @relation("EventAuthor")
   eventRsvps    EventRsvp[] @relation("EventRsvpUser")
 
+  sentMessages     DirectMessage[] @relation("DmSender")
+  receivedMessages DirectMessage[] @relation("DmReceiver")
+
   createdAt DateTime  @default(now())
   deletedAt DateTime?
 

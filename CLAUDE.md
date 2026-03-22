@@ -46,7 +46,7 @@ Faindor is a workplace social media platform where users log in with work emails
   - Custom JWT implementation (access + refresh tokens)
   - Token utilities in `src/shared/utils/token.ts`
 - **Module Structure**:
-  - Each feature has its own module: auth, users, organizations, posts, comments, likes, groups, notifications, search, events, admin
+  - Each feature has its own module: auth, users, organizations, posts, comments, likes, groups, notifications, search, events, admin, messages
   - Modules contain: router.ts, service.ts (optional), types/request.ts
 - **Key Patterns**:
   - tRPC procedures: `publicProcedure` and `authenticatedProcedure`
@@ -78,6 +78,7 @@ Faindor is a workplace social media platform where users log in with work emails
 ## Database Schema
 - **Users**: Email-based authentication, role system (USER, APP_ADMIN); optional `bio` and `avatarUrl` fields for profile customization; `tokenVersion` for token revocation; `active` flag for account suspension; `emailVerifiedAt DateTime?` for email verification gating
 - **Events**: `Event` model (title, description, startsAt, endsAt, location, onlineUrl, organizationId, authorId); `EventRsvp` (eventId, userId, status GOING/NOT_GOING)
+- **Direct Messages**: `DirectMessage` model (senderId, receiverId, content, readAt); org-scoped; Supabase Realtime postgres_changes for instant delivery + 3s polling fallback
 - **Admin**: No separate model — admin capabilities are enforced via `adminProcedure` tRPC middleware that checks `ctx.user.role === APP_ADMIN`
 - **Organizations**: Domain-based grouping (e.g., @company.com)
 - **Posts, Comments, Likes**: Social features
