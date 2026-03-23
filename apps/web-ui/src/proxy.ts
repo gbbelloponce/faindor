@@ -9,7 +9,7 @@ import {
 import { PREFERRED_LOCALE_COOKIE_KEY } from "@/dictionaries/constants";
 import { type Locale, i18n } from "@/dictionaries/i18n-config";
 
-const authRoutes = ["/login", "/register"];
+const authRoutes = ["/login", "/register", "/verify-email"];
 
 function getLocale(request: NextRequest) {
 	const preferredLocale = request.cookies.get(PREFERRED_LOCALE_COOKIE_KEY)
