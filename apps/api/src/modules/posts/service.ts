@@ -60,6 +60,7 @@ export const getPostById = async (
 			include: {
 				author: true,
 				likes: { where: { userId }, select: { id: true } },
+				savedByUsers: { where: { userId }, select: { id: true } },
 				_count: { select: { likes: true, comments: true } },
 			},
 		});
@@ -71,10 +72,11 @@ export const getPostById = async (
 			});
 		}
 
-		const { likes, ...post } = result;
+		const { likes, savedByUsers, ...post } = result;
 		return {
 			...post,
 			isLikedByUser: likes.length > 0,
+			isSavedByUser: savedByUsers.length > 0,
 		} as PostWithAuthorAndCounts;
 	} catch (error) {
 		throw handleError(error, {
@@ -98,6 +100,7 @@ export const getLatestsPostsByOrganizationId = async (
 			include: {
 				author: true,
 				likes: { where: { userId }, select: { id: true } },
+				savedByUsers: { where: { userId }, select: { id: true } },
 				_count: { select: { likes: true, comments: true } },
 			},
 			orderBy: {
@@ -106,9 +109,10 @@ export const getLatestsPostsByOrganizationId = async (
 			...getPaginationArgs(page),
 		});
 
-		return posts.map(({ likes, ...post }) => ({
+		return posts.map(({ likes, savedByUsers, ...post }) => ({
 			...post,
 			isLikedByUser: likes.length > 0,
+			isSavedByUser: savedByUsers.length > 0,
 		})) as PostWithAuthorAndCounts[];
 	} catch (error) {
 		throw handleError(error, {
@@ -134,6 +138,10 @@ export const getLatestsPostsByUserId = async (
 			include: {
 				author: true,
 				likes: { where: { userId: currentUserId }, select: { id: true } },
+				savedByUsers: {
+					where: { userId: currentUserId },
+					select: { id: true },
+				},
 				_count: { select: { likes: true, comments: true } },
 			},
 			orderBy: {
@@ -142,9 +150,10 @@ export const getLatestsPostsByUserId = async (
 			...getPaginationArgs(page),
 		});
 
-		return posts.map(({ likes, ...post }) => ({
+		return posts.map(({ likes, savedByUsers, ...post }) => ({
 			...post,
 			isLikedByUser: likes.length > 0,
+			isSavedByUser: savedByUsers.length > 0,
 		})) as PostWithAuthorAndCounts[];
 	} catch (error) {
 		throw handleError(error, {
@@ -170,6 +179,7 @@ export const getLatestsPostsByGroupId = async (
 			include: {
 				author: true,
 				likes: { where: { userId }, select: { id: true } },
+				savedByUsers: { where: { userId }, select: { id: true } },
 				_count: { select: { likes: true, comments: true } },
 			},
 			orderBy: {
@@ -178,9 +188,10 @@ export const getLatestsPostsByGroupId = async (
 			...getPaginationArgs(page),
 		});
 
-		return posts.map(({ likes, ...post }) => ({
+		return posts.map(({ likes, savedByUsers, ...post }) => ({
 			...post,
 			isLikedByUser: likes.length > 0,
+			isSavedByUser: savedByUsers.length > 0,
 		})) as PostWithAuthorAndCounts[];
 	} catch (error) {
 		throw handleError(error, {
@@ -279,6 +290,43 @@ export const savePostById = async (
 	} catch (error) {
 		throw handleError(error, {
 			message: `Failed to save post with id: ${postId} for user with id: ${userId}`,
+			code: "INTERNAL_SERVER_ERROR",
+		});
+	}
+};
+
+export const getSavedPosts = async (
+	userId: number,
+	organizationId: number,
+	page = 1,
+): Promise<PostWithAuthorAndCounts[]> => {
+	try {
+		const savedPosts = await db.savedPost.findMany({
+			where: {
+				userId,
+				post: { organizationId, deletedAt: null },
+			},
+			include: {
+				post: {
+					include: {
+						author: true,
+						likes: { where: { userId }, select: { id: true } },
+						_count: { select: { likes: true, comments: true } },
+					},
+				},
+			},
+			orderBy: { createdAt: "desc" },
+			...getPaginationArgs(page),
+		});
+
+		return savedPosts.map(({ post: { likes, ...post } }) => ({
+			...post,
+			isLikedByUser: likes.length > 0,
+			isSavedByUser: true,
+		})) as PostWithAuthorAndCounts[];
+	} catch (error) {
+		throw handleError(error, {
+			message: `Failed to get saved posts for user: ${userId}`,
 			code: "INTERNAL_SERVER_ERROR",
 		});
 	}

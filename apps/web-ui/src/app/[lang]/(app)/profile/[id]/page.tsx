@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useLocale } from "@/dictionaries/useLocale";
 import { uploadToStorage } from "@/lib/upload";
@@ -125,6 +126,11 @@ export default function ProfilePage() {
 	const postsQuery = useQuery(
 		trpc.posts.getLatestsPostsByUserId.queryOptions({ userId, page: 1 }),
 	);
+
+	const savedPostsQuery = useQuery({
+		...trpc.posts.getSavedPosts.queryOptions({ page: 1 }),
+		enabled: isOwnProfile,
+	});
 
 	const updateProfileMutation = useMutation(
 		trpc.users.updateProfile.mutationOptions({
@@ -362,22 +368,68 @@ export default function ProfilePage() {
 				</div>
 			) : null}
 
-			<h2 className="font-semibold">{dictionary.profile.posts}</h2>
+			{isOwnProfile ? (
+				<Tabs defaultValue="posts">
+					<TabsList>
+						<TabsTrigger value="posts">{dictionary.profile.posts}</TabsTrigger>
+						<TabsTrigger value="saved">
+							{dictionary.profile.savedPosts}
+						</TabsTrigger>
+					</TabsList>
 
-			{postsQuery.isLoading && <PostFeedSkeleton />}
+					<TabsContent value="posts" className="mt-4">
+						{postsQuery.isLoading && <PostFeedSkeleton />}
+						{!postsQuery.isLoading && postsQuery.data?.length === 0 && (
+							<p className="py-8 text-center text-sm text-muted-foreground">
+								{dictionary.profile.noPosts}
+							</p>
+						)}
+						{postsQuery.data && postsQuery.data.length > 0 && (
+							<div className="flex flex-col gap-4">
+								{postsQuery.data.map((post) => (
+									<PostCard key={post.id} post={post} />
+								))}
+							</div>
+						)}
+					</TabsContent>
 
-			{!postsQuery.isLoading && postsQuery.data?.length === 0 && (
-				<p className="py-8 text-center text-sm text-muted-foreground">
-					{dictionary.profile.noPosts}
-				</p>
-			)}
+					<TabsContent value="saved" className="mt-4">
+						{savedPostsQuery.isLoading && <PostFeedSkeleton />}
+						{!savedPostsQuery.isLoading &&
+							savedPostsQuery.data?.length === 0 && (
+								<p className="py-8 text-center text-sm text-muted-foreground">
+									{dictionary.profile.noSavedPosts}
+								</p>
+							)}
+						{savedPostsQuery.data && savedPostsQuery.data.length > 0 && (
+							<div className="flex flex-col gap-4">
+								{savedPostsQuery.data.map((post) => (
+									<PostCard key={post.id} post={post} />
+								))}
+							</div>
+						)}
+					</TabsContent>
+				</Tabs>
+			) : (
+				<>
+					<h2 className="font-semibold">{dictionary.profile.posts}</h2>
 
-			{postsQuery.data && postsQuery.data.length > 0 && (
-				<div className="flex flex-col gap-4">
-					{postsQuery.data.map((post) => (
-						<PostCard key={post.id} post={post} />
-					))}
-				</div>
+					{postsQuery.isLoading && <PostFeedSkeleton />}
+
+					{!postsQuery.isLoading && postsQuery.data?.length === 0 && (
+						<p className="py-8 text-center text-sm text-muted-foreground">
+							{dictionary.profile.noPosts}
+						</p>
+					)}
+
+					{postsQuery.data && postsQuery.data.length > 0 && (
+						<div className="flex flex-col gap-4">
+							{postsQuery.data.map((post) => (
+								<PostCard key={post.id} post={post} />
+							))}
+						</div>
+					)}
+				</>
 			)}
 		</div>
 	);

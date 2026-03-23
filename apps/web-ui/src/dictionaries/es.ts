@@ -102,6 +102,8 @@ export const es: Dictionary = {
 	profile: {
 		posts: "Publicaciones",
 		noPosts: "Aún no hay publicaciones.",
+		savedPosts: "Guardados",
+		noSavedPosts: "Aún no hay publicaciones guardadas.",
 		editProfile: "Editar perfil",
 		message: "Mensaje",
 		saveChanges: "Guardar cambios",

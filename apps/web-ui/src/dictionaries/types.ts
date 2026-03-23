@@ -97,6 +97,8 @@ export type Dictionary = {
 	profile: {
 		posts: string;
 		noPosts: string;
+		savedPosts: string;
+		noSavedPosts: string;
 		editProfile: string;
 		message: string;
 		saveChanges: string;

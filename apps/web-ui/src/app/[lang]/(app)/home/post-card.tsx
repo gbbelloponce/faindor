@@ -1,7 +1,7 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { Heart, MessageCircle, Send } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Bookmark, Heart, MessageCircle, Send } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -20,6 +20,7 @@ type PostCardProps = {
 		imageUrl: string | null;
 		createdAt: Date | string;
 		isLikedByUser: boolean;
+		isSavedByUser: boolean;
 		author: {
 			id: number;
 			name: string;
@@ -59,9 +60,11 @@ function getRelativeTime(date: Date | string): string {
 export function PostCard({ post }: PostCardProps) {
 	const { dictionary, locale } = useLocale();
 	const trpc = useTRPC();
+	const queryClient = useQueryClient();
 
 	const [liked, setLiked] = useState(post.isLikedByUser);
 	const [likesCount, setLikesCount] = useState(post._count.likes);
+	const [saved, setSaved] = useState(post.isSavedByUser);
 	const [commentsCount, setCommentsCount] = useState(post._count.comments);
 	const [showComments, setShowComments] = useState(false);
 	const [commentText, setCommentText] = useState("");
@@ -92,6 +95,36 @@ export function PostCard({ post }: PostCardProps) {
 	const createCommentMutation = useMutation(
 		trpc.comments.createComment.mutationOptions(),
 	);
+
+	const savePostMutation = useMutation(
+		trpc.posts.savePostById.mutationOptions({
+			onError: () => setSaved(false),
+			onSuccess: () =>
+				queryClient.invalidateQueries({
+					queryKey: trpc.posts.getSavedPosts.queryKey({ page: 1 }),
+				}),
+		}),
+	);
+
+	const unsavePostMutation = useMutation(
+		trpc.posts.unsavePostById.mutationOptions({
+			onError: () => setSaved(true),
+			onSuccess: () =>
+				queryClient.invalidateQueries({
+					queryKey: trpc.posts.getSavedPosts.queryKey({ page: 1 }),
+				}),
+		}),
+	);
+
+	const handleSave = () => {
+		if (saved) {
+			setSaved(false);
+			unsavePostMutation.mutate({ postId: post.id });
+		} else {
+			setSaved(true);
+			savePostMutation.mutate({ postId: post.id });
+		}
+	};
 
 	const handleLike = () => {
 		if (liked) {
@@ -181,6 +214,17 @@ export function PostCard({ post }: PostCardProps) {
 					<span>
 						{commentsCount} {dictionary.home.post.comments}
 					</span>
+				</button>
+
+				<button
+					type="button"
+					onClick={handleSave}
+					className={cn(
+						"ml-auto flex items-center gap-1.5 text-xs transition-colors",
+						saved ? "text-primary" : "text-muted-foreground hover:text-primary",
+					)}
+				>
+					<Bookmark className={cn("size-4", saved && "fill-current")} />
 				</button>
 			</div>
 

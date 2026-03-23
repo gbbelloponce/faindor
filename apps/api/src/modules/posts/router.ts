@@ -8,8 +8,10 @@ import {
 	getLatestsPostsByOrganizationId,
 	getLatestsPostsByUserId,
 	getPostById,
+	getSavedPosts,
 	savePostById,
 	softDeletePost,
+	unsavePostByPostAndUserId,
 	updatePost,
 } from "./service";
 import { createPostSchema, updatePostSchema } from "./types/request";
@@ -97,6 +99,20 @@ export const postsRouter = router({
 				input.postId,
 				ctx.user.id,
 				ctx.user.organizationId,
+			);
+		}),
+	unsavePostById: authenticatedProcedure
+		.input(z.object({ postId: positiveNumberSchema }))
+		.mutation(async ({ input, ctx }) => {
+			return await unsavePostByPostAndUserId(input.postId, ctx.user.id);
+		}),
+	getSavedPosts: authenticatedProcedure
+		.input(z.object({ page: positiveNumberSchema }))
+		.query(async ({ input, ctx }) => {
+			return await getSavedPosts(
+				ctx.user.id,
+				ctx.user.organizationId,
+				input.page,
 			);
 		}),
 });
