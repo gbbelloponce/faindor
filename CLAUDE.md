@@ -35,21 +35,24 @@ Faindor is a workplace social media platform where users log in with work emails
 ### API (apps/api)
 - **Framework**: Hono with tRPC integration (@hono/trpc-server)
 - **Database**:
-  - Prisma 7 ORM with PostgreSQL
-  - Prisma Accelerate for edge performance
+  - Prisma 7 ORM with PostgreSQL (Supabase PostgreSQL via `pg` adapter)
   - Single schema file: `src/shared/db/schema.prisma`; model files in `src/shared/db/models/` (user.prisma, organization.prisma, post.prisma, group.prisma, event.prisma)
   - Migrations in `src/shared/db/migrations/`
   - Config in `prisma.config.ts` (schema path, migrations path, datasource URL)
   - Generated client output: `src/shared/db/generated/prisma/` (use relative imports to `shared/db/generated/prisma/client`, not `@/` alias, to keep API type declarations resolvable by the web-ui)
-  - Database: Supabase PostgreSQL (migrated from Prisma Postgres/Accelerate)
-- **Authentication**: 
+- **Authentication**:
   - Custom JWT implementation (access + refresh tokens)
   - Token utilities in `src/shared/utils/token.ts`
+- **File Uploads**:
+  - Supabase Storage for avatars and post images
+  - Dedicated Hono HTTP route (not tRPC): `POST /sign` in `src/modules/upload/route.ts`
+  - Returns a signed upload URL; client uploads directly to Supabase from the browser
+  - Allowed buckets: `avatars`, `post-images`
 - **Module Structure**:
-  - Each feature has its own module: auth, users, organizations, posts, comments, likes, groups, notifications, search, events, admin, messages
-  - Modules contain: router.ts, service.ts (optional), types/request.ts
+  - tRPC modules: auth, users, organizations, posts, comments, likes, groups, notifications, search, events, admin, messages
+  - Each module contains: router.ts, service.ts (optional), types/request.ts
 - **Key Patterns**:
-  - tRPC procedures: `publicProcedure` and `authenticatedProcedure`
+  - tRPC procedures: `publicProcedure`, `authenticatedProcedure`, `adminProcedure`
   - Centralized error handling via `handleError()`
   - Type exports for frontend consumption via `AppRouter`
 
@@ -81,7 +84,7 @@ Faindor is a workplace social media platform where users log in with work emails
 - **Direct Messages**: `DirectMessage` model (senderId, receiverId, content, readAt); org-scoped; Supabase Realtime postgres_changes for instant delivery + 3s polling fallback
 - **Admin**: No separate model — admin capabilities are enforced via `adminProcedure` tRPC middleware that checks `ctx.user.role === APP_ADMIN`
 - **Organizations**: Domain-based grouping (e.g., @company.com)
-- **Posts, Comments, Likes**: Social features
+- **Posts, Comments, Likes**: Social features; posts support an optional `imageUrl`; users can save/unsave posts (`SavedPost` join table)
 - **Groups**: Organization-specific groups with membership
 - **Notifications**: `Notification` model with `NotificationType` enum (LIKE, COMMENT, REPLY); linked to recipient, actor, post, and optional comment
 - **Soft deletes**: Using `deletedAt` timestamps
@@ -109,6 +112,8 @@ Faindor is a workplace social media platform where users log in with work emails
 - `REFRESH_TOKEN_SECRET`: JWT signing secret for refresh tokens
 - `SUPABASE_URL`: Supabase project URL (e.g. `https://<ref>.supabase.co`)
 - `SUPABASE_SERVICE_ROLE_KEY`: Supabase service role key — **never expose to client**; used to create signed upload URLs
+- `RESEND_API_KEY`: Resend API key for sending verification emails (free tier: 3k/month); if unset, emails are skipped with a warning
+- `RESEND_FROM_EMAIL`: Sender address (defaults to `onboarding@resend.dev` sandbox if unset)
 
 **Web UI (`apps/web-ui/.env.local`):**
 - `NEXT_PUBLIC_API_URL`: API endpoint for tRPC client
