@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInput, useSidebar } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useLocale } from "@/dictionaries/useLocale";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/lib/supabase";
@@ -51,7 +52,7 @@ function getInitials(name: string): string {
 		.slice(0, 2);
 }
 
-function getRelativeTime(date: Date | string): string {
+function getRelativeTime(date: Date | string, locale: string): string {
 	const now = new Date();
 	const d = new Date(date);
 	const diffMs = now.getTime() - d.getTime();
@@ -60,11 +61,16 @@ function getRelativeTime(date: Date | string): string {
 	const diffHours = Math.floor(diffMinutes / 60);
 	const diffDays = Math.floor(diffHours / 24);
 
-	if (diffSeconds < 60) return "just now";
-	if (diffMinutes < 60) return `${diffMinutes}m`;
-	if (diffHours < 24) return `${diffHours}h`;
-	if (diffDays < 30) return `${diffDays}d`;
-	return d.toLocaleDateString();
+	const rtf = new Intl.RelativeTimeFormat(locale, {
+		numeric: "auto",
+		style: "narrow",
+	});
+
+	if (diffSeconds < 60) return rtf.format(-diffSeconds, "second");
+	if (diffMinutes < 60) return rtf.format(-diffMinutes, "minute");
+	if (diffHours < 24) return rtf.format(-diffHours, "hour");
+	if (diffDays < 30) return rtf.format(-diffDays, "day");
+	return d.toLocaleDateString(locale);
 }
 
 export function AppHeader() {
@@ -307,8 +313,20 @@ export function AppHeader() {
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						<div className="max-h-[calc(60vh-4rem)] overflow-y-auto">
-							{!notificationsQuery.data ||
-							notificationsQuery.data.length === 0 ? (
+							{notificationsQuery.isLoading ? (
+								<div className="flex flex-col gap-1 p-2">
+									{[1, 2, 3].map((i) => (
+										<div key={i} className="flex items-start gap-3 px-3 py-2">
+											<Skeleton className="size-8 rounded-full shrink-0" />
+											<div className="flex flex-col gap-1.5 flex-1">
+												<Skeleton className="h-3 w-40" />
+												<Skeleton className="h-2.5 w-16" />
+											</div>
+										</div>
+									))}
+								</div>
+							) : !notificationsQuery.data ||
+								notificationsQuery.data.length === 0 ? (
 								<p className="py-6 text-center text-sm text-muted-foreground">
 									{dictionary.notifications.empty}
 								</p>
@@ -340,7 +358,7 @@ export function AppHeader() {
 														{getNotificationText(notification.type)}
 													</p>
 													<p className="text-xs text-muted-foreground mt-0.5">
-														{getRelativeTime(notification.createdAt)}
+														{getRelativeTime(notification.createdAt, locale)}
 													</p>
 												</div>
 											</Link>
@@ -377,12 +395,12 @@ export function AppHeader() {
 							<DropdownMenuItem asChild>
 								<Link href={`/${locale}/profile/${currentUser?.id}`}>
 									<User />
-									<span>My Profile</span>
+									<span>{dictionary.common.myProfile}</span>
 								</Link>
 							</DropdownMenuItem>
 							<DropdownMenuItem>
 								<Settings />
-								<span>Settings</span>
+								<span>{dictionary.common.settings}</span>
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 
@@ -396,7 +414,9 @@ export function AppHeader() {
 									onClick={handleLogOut}
 								>
 									<LogOut className="h-4 w-4 text-destructive" />
-									<span className="text-destructive">Log out</span>
+									<span className="text-destructive">
+										{dictionary.auth.logout}
+									</span>
 								</Button>
 							</DropdownMenuItem>
 						</DropdownMenuGroup>

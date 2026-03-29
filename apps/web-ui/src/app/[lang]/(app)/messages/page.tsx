@@ -370,7 +370,7 @@ function MessagesContent() {
 								/>
 							) : !messagesQuery.data || messagesQuery.data.length === 0 ? (
 								<p className="text-center text-sm text-muted-foreground py-8">
-									No messages yet. Say hi!
+									{d.noMessages}
 								</p>
 							) : (
 								<div className="flex flex-col gap-1">

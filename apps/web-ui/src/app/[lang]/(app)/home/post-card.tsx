@@ -29,7 +29,7 @@ function getInitials(name: string): string {
 		.slice(0, 2);
 }
 
-function getRelativeTime(date: Date | string): string {
+function getRelativeTime(date: Date | string, locale: string): string {
 	const now = new Date();
 	const d = new Date(date);
 	const diffMs = now.getTime() - d.getTime();
@@ -38,11 +38,16 @@ function getRelativeTime(date: Date | string): string {
 	const diffHours = Math.floor(diffMinutes / 60);
 	const diffDays = Math.floor(diffHours / 24);
 
-	if (diffSeconds < 60) return "just now";
-	if (diffMinutes < 60) return `${diffMinutes}m`;
-	if (diffHours < 24) return `${diffHours}h`;
-	if (diffDays < 30) return `${diffDays}d`;
-	return d.toLocaleDateString();
+	const rtf = new Intl.RelativeTimeFormat(locale, {
+		numeric: "auto",
+		style: "narrow",
+	});
+
+	if (diffSeconds < 60) return rtf.format(-diffSeconds, "second");
+	if (diffMinutes < 60) return rtf.format(-diffMinutes, "minute");
+	if (diffHours < 24) return rtf.format(-diffHours, "hour");
+	if (diffDays < 30) return rtf.format(-diffDays, "day");
+	return d.toLocaleDateString(locale);
 }
 
 export function PostCard({ post }: PostCardProps) {
@@ -162,7 +167,7 @@ export function PostCard({ post }: PostCardProps) {
 						{post.author.name}
 					</Link>
 					<span className="text-xs text-muted-foreground">
-						{getRelativeTime(post.createdAt)}
+						{getRelativeTime(post.createdAt, locale)}
 					</span>
 				</div>
 			</div>
@@ -285,7 +290,7 @@ export function PostCard({ post }: PostCardProps) {
 											{comment.author.name}
 										</span>
 										<span className="text-xs text-muted-foreground">
-											{getRelativeTime(comment.createdAt)}
+											{getRelativeTime(comment.createdAt, locale)}
 										</span>
 									</div>
 									<p className="text-xs mt-0.5 whitespace-pre-wrap">

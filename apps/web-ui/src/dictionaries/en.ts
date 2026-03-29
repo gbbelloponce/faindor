@@ -14,6 +14,8 @@ export const en: Dictionary = {
 		},
 		tryAgain: "Try again",
 		goHome: "Go to home",
+		myProfile: "My Profile",
+		settings: "Settings",
 		notFound: {
 			title: "Page not found",
 			subtitle: "The page you're looking for doesn't exist or has been moved.",
@@ -151,6 +153,7 @@ export const en: Dictionary = {
 		messagePlaceholder: "Write a message…",
 		you: "You",
 		unreadBadgeLabel: "unread messages",
+		noMessages: "No messages yet. Say hi!",
 	},
 	emailVerification: {
 		title: "Check your inbox",

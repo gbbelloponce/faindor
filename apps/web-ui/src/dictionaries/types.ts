@@ -12,6 +12,8 @@ export type Dictionary = {
 		};
 		tryAgain: string;
 		goHome: string;
+		myProfile: string;
+		settings: string;
 		notFound: {
 			title: string;
 			subtitle: string;
@@ -147,6 +149,7 @@ export type Dictionary = {
 		messagePlaceholder: string;
 		you: string;
 		unreadBadgeLabel: string;
+		noMessages: string;
 	};
 	emailVerification: {
 		title: string;
