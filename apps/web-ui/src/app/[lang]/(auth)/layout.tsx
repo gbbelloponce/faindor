@@ -3,7 +3,9 @@ import { ThemeToggler } from "@/components/theme-toggler";
 
 export default function AuthLayout({
 	children,
-}: { children: React.ReactNode }) {
+}: {
+	children: React.ReactNode;
+}) {
 	return (
 		<>
 			<header className="absolute top-2 right-2">

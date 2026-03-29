@@ -1,7 +1,6 @@
-import { adminProcedure, router } from "@/shared/trpc";
-import { positiveNumberSchema } from "@/shared/types/schemas";
-import { handleError } from "@/shared/utils/errors";
 import { z } from "zod";
+import { adminProcedure, router } from "@/shared/trpc";
+import { handleError } from "@/shared/utils/errors";
 import {
 	activateUser,
 	adminDeletePost,

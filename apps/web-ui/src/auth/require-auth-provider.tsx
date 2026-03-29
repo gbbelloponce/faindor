@@ -6,12 +6,13 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { ACCESS_TOKEN_COOKIE_KEY } from "./constants";
-import { useAuth } from "./useAuth";
-import { useAuthStore } from "./useAuth";
+import { useAuth, useAuthStore } from "./useAuth";
 
 export function RequireAuthProvider({
 	children,
-}: { children: React.ReactNode }) {
+}: {
+	children: React.ReactNode;
+}) {
 	const { isLoading, logInWithAccessToken, refreshAccessToken, logOut } =
 		useAuth();
 	const { currentUser } = useAuthStore();

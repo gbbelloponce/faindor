@@ -13,7 +13,9 @@ import {
 
 export function ThemeToggler({
 	buttonVariant = "outline",
-}: { buttonVariant?: "outline" | "ghost" }) {
+}: {
+	buttonVariant?: "outline" | "ghost";
+}) {
 	const { setTheme } = useTheme();
 
 	return (

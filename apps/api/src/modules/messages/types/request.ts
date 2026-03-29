@@ -1,5 +1,5 @@
-import { positiveNumberSchema } from "@/shared/types/schemas";
 import { z } from "zod";
+import { positiveNumberSchema } from "@/shared/types/schemas";
 
 export const sendMessageSchema = z.object({
 	receiverId: positiveNumberSchema,

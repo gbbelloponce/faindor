@@ -1,12 +1,10 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createTRPCClient, httpBatchLink } from "@trpc/client";
-import { TRPCClientError } from "@trpc/client";
+import { createTRPCClient, httpBatchLink, TRPCClientError } from "@trpc/client";
+import type { AppRouter } from "api";
 import Cookies from "js-cookie";
 import { useState } from "react";
-
-import type { AppRouter } from "api";
 import {
 	ACCESS_TOKEN_COOKIE_CONFIG,
 	ACCESS_TOKEN_COOKIE_KEY,
@@ -44,7 +42,7 @@ const makeQueryClient = () => {
 	});
 };
 
-let browserQueryClient: QueryClient | undefined = undefined;
+let browserQueryClient: QueryClient | undefined;
 
 const getQueryClient = () => {
 	if (typeof window === "undefined") {

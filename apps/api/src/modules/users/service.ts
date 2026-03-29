@@ -1,7 +1,4 @@
 import { TRPCError } from "@trpc/server";
-import { type User, UserRole } from "../../shared/db/generated/prisma/client";
-import type { UpdateProfileBody } from "./types/request";
-
 import {
 	createOrganization,
 	getOrganizationByDomain,
@@ -14,10 +11,12 @@ import {
 	COMMON_EMAIL_PROVIDERS,
 	getNormalizedDomainFromEmail,
 } from "@/shared/utils/mail";
+import { type User, UserRole } from "../../shared/db/generated/prisma/client";
 import type {
 	CreateUserParams,
 	GetUserByCredentialsParams,
 } from "../auth/types/request";
+import type { UpdateProfileBody } from "./types/request";
 
 export const getPublicUserInfoById = async (id: number) => {
 	try {

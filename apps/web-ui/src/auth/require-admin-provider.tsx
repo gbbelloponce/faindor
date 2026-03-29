@@ -8,7 +8,9 @@ import { useAuthStore } from "./useAuth";
 
 export function RequireAdminProvider({
 	children,
-}: { children: React.ReactNode }) {
+}: {
+	children: React.ReactNode;
+}) {
 	const { currentUser } = useAuthStore();
 	const router = useRouter();
 	const { locale } = useLocale();

@@ -1,3 +1,4 @@
+import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 import { adminRouter } from "@/modules/admin/router";
 import { authRouter } from "@/modules/auth/router";
 import { commentsRouter } from "@/modules/comments/router";
@@ -11,7 +12,6 @@ import { postsRouter } from "@/modules/posts/router";
 import { searchRouter } from "@/modules/search/router";
 import { usersRouter } from "@/modules/users/router";
 import { publicProcedure, router } from "@/shared/trpc";
-import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 
 export const appRouter = router({
 	hi: publicProcedure.query(async () => {

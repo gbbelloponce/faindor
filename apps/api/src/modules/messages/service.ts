@@ -1,6 +1,6 @@
+import { TRPCError } from "@trpc/server";
 import { db } from "@/shared/db";
 import { handleError } from "@/shared/utils/errors";
-import { TRPCError } from "@trpc/server";
 
 const PARTNER_SELECT = {
 	id: true,

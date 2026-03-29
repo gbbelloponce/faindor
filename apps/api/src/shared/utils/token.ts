@@ -1,9 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import { sign, verify } from "hono/jwt";
 import { type JWTPayload, JwtTokenExpired } from "hono/utils/jwt/types";
-import type { UserRole } from "../db/generated/prisma/client";
-
 import type { LoggedUser } from "@/shared/types/auth";
+import type { UserRole } from "../db/generated/prisma/client";
 
 // Token expiration times in seconds
 export const ACCESS_TOKEN_EXPIRY = 15 * 60; // 15 minutes

@@ -5,8 +5,8 @@ import { useParams, usePathname, useRouter } from "next/navigation";
 
 import { PREFERRED_LOCALE_COOKIE_KEY } from "@/dictionaries/constants";
 import { getDictionary } from "@/dictionaries/get-dictionary";
-import { i18n } from "@/dictionaries/i18n-config";
 import type { Locale } from "@/dictionaries/i18n-config";
+import { i18n } from "@/dictionaries/i18n-config";
 
 export const useLocale = () => {
 	const { lang } = useParams<{ lang: string }>();

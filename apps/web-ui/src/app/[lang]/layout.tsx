@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 import "@/styles/globals.css";
 import { getDictionary } from "@/dictionaries/get-dictionary";
-import { type Locale, i18n } from "@/dictionaries/i18n-config";
+import { i18n, type Locale } from "@/dictionaries/i18n-config";
 import { AppTRPCProvider } from "@/trpc/app-trpc-provider";
 
 const geistSans = Geist({
@@ -21,7 +21,9 @@ const geistMono = Geist_Mono({
 
 export async function generateMetadata({
 	params,
-}: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+}: {
+	params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
 	const { lang } = await params;
 
 	const dictionary = getDictionary(lang as Locale);

@@ -1,12 +1,12 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { RouterOutputs } from "api";
 import { Bookmark, Heart, MessageCircle, Send } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
-
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,7 +14,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { useLocale } from "@/dictionaries/useLocale";
 import { useTRPC } from "@/trpc/trpc";
 import { cn } from "@/utils";
-import type { RouterOutputs } from "api";
 
 type PostCardProps = {
 	post: RouterOutputs["posts"]["getPostById"];

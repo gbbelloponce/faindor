@@ -197,7 +197,7 @@ export default function ProfilePage() {
 	};
 
 	const onSubmit = async (values: EditProfileValues) => {
-		let avatarUrl: string | null | undefined = undefined;
+		let avatarUrl: string | null | undefined;
 
 		if (avatarFile) {
 			try {

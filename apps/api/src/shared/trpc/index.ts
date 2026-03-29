@@ -1,4 +1,4 @@
-import { TRPCError, initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 
 import { UserRole } from "../db/generated/prisma/client";
 import type { createContext } from "./context";

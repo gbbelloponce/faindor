@@ -1,8 +1,8 @@
 import { trpcServer } from "@hono/trpc-server";
 import { type Context, Hono } from "hono";
-import { rateLimiter } from "hono-rate-limiter";
 import { cors } from "hono/cors";
 import { prettyJSON } from "hono/pretty-json";
+import { rateLimiter } from "hono-rate-limiter";
 
 import { uploadRoute } from "@/modules/upload/route";
 import { appRouter } from "@/router";

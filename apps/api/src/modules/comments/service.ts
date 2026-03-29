@@ -1,10 +1,10 @@
+import { TRPCError } from "@trpc/server";
 import { createNotification } from "@/modules/notifications/service";
 import { isPostFromOrganization } from "@/modules/posts/service";
 import { db } from "@/shared/db";
 import { NotificationType } from "@/shared/db/generated/prisma/client";
 import { handleError } from "@/shared/utils/errors";
 import { getPaginationArgs } from "@/shared/utils/pagination";
-import { TRPCError } from "@trpc/server";
 import type { CreateCommentBody } from "./types/request";
 
 export const getCommentsByPostId = async (

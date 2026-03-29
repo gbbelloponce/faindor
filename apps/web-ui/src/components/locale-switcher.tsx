@@ -15,7 +15,9 @@ import { useLocale } from "@/dictionaries/useLocale";
 
 export function LocaleSwitcher({
 	buttonVariant = "outline",
-}: { buttonVariant?: "outline" | "ghost" }) {
+}: {
+	buttonVariant?: "outline" | "ghost";
+}) {
 	const { dictionary, changeLocale } = useLocale();
 
 	return (

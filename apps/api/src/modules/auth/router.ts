@@ -1,3 +1,5 @@
+import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import {
 	createUser,
 	getUserByCredentials,
@@ -15,8 +17,6 @@ import {
 	decodeEmailVerificationToken,
 	decodeRefreshToken,
 } from "@/shared/utils/token";
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
 import {
 	logInWithAccessTokenSchema,
 	logInWithCredentialsSchema,

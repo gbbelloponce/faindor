@@ -7,7 +7,7 @@ import {
 	REFRESH_TOKEN_COOKIE_KEY,
 } from "@/auth/constants";
 import { PREFERRED_LOCALE_COOKIE_KEY } from "@/dictionaries/constants";
-import { type Locale, i18n } from "@/dictionaries/i18n-config";
+import { i18n, type Locale } from "@/dictionaries/i18n-config";
 
 const authRoutes = ["/login", "/register", "/verify-email"];
 
@@ -20,10 +20,11 @@ function getLocale(request: NextRequest) {
 	}
 
 	const negotiatorHeaders: Record<string, string> = {};
-	// biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
-	request.headers.forEach((value, key) => (negotiatorHeaders[key] = value));
+	request.headers.forEach((value, key) => {
+		negotiatorHeaders[key] = value;
+	});
 
-	// @ts-ignore locales are readonly
+	// @ts-expect-error locales are readonly
 	const locales: string[] = i18n.locales;
 
 	const languages = new Negotiator({ headers: negotiatorHeaders }).languages(

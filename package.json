@@ -14,7 +14,7 @@
     "clean": "rm -rf node_modules/ bun.lock"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
+    "@biomejs/biome": "^2.4.9",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0"
   },

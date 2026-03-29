@@ -1,7 +1,7 @@
+import { z } from "zod";
 import { adminProcedure, authenticatedProcedure, router } from "@/shared/trpc";
 import { positiveNumberSchema } from "@/shared/types/schemas";
 import { handleError } from "@/shared/utils/errors";
-import { z } from "zod";
 import {
 	createEvent,
 	getEventById,

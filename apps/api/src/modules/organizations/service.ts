@@ -1,8 +1,7 @@
 import { TRPCError } from "@trpc/server";
-import type { Organization } from "../../shared/db/generated/prisma/client";
-
 import { db } from "@/shared/db";
 import { handleError } from "@/shared/utils/errors";
+import type { Organization } from "../../shared/db/generated/prisma/client";
 import type { CreateOrganizationBody } from "./types/request";
 
 export const getOrganizationById = async (

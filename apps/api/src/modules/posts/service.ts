@@ -1,9 +1,8 @@
 import { TRPCError } from "@trpc/server";
-import type { Post, SavedPost } from "../../shared/db/generated/prisma/client";
-
 import { db } from "@/shared/db";
 import { handleError } from "@/shared/utils/errors";
 import { getPaginationArgs } from "@/shared/utils/pagination";
+import type { Post, SavedPost } from "../../shared/db/generated/prisma/client";
 import type {
 	CreatePostBody,
 	PostWithAuthorAndCounts,
