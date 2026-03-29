@@ -3,8 +3,23 @@
 ## Routing Structure
 Next.js App Router with dynamic `[lang]` locale prefix:
 - `src/app/[lang]/` — root layout (fonts, ThemeProvider, AppTRPCProvider, Toaster)
-- `src/app/[lang]/(auth)/` — public auth pages (login, register). Layout has locale switcher + theme toggler.
+- `src/app/[lang]/(auth)/` — public auth pages (login, register, verify-email). Layout has locale switcher + theme toggler.
 - `src/app/[lang]/(app)/` — protected app pages. Layout wraps with `RequireAuthProvider`, `SidebarProvider`, `AppHeader`, `AppSidebar`. Has an `error.tsx` error boundary.
+
+**Implemented pages:**
+| Route | Description |
+|---|---|
+| `home` | Post feed with post creation form |
+| `posts/[id]` | Single post with comments |
+| `events` | Org events list with RSVP |
+| `groups` | Org groups list and detail (`groups/[id]`) |
+| `messages` | Real-time direct messages (Supabase Realtime + polling fallback) |
+| `profile/[id]` | User profile with post history |
+| `admin` | Admin panel (users, org settings, events, content moderation) |
+
+**Sidebar links without pages yet:** `marketplace` (link exists in sidebar, no route implemented)
+
+**Notifications:** bell dropdown in `AppHeader` exists; full `/notifications` page not yet built.
 
 ## Key Patterns
 
@@ -118,5 +133,11 @@ All user-visible error strings must live in the dictionary (`src/dictionaries/en
 - `dictionary.common.error.title/subtitle` — generic error page copy
 - `dictionary.common.notFound.title/subtitle` — 404 page copy
 
+## File Uploads
+- `POST /sign` on the API returns a Supabase signed upload URL.
+- Client calls `/sign` with a Bearer token, then PUTs the file directly to Supabase.
+- Used for avatar uploads (in profile edit) and post image attachments.
+
 ## Known Issues
-- Sidebar nav items are placeholders — will be wired up as features are added
+- `/marketplace` sidebar link has no page yet
+- `/notifications` page not built yet (only the bell dropdown in the header)
