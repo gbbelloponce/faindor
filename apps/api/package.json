@@ -5,6 +5,7 @@
 		"db:generate": "bunx prisma generate",
 		"db:migrate:dev": "bunx prisma migrate dev",
 		"db:studio": "bunx prisma studio",
+		"typecheck": "tsc --noEmit",
 		"build:app": "bun build --target node --outdir dist src/index.ts",
 		"build:types": "tsc --emitDeclarationOnly",
 		"build": "bun run build:app && bun run build:types",

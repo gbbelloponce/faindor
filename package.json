@@ -9,6 +9,7 @@
   "scripts": {
     "prepare": "husky",
     "dev": "bun --filter '*' dev",
+    "typecheck": "bun run --cwd apps/api build:types && bun run --cwd apps/web-ui typecheck",
     "lint": "bunx biome check --write ./apps/",
     "clean": "rm -rf node_modules/ bun.lock"
   },
