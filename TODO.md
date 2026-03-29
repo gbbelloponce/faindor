@@ -65,6 +65,25 @@ Added a module-level `refreshPromise` lock in `app-trpc-provider.tsx`. Concurren
 
 ## Core Features
 
+### Notifications page
+**Effort:** ~half a day
+**Why:** The bell dropdown in the header shows the last few notifications, but there's no dedicated `/notifications` page for the full list with pagination. The API already has `notifications.getNotifications(page)`, `getUnreadCount`, and `markAllAsRead`.
+**What to do:**
+- Add `src/app/[lang]/(app)/notifications/page.tsx` with the same paginated list UI as the dropdown items
+- Wire the "View all" / bell icon to navigate there
+- Add `notifications` link to the sidebar
+
+---
+
+### Saved posts page
+**Effort:** ~half a day
+**Why:** The API already has `posts.savePostById`, `posts.unsavePostById`, and `posts.getSavedPosts`, but there's no UI for viewing saved posts.
+**What to do:**
+- Add a "Saved" section to the profile page or a standalone `/saved` route
+- Reuse the `PostCard` component; query `posts.getSavedPosts` with pagination
+
+---
+
 ### Avatar image optimization
 **Effort:** ~1 hour (when on Supabase Pro)
 **Why:** Currently whatever the user uploads is stored and served as-is. Supabase Storage has a built-in CDN image transformation API (`transform: { width, height, format: "webp", quality }` on `getPublicUrl`) that resizes and converts on the edge — no extra infrastructure needed.
