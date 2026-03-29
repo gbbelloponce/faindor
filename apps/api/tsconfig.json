@@ -12,9 +12,7 @@
 		"moduleResolution": "NodeNext",
 		"skipLibCheck": true,
 		"paths": {
-			"@/*": [
-				"./src/*"
-			]
+			"@/*": ["./src/*"]
 		}
 	}
 }

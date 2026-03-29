@@ -43,13 +43,12 @@ function VerifyEmailContent() {
 	);
 
 	const hasVerified = useRef(false);
-	// biome-ignore lint/correctness/useExhaustiveDependencies: verifyMutation.mutate is stable and we only want this to fire once on mount when token is present
 	useEffect(() => {
 		if (token && !hasVerified.current) {
 			hasVerified.current = true;
 			verifyMutation.mutate({ token });
 		}
-	}, [token]);
+	}, [token, verifyMutation.mutate]);
 
 	if (verifyState === "verifying") {
 		return (

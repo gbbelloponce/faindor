@@ -137,13 +137,14 @@ export function CreatePostForm({ groupId }: CreatePostFormProps = {}) {
 	};
 
 	return (
-		<div
-			className="rounded-xl border bg-card p-4"
-			onDragOver={handleDragOver}
-			onDrop={handleDrop}
-		>
+		<div className="rounded-xl border bg-card p-4">
 			<Form {...form}>
-				<form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-3">
+				<form
+					onSubmit={form.handleSubmit(onSubmit)}
+					onDragOver={handleDragOver}
+					onDrop={handleDrop}
+					className="flex gap-3"
+				>
 					<Avatar>
 						<AvatarFallback>
 							{currentUser ? getInitials(currentUser.name) : "?"}

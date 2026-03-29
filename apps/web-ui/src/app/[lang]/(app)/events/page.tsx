@@ -5,7 +5,6 @@ import { Calendar, MapPin, Monitor } from "lucide-react";
 import { toast } from "sonner";
 
 import { QueryError } from "@/components/query-error";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLocale } from "@/dictionaries/useLocale";

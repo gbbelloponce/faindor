@@ -148,7 +148,6 @@ function MessagesContent() {
 	// If opening a new conversation (?with=userId) and user not yet in conversations list,
 	// fetch their info so we can show the chat header
 	const newPartnerQuery = useQuery({
-		// biome-ignore lint/style/noNonNullAssertion: guarded by enabled flag
 		...trpc.users.getPublicUserInfoById.queryOptions({
 			id: selectedPartnerId ?? 0,
 		}),
@@ -166,7 +165,6 @@ function MessagesContent() {
 			: undefined);
 
 	const messagesQuery = useQuery({
-		// biome-ignore lint/style/noNonNullAssertion: guarded by enabled flag
 		...trpc.messages.getMessages.queryOptions({
 			partnerId: selectedPartnerId ?? 0,
 		}),
@@ -191,9 +189,9 @@ function MessagesContent() {
 		trpc.messages.sendMessage.mutationOptions({
 			onSuccess: (newMsg) => {
 				// Optimistically append to message list
+				if (selectedPartnerId === null) return;
 				queryClient.setQueryData(
-					// biome-ignore lint/style/noNonNullAssertion: sendMutation only fires when selectedPartnerId is set
-					trpc.messages.getMessages.queryKey({ partnerId: selectedPartnerId! }),
+					trpc.messages.getMessages.queryKey({ partnerId: selectedPartnerId }),
 					(old: typeof messagesQuery.data) =>
 						old ? [...old, newMsg] : [newMsg],
 				);
@@ -248,12 +246,11 @@ function MessagesContent() {
 	// ── side effects ─────────────────────────────────────────────────────────
 
 	// Mark as read when opening a conversation
-	// biome-ignore lint/correctness/useExhaustiveDependencies: markAsReadMutation.mutate is stable; we only want this to fire when the selected partner changes
 	useEffect(() => {
 		if (selectedPartnerId !== null) {
 			markAsReadMutation.mutate({ partnerId: selectedPartnerId });
 		}
-	}, [selectedPartnerId]);
+	}, [selectedPartnerId, markAsReadMutation.mutate]);
 
 	// Scroll to bottom when new messages arrive
 	// biome-ignore lint/correctness/useExhaustiveDependencies: intentionally depends on message data to trigger scroll
