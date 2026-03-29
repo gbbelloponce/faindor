@@ -15,6 +15,11 @@ import {
 } from "../auth/constants";
 import { TRPCProvider } from "./trpc";
 
+// Minimal client used only for token refresh — no auth headers, no interceptor
+const authClient = createTRPCClient<AppRouter>({
+	links: [httpBatchLink({ url: process.env.NEXT_PUBLIC_API_URL })],
+});
+
 // Shared lock so concurrent 401s don't each trigger their own refresh
 let refreshPromise: Promise<string | null> | null = null;
 
@@ -80,33 +85,20 @@ export function AppTRPCProvider({ children }: { children: React.ReactNode }) {
 								if (!refreshPromise) {
 									refreshPromise = (async () => {
 										try {
-											const refreshResponse = await fetch(
-												`${process.env.NEXT_PUBLIC_API_URL}/auth.refreshToken`,
-												{
-													method: "POST",
-													headers: { "Content-Type": "application/json" },
-													body: JSON.stringify({ refreshToken }),
-												},
+											const data = await authClient.auth.refreshToken.mutate({
+												refreshToken,
+											});
+											Cookies.set(
+												ACCESS_TOKEN_COOKIE_KEY,
+												data.accessToken,
+												ACCESS_TOKEN_COOKIE_CONFIG,
 											);
-
-											if (refreshResponse.ok) {
-												const data = await refreshResponse.json();
-												const newToken = data.result.data.accessToken as string;
-												const newRefreshToken = data.result.data
-													.refreshToken as string;
-												Cookies.set(
-													ACCESS_TOKEN_COOKIE_KEY,
-													newToken,
-													ACCESS_TOKEN_COOKIE_CONFIG,
-												);
-												Cookies.set(
-													REFRESH_TOKEN_COOKIE_KEY,
-													newRefreshToken,
-													REFRESH_TOKEN_COOKIE_CONFIG,
-												);
-												return newToken;
-											}
-											return null;
+											Cookies.set(
+												REFRESH_TOKEN_COOKIE_KEY,
+												data.refreshToken,
+												REFRESH_TOKEN_COOKIE_CONFIG,
+											);
+											return data.accessToken;
 										} catch (error) {
 											console.error("Failed to refresh token:", error);
 											return null;

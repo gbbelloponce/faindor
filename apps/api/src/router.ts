@@ -11,6 +11,7 @@ import { postsRouter } from "@/modules/posts/router";
 import { searchRouter } from "@/modules/search/router";
 import { usersRouter } from "@/modules/users/router";
 import { publicProcedure, router } from "@/shared/trpc";
+import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 
 export const appRouter = router({
 	hi: publicProcedure.query(async () => {
@@ -31,3 +32,5 @@ export const appRouter = router({
 });
 
 export type AppRouter = typeof appRouter;
+export type RouterOutputs = inferRouterOutputs<AppRouter>;
+export type RouterInputs = inferRouterInputs<AppRouter>;

@@ -12,24 +12,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { useLocale } from "@/dictionaries/useLocale";
 import { useTRPC } from "@/trpc/trpc";
 import { cn } from "@/utils";
+import type { RouterOutputs } from "api";
 
 type PostCardProps = {
-	post: {
-		id: number;
-		content: string;
-		imageUrl: string | null;
-		createdAt: Date | string;
-		isLikedByUser: boolean;
-		isSavedByUser: boolean;
-		author: {
-			id: number;
-			name: string;
-		};
-		_count: {
-			likes: number;
-			comments: number;
-		};
-	};
+	post: RouterOutputs["posts"]["getPostById"];
 };
 
 function getInitials(name: string): string {

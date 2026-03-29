@@ -92,10 +92,10 @@ export const decodeAccessToken = async (accessToken: string) => {
 
 	return {
 		id: Number(payload.userId),
-		role: payload.userRole,
+		role: payload.userRole as UserRole,
 		organizationId: Number(payload.organizationId),
 		tokenVersion: Number(payload.tokenVersion),
-	} as LoggedUser;
+	} satisfies LoggedUser;
 };
 
 export const createEmailVerificationToken = async ({
