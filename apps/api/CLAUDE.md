@@ -1,10 +1,15 @@
 # API - Context for Claude Code
 
 ## Module Structure
-Each feature lives in `src/modules/<feature>/` with:
+Each tRPC feature lives in `src/modules/<feature>/` with:
 - `router.ts` — tRPC router with procedures
-- `service.ts` — business logic and database queries
+- `service.ts` — business logic and database queries (optional)
 - `types/request.ts` — Zod input schemas
+
+**Special module:** `src/modules/upload/route.ts` is a plain Hono HTTP route (not tRPC):
+- `POST /sign` — authenticates via Bearer token, calls Supabase Storage `createSignedUploadUrl`, returns `{ signedUrl, path }`
+- Allowed buckets: `avatars`, `post-images`
+- Client uploads directly to Supabase from the browser using the returned URL
 
 Shared code lives in `src/shared/`:
 - `trpc/` — tRPC setup, context creation, procedure definitions
@@ -53,6 +58,11 @@ Shared code lives in `src/shared/`:
 - **Prisma generate:** `bun run db:generate` (outputs to `src/generated/prisma/`)
 - **Prisma migrate:** `bun run db:migrate` (reads config from `prisma.config.ts`)
 - **Install packages:** `cd apps/api && bun add <package>` (not `--filter`)
+
+## Email Service
+- Resend (`resend` package) used for verification emails.
+- Fire-and-forget — email failures do not fail the registration request.
+- Set `RESEND_API_KEY` and optionally `RESEND_FROM_EMAIL` in `.env`. If unset, emails are skipped with a warning logged.
 
 ## Known Issues
 - Offset-based pagination — works fine now; cursor-based would be more reliable at scale
