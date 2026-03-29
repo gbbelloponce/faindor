@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Calendar, MapPin, Monitor } from "lucide-react";
 import { toast } from "sonner";
 
+import { QueryError } from "@/components/query-error";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -53,11 +54,20 @@ export default function EventsPage() {
 
 			{eventsQuery.isLoading && <EventsListSkeleton />}
 
-			{!eventsQuery.isLoading && eventsQuery.data?.length === 0 && (
-				<p className="py-8 text-center text-sm text-muted-foreground">
-					{d.noEvents}
-				</p>
+			{eventsQuery.isError && (
+				<QueryError
+					message={eventsQuery.error.message}
+					onRetry={() => eventsQuery.refetch()}
+				/>
 			)}
+
+			{!eventsQuery.isLoading &&
+				!eventsQuery.isError &&
+				eventsQuery.data?.length === 0 && (
+					<p className="py-8 text-center text-sm text-muted-foreground">
+						{d.noEvents}
+					</p>
+				)}
 
 			{eventsQuery.data && eventsQuery.data.length > 0 && (
 				<div className="flex flex-col gap-3">

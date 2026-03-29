@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { QueryError } from "@/components/query-error";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -53,7 +54,7 @@ export default function GroupsPage() {
 				});
 			},
 			onError: (error) => {
-				toast.error(error.message ?? "Failed to create group");
+				toast.error(error.message ?? dictionary.groups.createError);
 			},
 		}),
 	);
@@ -66,7 +67,7 @@ export default function GroupsPage() {
 				});
 			},
 			onError: () => {
-				toast.error("Failed to join group");
+				toast.error(dictionary.groups.joinError);
 			},
 		}),
 	);
@@ -79,7 +80,7 @@ export default function GroupsPage() {
 				});
 			},
 			onError: () => {
-				toast.error("Failed to leave group");
+				toast.error(dictionary.groups.leaveError);
 			},
 		}),
 	);
@@ -134,11 +135,20 @@ export default function GroupsPage() {
 
 			{groupsQuery.isLoading && <GroupsListSkeleton />}
 
-			{!groupsQuery.isLoading && groupsQuery.data?.length === 0 && (
-				<p className="py-8 text-center text-sm text-muted-foreground">
-					{dictionary.groups.noGroups}
-				</p>
+			{groupsQuery.isError && (
+				<QueryError
+					message={groupsQuery.error.message}
+					onRetry={() => groupsQuery.refetch()}
+				/>
 			)}
+
+			{!groupsQuery.isLoading &&
+				!groupsQuery.isError &&
+				groupsQuery.data?.length === 0 && (
+					<p className="py-8 text-center text-sm text-muted-foreground">
+						{dictionary.groups.noGroups}
+					</p>
+				)}
 
 			{groupsQuery.data && groupsQuery.data.length > 0 && (
 				<div className="flex flex-col gap-3">

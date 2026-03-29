@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 import { useAuth } from "@/auth/useAuth";
+import { QueryError } from "@/components/query-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLocale } from "@/dictionaries/useLocale";
 import { supabase } from "@/lib/supabase";
@@ -89,6 +90,15 @@ export function PostFeed() {
 
 	if (postsQuery.isLoading) {
 		return <PostFeedSkeleton />;
+	}
+
+	if (postsQuery.isError) {
+		return (
+			<QueryError
+				message={postsQuery.error.message}
+				onRetry={() => postsQuery.refetch()}
+			/>
+		);
 	}
 
 	if (!postsQuery.data || postsQuery.data.length === 0) {

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 
+import { QueryError } from "@/components/query-error";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLocale } from "@/dictionaries/useLocale";
@@ -59,7 +60,7 @@ export default function GroupPage() {
 				});
 			},
 			onError: () => {
-				toast.error("Failed to join group");
+				toast.error(dictionary.groups.joinError);
 			},
 		}),
 	);
@@ -75,7 +76,7 @@ export default function GroupPage() {
 				});
 			},
 			onError: () => {
-				toast.error("Failed to leave group");
+				toast.error(dictionary.groups.leaveError);
 			},
 		}),
 	);
@@ -99,6 +100,11 @@ export default function GroupPage() {
 						<Skeleton className="h-3 w-24" />
 					</div>
 				</div>
+			) : groupQuery.isError ? (
+				<QueryError
+					message={groupQuery.error.message}
+					onRetry={() => groupQuery.refetch()}
+				/>
 			) : group ? (
 				<div className="rounded-xl border bg-card p-5 flex items-center justify-between gap-4">
 					<div className="flex items-center gap-4">
@@ -135,11 +141,20 @@ export default function GroupPage() {
 
 			{postsQuery.isLoading && <GroupPostFeedSkeleton />}
 
-			{!postsQuery.isLoading && postsQuery.data?.length === 0 && (
-				<p className="py-8 text-center text-sm text-muted-foreground">
-					{dictionary.groups.emptyFeed}
-				</p>
+			{postsQuery.isError && (
+				<QueryError
+					message={postsQuery.error.message}
+					onRetry={() => postsQuery.refetch()}
+				/>
 			)}
+
+			{!postsQuery.isLoading &&
+				!postsQuery.isError &&
+				postsQuery.data?.length === 0 && (
+					<p className="py-8 text-center text-sm text-muted-foreground">
+						{dictionary.groups.emptyFeed}
+					</p>
+				)}
 
 			{postsQuery.data && postsQuery.data.length > 0 && (
 				<div className="flex flex-col gap-4">

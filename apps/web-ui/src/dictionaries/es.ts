@@ -12,6 +12,17 @@ export const es: Dictionary = {
 			en: "Inglés",
 			es: "Español",
 		},
+		tryAgain: "Intentar de nuevo",
+		goHome: "Ir al inicio",
+		notFound: {
+			title: "Página no encontrada",
+			subtitle: "La página que buscas no existe o ha sido movida.",
+		},
+		error: {
+			title: "Algo salió mal",
+			subtitle:
+				"Ocurrió un error inesperado. Puedes intentar de nuevo o volver al inicio.",
+		},
 	},
 	auth: {
 		login: {
@@ -77,12 +88,15 @@ export const es: Dictionary = {
 			removeImage: "Eliminar imagen",
 			imageTooBig: "La imagen debe pesar menos de 5 MB.",
 			imageInvalidType: "Solo se aceptan imágenes JPEG, PNG, WebP o GIF.",
+			createError: "Error al crear la publicación",
+			uploadError: "Error al subir la imagen",
 		},
 		post: {
 			likes: "me gusta",
 			comments: "comentarios",
 			commentPlaceholder: "Escribe un comentario…",
 			noComments: "Sin comentarios aún. ¡Sé el primero!",
+			commentError: "Error al publicar el comentario",
 		},
 		emptyFeed: "No hay publicaciones aún. ¡Sé el primero en compartir algo!",
 	},
@@ -98,6 +112,9 @@ export const es: Dictionary = {
 		leave: "Salir",
 		backToGroups: "← Volver a grupos",
 		emptyFeed: "Aún no hay publicaciones en este grupo. ¡Sé el primero!",
+		joinError: "Error al unirse al grupo",
+		leaveError: "Error al salir del grupo",
+		createError: "Error al crear el grupo",
 	},
 	profile: {
 		posts: "Publicaciones",

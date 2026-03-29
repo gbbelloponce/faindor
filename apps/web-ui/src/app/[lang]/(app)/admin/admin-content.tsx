@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { QueryError } from "@/components/query-error";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Dictionary } from "@/dictionaries/types";
@@ -48,6 +49,15 @@ export function AdminContent({ dictionary }: { dictionary: Dictionary }) {
 	);
 
 	if (postsQuery.isLoading) return <PostsListSkeleton />;
+
+	if (postsQuery.isError) {
+		return (
+			<QueryError
+				message={postsQuery.error.message}
+				onRetry={() => postsQuery.refetch()}
+			/>
+		);
+	}
 
 	if (!postsQuery.data || postsQuery.data.length === 0) {
 		return (

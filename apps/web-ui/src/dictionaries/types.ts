@@ -10,6 +10,16 @@ export type Dictionary = {
 			en: string;
 			es: string;
 		};
+		tryAgain: string;
+		goHome: string;
+		notFound: {
+			title: string;
+			subtitle: string;
+		};
+		error: {
+			title: string;
+			subtitle: string;
+		};
 	};
 	auth: {
 		login: {
@@ -72,12 +82,15 @@ export type Dictionary = {
 			removeImage: string;
 			imageTooBig: string;
 			imageInvalidType: string;
+			createError: string;
+			uploadError: string;
 		};
 		post: {
 			likes: string;
 			comments: string;
 			commentPlaceholder: string;
 			noComments: string;
+			commentError: string;
 		};
 		emptyFeed: string;
 	};
@@ -93,6 +106,9 @@ export type Dictionary = {
 		leave: string;
 		backToGroups: string;
 		emptyFeed: string;
+		joinError: string;
+		leaveError: string;
+		createError: string;
 	};
 	profile: {
 		posts: string;

@@ -84,7 +84,7 @@ export function CreatePostForm({ groupId }: CreatePostFormProps = {}) {
 				}
 			},
 			onError: () => {
-				toast.error("Failed to create post");
+				toast.error(dictionary.home.createPost.createError);
 			},
 		}),
 	);
@@ -128,7 +128,7 @@ export function CreatePostForm({ groupId }: CreatePostFormProps = {}) {
 			try {
 				imageUrl = await uploadToStorage(imageFile, "post-images");
 			} catch {
-				toast.error("Failed to upload image");
+				toast.error(dictionary.home.createPost.uploadError);
 				return;
 			}
 		}

@@ -90,6 +90,11 @@ Faindor is a workplace social media platform where users log in with work emails
 - **Type Safety**: End-to-end type safety via tRPC
 - **Validation**: Zod v4 schemas for request/response validation (use `{ error: "msg" }` instead of string shorthand for error messages; use `z.enum()` instead of `z.nativeEnum()` for native enums)
 - **Error Handling**: Standardized error responses with specific error codes
+- **Loading/Error UI**: Established pattern — see `apps/web-ui/CLAUDE.md` for full details. Summary:
+  - Co-located skeleton components using shadcn `<Skeleton>`; shared `<QueryError>` in `src/components/query-error.tsx` for inline query errors with retry
+  - Single-query components: early returns (loading → error → empty → data)
+  - Multi-query pages: JSX conditionals in same order
+  - Mutations: `toast.error()` in `onError` + `<Loader2>` spinner on buttons during `isPending`
 - **Code Style**: 
   - Tab indentation (enforced by Biome)
   - Double quotes for strings

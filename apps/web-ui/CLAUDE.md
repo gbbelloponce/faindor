@@ -54,6 +54,69 @@ Next.js App Router with dynamic `[lang]` locale prefix:
 - `NEXT_PUBLIC_API_URL` — API endpoint for tRPC client.
 - `NODE_ENV` — used for cookie security flags (secure: true in production).
 
+## Loading / Error State Patterns
+
+All tRPC query states follow a consistent order: **loading → error → empty → data**.
+
+### Shared component
+`<QueryError>` (`src/components/query-error.tsx`) — renders an icon, localized message, and optional retry button. Use it for all inline query error states.
+
+```tsx
+import { QueryError } from "@/components/query-error";
+
+<QueryError message={query.error.message} onRetry={() => query.refetch()} />
+```
+
+### Skeleton loaders
+- Co-locate skeleton components with the parent that owns the query (e.g. `PostFeedSkeleton` lives in `post-feed.tsx`)
+- Name them `<FeatureName>Skeleton` or `<ComponentName>Skeleton`
+- Build repeating items with `[1, 2, 3].map(i => ...)` — avoids hardcoded duplication
+- Always use `<Skeleton>` from `src/components/ui/skeleton` — never `animate-pulse` on raw divs
+
+### Single-query components → early returns
+Use early returns when a component is dedicated to one query:
+
+```tsx
+if (query.isLoading) return <FeatureSkeleton />;
+if (query.isError) return <QueryError message={query.error.message} onRetry={() => query.refetch()} />;
+if (!query.data || query.data.length === 0) return <p className="py-8 text-center text-sm text-muted-foreground">No items.</p>;
+return <Content data={query.data} />;
+```
+
+### Multi-query pages → JSX conditionals
+When a page has multiple queries or a complex layout, use inline conditionals. Guard empty-state checks with `!isLoading && !isError`:
+
+```tsx
+{query.isLoading && <FeatureSkeleton />}
+{query.isError && <QueryError message={query.error.message} onRetry={() => query.refetch()} />}
+{!query.isLoading && !query.isError && query.data?.length === 0 && (
+  <p className="py-8 text-center text-sm text-muted-foreground">No items.</p>
+)}
+{query.data && query.data.length > 0 && <Content data={query.data} />}
+```
+
+### Mutations
+- Show errors via `toast.error(e.message)` in `onError` — no inline error UI needed
+- Always use dictionary strings for toast messages — never hardcode English. Add new error keys to `dictionary.groups.*`, `dictionary.home.createPost.*`, etc. as needed
+- Disable submit buttons and show a `<Loader2 className="animate-spin" />` during `mutation.isPending`
+
+### Route-level special files
+| File | Purpose |
+|---|---|
+| `app/[lang]/(app)/loading.tsx` | Suspense fallback for content area during initial render |
+| `app/[lang]/(app)/error.tsx` | Error boundary for all protected app pages; localized, has retry + go-home |
+| `app/[lang]/error.tsx` | Error boundary for auth pages and other `[lang]` routes |
+| `app/[lang]/not-found.tsx` | Localized 404 page; shown when `notFound()` is called or route doesn't exist |
+| `app/not-found.tsx` | Root fallback 404; English-only, shown for paths without a `[lang]` prefix |
+
+The `error.tsx` files are React Error Boundaries for **unexpected component crashes** — NOT for tRPC query failures. Always handle query errors inline with `<QueryError>`.
+
+### Dictionary strings for errors
+All user-visible error strings must live in the dictionary (`src/dictionaries/en.ts`, `es.ts`, `types.ts`). Shared UI strings:
+- `dictionary.common.tryAgain` — retry button label
+- `dictionary.common.goHome` — go-home button label
+- `dictionary.common.error.title/subtitle` — generic error page copy
+- `dictionary.common.notFound.title/subtitle` — 404 page copy
+
 ## Known Issues
-- No consistent loading/error state patterns for tRPC queries — will be addressed as pages are built
 - Sidebar nav items are placeholders — will be wired up as features are added

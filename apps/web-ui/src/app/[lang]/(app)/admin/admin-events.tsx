@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { QueryError } from "@/components/query-error";
 import { Button } from "@/components/ui/button";
 import {
 	Form,
@@ -234,11 +235,20 @@ export function AdminEvents({ dictionary }: { dictionary: Dictionary }) {
 
 			{eventsQuery.isLoading && <EventsListSkeleton />}
 
-			{!eventsQuery.isLoading && eventsQuery.data?.length === 0 && (
-				<p className="py-8 text-center text-sm text-muted-foreground">
-					{d.noEvents}
-				</p>
+			{eventsQuery.isError && (
+				<QueryError
+					message={eventsQuery.error.message}
+					onRetry={() => eventsQuery.refetch()}
+				/>
 			)}
+
+			{!eventsQuery.isLoading &&
+				!eventsQuery.isError &&
+				eventsQuery.data?.length === 0 && (
+					<p className="py-8 text-center text-sm text-muted-foreground">
+						{d.noEvents}
+					</p>
+				)}
 
 			{eventsQuery.data && eventsQuery.data.length > 0 && (
 				<div className="flex flex-col gap-2">

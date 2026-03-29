@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { useAuth } from "@/auth/useAuth";
+import { QueryError } from "@/components/query-error";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -220,6 +221,11 @@ export default function ProfilePage() {
 		<div className="flex flex-1 flex-col gap-4 p-4 max-w-2xl mx-auto">
 			{userQuery.isLoading ? (
 				<ProfileHeaderSkeleton />
+			) : userQuery.isError ? (
+				<QueryError
+					message={userQuery.error.message}
+					onRetry={() => userQuery.refetch()}
+				/>
 			) : user ? (
 				<div className="rounded-xl border bg-card p-6">
 					{isEditing ? (
@@ -379,11 +385,19 @@ export default function ProfilePage() {
 
 					<TabsContent value="posts" className="mt-4">
 						{postsQuery.isLoading && <PostFeedSkeleton />}
-						{!postsQuery.isLoading && postsQuery.data?.length === 0 && (
-							<p className="py-8 text-center text-sm text-muted-foreground">
-								{dictionary.profile.noPosts}
-							</p>
+						{postsQuery.isError && (
+							<QueryError
+								message={postsQuery.error.message}
+								onRetry={() => postsQuery.refetch()}
+							/>
 						)}
+						{!postsQuery.isLoading &&
+							!postsQuery.isError &&
+							postsQuery.data?.length === 0 && (
+								<p className="py-8 text-center text-sm text-muted-foreground">
+									{dictionary.profile.noPosts}
+								</p>
+							)}
 						{postsQuery.data && postsQuery.data.length > 0 && (
 							<div className="flex flex-col gap-4">
 								{postsQuery.data.map((post) => (
@@ -395,7 +409,14 @@ export default function ProfilePage() {
 
 					<TabsContent value="saved" className="mt-4">
 						{savedPostsQuery.isLoading && <PostFeedSkeleton />}
+						{savedPostsQuery.isError && (
+							<QueryError
+								message={savedPostsQuery.error.message}
+								onRetry={() => savedPostsQuery.refetch()}
+							/>
+						)}
 						{!savedPostsQuery.isLoading &&
+							!savedPostsQuery.isError &&
 							savedPostsQuery.data?.length === 0 && (
 								<p className="py-8 text-center text-sm text-muted-foreground">
 									{dictionary.profile.noSavedPosts}
@@ -416,11 +437,20 @@ export default function ProfilePage() {
 
 					{postsQuery.isLoading && <PostFeedSkeleton />}
 
-					{!postsQuery.isLoading && postsQuery.data?.length === 0 && (
-						<p className="py-8 text-center text-sm text-muted-foreground">
-							{dictionary.profile.noPosts}
-						</p>
+					{postsQuery.isError && (
+						<QueryError
+							message={postsQuery.error.message}
+							onRetry={() => postsQuery.refetch()}
+						/>
 					)}
+
+					{!postsQuery.isLoading &&
+						!postsQuery.isError &&
+						postsQuery.data?.length === 0 && (
+							<p className="py-8 text-center text-sm text-muted-foreground">
+								{dictionary.profile.noPosts}
+							</p>
+						)}
 
 					{postsQuery.data && postsQuery.data.length > 0 && (
 						<div className="flex flex-col gap-4">

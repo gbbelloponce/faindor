@@ -12,6 +12,17 @@ export const en: Dictionary = {
 			en: "English",
 			es: "Spanish",
 		},
+		tryAgain: "Try again",
+		goHome: "Go to home",
+		notFound: {
+			title: "Page not found",
+			subtitle: "The page you're looking for doesn't exist or has been moved.",
+		},
+		error: {
+			title: "Something went wrong",
+			subtitle:
+				"An unexpected error occurred. You can try again or go back home.",
+		},
 	},
 	auth: {
 		login: {
@@ -75,12 +86,15 @@ export const en: Dictionary = {
 			removeImage: "Remove image",
 			imageTooBig: "Image must be smaller than 5 MB.",
 			imageInvalidType: "Only JPEG, PNG, WebP, or GIF images are accepted.",
+			createError: "Failed to create post",
+			uploadError: "Failed to upload image",
 		},
 		post: {
 			likes: "likes",
 			comments: "comments",
 			commentPlaceholder: "Write a comment…",
 			noComments: "No comments yet. Be the first!",
+			commentError: "Failed to post comment",
 		},
 		emptyFeed: "No posts yet. Be the first to share something!",
 	},
@@ -96,6 +110,9 @@ export const en: Dictionary = {
 		leave: "Leave",
 		backToGroups: "← Back to groups",
 		emptyFeed: "No posts in this group yet. Be the first to post!",
+		joinError: "Failed to join group",
+		leaveError: "Failed to leave group",
+		createError: "Failed to create group",
 	},
 	profile: {
 		posts: "Posts",

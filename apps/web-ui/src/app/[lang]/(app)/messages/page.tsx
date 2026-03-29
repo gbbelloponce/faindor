@@ -7,6 +7,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { useAuthStore } from "@/auth/useAuth";
+import { QueryError } from "@/components/query-error";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -292,6 +293,11 @@ function MessagesContent() {
 				<ScrollArea className="flex-1">
 					{conversationsQuery.isLoading ? (
 						<ConversationListSkeleton />
+					) : conversationsQuery.isError ? (
+						<QueryError
+							message={conversationsQuery.error.message}
+							onRetry={() => conversationsQuery.refetch()}
+						/>
 					) : !conversationsQuery.data ||
 						conversationsQuery.data.length === 0 ? (
 						<div className="flex flex-col items-center justify-center gap-2 p-8 text-center">
@@ -357,6 +363,11 @@ function MessagesContent() {
 										/>
 									))}
 								</div>
+							) : messagesQuery.isError ? (
+								<QueryError
+									message={messagesQuery.error.message}
+									onRetry={() => messagesQuery.refetch()}
+								/>
 							) : !messagesQuery.data || messagesQuery.data.length === 0 ? (
 								<p className="text-center text-sm text-muted-foreground py-8">
 									No messages yet. Say hi!

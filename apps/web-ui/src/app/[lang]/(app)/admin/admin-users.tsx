@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { QueryError } from "@/components/query-error";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -106,6 +107,15 @@ export function AdminUsers({ dictionary }: { dictionary: Dictionary }) {
 		revokeMutation.isPending;
 
 	if (usersQuery.isLoading) return <UsersTableSkeleton />;
+
+	if (usersQuery.isError) {
+		return (
+			<QueryError
+				message={usersQuery.error.message}
+				onRetry={() => usersQuery.refetch()}
+			/>
+		);
+	}
 
 	if (!usersQuery.data || usersQuery.data.length === 0) {
 		return (

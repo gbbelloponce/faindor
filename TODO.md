@@ -117,5 +117,10 @@ Added a module-level `refreshPromise` lock in `app-trpc-provider.tsx`. Concurren
 ### Error monitoring
 - Add [Sentry](https://sentry.io) to both apps for runtime error tracking
 
-### Loading / error state patterns
-- Establish consistent skeleton loaders and error fallbacks for tRPC queries across all pages
+### ~~Loading / error state patterns~~ ✅ Done
+- `<QueryError>` (`src/components/query-error.tsx`) — localized icon + message + retry button for inline query errors
+- Co-located skeleton components per feature, built with shadcn `<Skeleton>`
+- Pattern: single-query → early returns (loading → error → empty → data); multi-query → JSX conditionals in same order
+- Route-level files: `(app)/loading.tsx` (content skeleton), `(app)/error.tsx` (localized, retry + go-home), `[lang]/error.tsx` (covers auth routes), `[lang]/not-found.tsx` (localized 404), `app/not-found.tsx` (root English fallback)
+- Mutations: `toast.error()` in `onError` with dictionary strings (no hardcoded English), `<Loader2>` spinner during `isPending`
+- Applied to all existing pages; documented in `apps/web-ui/CLAUDE.md` and root `CLAUDE.md`

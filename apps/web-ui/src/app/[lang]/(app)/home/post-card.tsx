@@ -5,9 +5,11 @@ import { Bookmark, Heart, MessageCircle, Send } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useLocale } from "@/dictionaries/useLocale";
 import { useTRPC } from "@/trpc/trpc";
@@ -55,7 +57,11 @@ export function PostCard({ post }: PostCardProps) {
 	const [showComments, setShowComments] = useState(false);
 	const [commentText, setCommentText] = useState("");
 
-	const { data: commentsData, refetch: refetchComments } = useQuery({
+	const {
+		data: commentsData,
+		isLoading: commentsLoading,
+		refetch: refetchComments,
+	} = useQuery({
 		...trpc.comments.getPostComments.queryOptions({ postId: post.id, page: 1 }),
 		enabled: showComments,
 	});
@@ -79,7 +85,11 @@ export function PostCard({ post }: PostCardProps) {
 	);
 
 	const createCommentMutation = useMutation(
-		trpc.comments.createComment.mutationOptions(),
+		trpc.comments.createComment.mutationOptions({
+			onError: () => {
+				toast.error(dictionary.home.post.commentError);
+			},
+		}),
 	);
 
 	const savePostMutation = useMutation(
@@ -241,7 +251,21 @@ export function PostCard({ post }: PostCardProps) {
 						</Button>
 					</div>
 
-					{commentsData?.length === 0 && (
+					{commentsLoading && (
+						<div className="flex flex-col gap-3">
+							{[1, 2].map((i) => (
+								<div key={i} className="flex gap-2">
+									<Skeleton className="size-7 rounded-full shrink-0" />
+									<div className="flex flex-col gap-1.5 flex-1">
+										<Skeleton className="h-2.5 w-20" />
+										<Skeleton className="h-2.5 w-full" />
+									</div>
+								</div>
+							))}
+						</div>
+					)}
+
+					{!commentsLoading && commentsData?.length === 0 && (
 						<p className="text-xs text-muted-foreground text-center py-2">
 							{dictionary.home.post.noComments}
 						</p>
