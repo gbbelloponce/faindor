@@ -367,6 +367,15 @@ export function AppHeader() {
 								</DropdownMenuGroup>
 							)}
 						</div>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem asChild>
+							<Link
+								href={`/${locale}/notifications`}
+								className="justify-center text-sm text-muted-foreground w-full"
+							>
+								{dictionary.notifications.viewAll}
+							</Link>
+						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 
