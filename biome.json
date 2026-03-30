@@ -10,12 +10,12 @@
 		"includes": [
 			"**",
 			"!bun.lock",
-			"!**/node_modules/**",
-			"!apps/api/dist/**",
-			"!apps/web-ui/dist/**",
-			"!apps/api/src/shared/db/generated/**",
-			"!apps/api/src/shared/db/migrations/**",
-			"!apps/web-ui/.next/**"
+			"!node_modules/",
+			"!apps/api/dist/",
+			"!apps/web-ui/dist/",
+			"!apps/api/src/shared/db/generated/",
+			"!apps/api/src/shared/db/migrations/",
+			"!apps/web-ui/.next/"
 		]
 	},
 	"formatter": {
