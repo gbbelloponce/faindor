@@ -134,6 +134,11 @@ export type Dictionary = {
 		likedYourPost: string;
 		commentedOnYourPost: string;
 		repliedToYourComment: string;
+		markAllAsRead: string;
+		viewAll: string;
+	};
+	saved: {
+		title: string;
 	};
 	search: {
 		placeholder: string;

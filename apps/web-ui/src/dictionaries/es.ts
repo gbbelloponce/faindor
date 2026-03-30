@@ -140,6 +140,11 @@ export const es: Dictionary = {
 		likedYourPost: "le dio me gusta a tu publicación",
 		commentedOnYourPost: "comentó en tu publicación",
 		repliedToYourComment: "respondió a tu comentario",
+		markAllAsRead: "Marcar todo como leído",
+		viewAll: "Ver todas las notificaciones",
+	},
+	saved: {
+		title: "Publicaciones guardadas",
 	},
 	search: {
 		placeholder: "Buscar…",

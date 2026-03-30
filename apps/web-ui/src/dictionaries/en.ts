@@ -138,6 +138,11 @@ export const en: Dictionary = {
 		likedYourPost: "liked your post",
 		commentedOnYourPost: "commented on your post",
 		repliedToYourComment: "replied to your comment",
+		markAllAsRead: "Mark all as read",
+		viewAll: "View all notifications",
+	},
+	saved: {
+		title: "Saved Posts",
 	},
 	search: {
 		placeholder: "Search…",
