@@ -2,6 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import {
+	Bell,
+	Bookmark,
 	Calendar,
 	Home,
 	MessageSquare,
@@ -34,6 +36,13 @@ export function AppSidebar() {
 
 	const unreadCount = unreadCountQuery.data ?? 0;
 
+	const notifUnreadCountQuery = useQuery({
+		...trpc.notifications.getUnreadCount.queryOptions(),
+		refetchInterval: 15_000,
+	});
+
+	const notifUnreadCount = notifUnreadCountQuery.data ?? 0;
+
 	const navItems = [
 		{ icon: Home, href: `/${locale}/home`, label: "Home" },
 		{ icon: Calendar, href: `/${locale}/events`, label: "Events" },
@@ -44,6 +53,13 @@ export function AppSidebar() {
 			label: "Messages",
 			badge: unreadCount > 0 ? unreadCount : null,
 		},
+		{
+			icon: Bell,
+			href: `/${locale}/notifications`,
+			label: "Notifications",
+			badge: notifUnreadCount > 0 ? notifUnreadCount : null,
+		},
+		{ icon: Bookmark, href: `/${locale}/saved`, label: "Saved" },
 		{ icon: ShoppingBag, href: `/${locale}/marketplace`, label: "Marketplace" },
 		...(currentUser?.role === "APP_ADMIN"
 			? [{ icon: Shield, href: `/${locale}/admin`, label: "Admin" }]
