@@ -14,12 +14,12 @@ Next.js App Router with dynamic `[lang]` locale prefix:
 | `events` | Org events list with RSVP |
 | `groups` | Org groups list and detail (`groups/[id]`) |
 | `messages` | Real-time direct messages (Supabase Realtime + polling fallback) |
-| `profile/[id]` | User profile with post history |
+| `profile/[id]` | User profile with post history and saved-posts tab |
+| `notifications` | Full notifications list with "Mark all as read" button; also exposed as bell dropdown in `AppHeader` |
+| `saved` | Saved posts feed; reuses `PostCard` from home |
 | `admin` | Admin panel (users, org settings, events, content moderation) |
 
 **Sidebar links without pages yet:** `marketplace` (link exists in sidebar, no route implemented)
-
-**Notifications:** bell dropdown in `AppHeader` exists; full `/notifications` page not yet built.
 
 ## Key Patterns
 
@@ -140,4 +140,3 @@ All user-visible error strings must live in the dictionary (`src/dictionaries/en
 
 ## Known Issues
 - `/marketplace` sidebar link has no page yet
-- `/notifications` page not built yet (only the bell dropdown in the header)

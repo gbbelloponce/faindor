@@ -65,22 +65,17 @@ Added a module-level `refreshPromise` lock in `app-trpc-provider.tsx`. Concurren
 
 ## Core Features
 
-### Notifications page
-**Effort:** ~half a day
-**Why:** The bell dropdown in the header shows the last few notifications, but there's no dedicated `/notifications` page for the full list with pagination. The API already has `notifications.getNotifications(page)`, `getUnreadCount`, and `markAllAsRead`.
-**What to do:**
-- Add `src/app/[lang]/(app)/notifications/page.tsx` with the same paginated list UI as the dropdown items
-- Wire the "View all" / bell icon to navigate there
-- Add `notifications` link to the sidebar
+### ~~Notifications page~~ ✅ Done
+- `/notifications` page with full paginated list, unread highlighting, "Mark all as read" button
+- "View all notifications" link added to the bell dropdown in the header
+- Notifications sidebar link with unread count badge (15s polling)
 
 ---
 
-### Saved posts page
-**Effort:** ~half a day
-**Why:** The API already has `posts.savePostById`, `posts.unsavePostById`, and `posts.getSavedPosts`, but there's no UI for viewing saved posts.
-**What to do:**
-- Add a "Saved" section to the profile page or a standalone `/saved` route
-- Reuse the `PostCard` component; query `posts.getSavedPosts` with pagination
+### ~~Saved posts page~~ ✅ Done
+- `/saved` standalone page reusing `PostCard`
+- Saved sidebar link added
+- Profile page still has the saved tab for in-context access
 
 ---
 
@@ -143,3 +138,31 @@ Added a module-level `refreshPromise` lock in `app-trpc-provider.tsx`. Concurren
 - Route-level files: `(app)/loading.tsx` (content skeleton), `(app)/error.tsx` (localized, retry + go-home), `[lang]/error.tsx` (covers auth routes), `[lang]/not-found.tsx` (localized 404), `app/not-found.tsx` (root English fallback)
 - Mutations: `toast.error()` in `onError` with dictionary strings (no hardcoded English), `<Loader2>` spinner during `isPending`
 - Applied to all existing pages; documented in `apps/web-ui/CLAUDE.md` and root `CLAUDE.md`
+
+---
+
+## What's Next (recommended order)
+
+### 1. Marketplace page
+**Effort:** ~2-3 days
+The sidebar link already exists. This is the most visible gap — users clicking "Marketplace" get nothing. See the full spec in the Marketplace section above.
+
+### 2. Pagination / infinite scroll
+**Effort:** ~1 day
+Every page currently loads `page: 1` only (20 items). Adding a "Load more" button or infinite scroll to the home feed, notifications, and saved posts would noticeably improve the experience without touching the API (pagination args already exist).
+
+### 3. Post editing
+**Effort:** ~half a day
+`posts.updatePost` procedure exists in the API. The UI has no "Edit" option on posts. Add an edit flow on `PostCard` (e.g. a popover menu with Edit/Delete for the author).
+
+### 4. Post deletion for authors
+**Effort:** ~2 hours
+`posts.softDeletePost` exists in the API. Currently only admins can delete posts (via admin panel). Add a delete option to the author's `PostCard` menu.
+
+### 5. OAuth (Google / Microsoft)
+**Effort:** ~1-2 days per provider
+See the full spec in the Auth Features section above. Most valuable for a corporate-focused app.
+
+### 6. Error monitoring (Sentry)
+**Effort:** ~2 hours
+Add Sentry to both apps for runtime error visibility in production.
