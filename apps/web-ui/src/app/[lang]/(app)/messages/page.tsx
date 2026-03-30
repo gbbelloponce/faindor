@@ -385,7 +385,7 @@ function MessagesContent() {
 															: "bg-muted rounded-bl-sm"
 													}`}
 												>
-													<p className="break-words">{msg.content}</p>
+													<p className="wrap-break-words">{msg.content}</p>
 													<p
 														className={`text-[10px] mt-1 ${isOwn ? "text-primary-foreground/70" : "text-muted-foreground"}`}
 													>
